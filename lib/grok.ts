@@ -50,12 +50,25 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
     const response = completion.choices[0]?.message?.content || '';
     
     // Parse the response into individual posts
-    const posts = response
-      .split('\n')
-      .filter(line => line.trim().length > 0)
-      .filter(line => !line.match(/^(###\s*)?Post\s*[0-9]+[:.)]?\s*$/i)) // Remove "Post 1:", "### Post 1:", etc.
-      .map(line => line.replace(/^["']|["']$/g, '').trim())
-      .filter(post => post.length > 0 && post.length <= 280)
+    const lines = response.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    
+    const posts = lines
+      // Remove metadata/description lines (like "Here's three unique posts...")
+      .filter(line => !line.toLowerCase().includes("here's") && !line.toLowerCase().includes("i've varied"))
+      // Remove markdown headers like "### Post 1:"
+      .filter(line => !line.match(/^(###\s*)?Post\s*[0-9]+[:.)]?\s*$/i))
+      // Remove numbering prefixes like "1.", "2.", "3."
+      .map(line => line.replace(/^[0-9]+\.\s*/, ''))
+      // Remove surrounding quotes
+      .map(line => line.replace(/^["']|["']$/g, ''))
+      // Extract content from quoted posts
+      .map(line => {
+        const match = line.match(/^[0-9]+\.\s*["'](.+)["']\s*$/);
+        return match ? match[1] : line;
+      })
+      .map(line => line.trim())
+      // Filter valid posts
+      .filter(post => post.length > 10 && post.length <= 280)
       .slice(0, 3);
 
     // Validate posts
