@@ -38,7 +38,7 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
 
   try {
     const completion = await grok.chat.completions.create({
-      model: 'grok-beta',
+      model: 'grok-3',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
@@ -90,7 +90,7 @@ export async function analyzeVoice(posts: string[]): Promise<any> {
 
   try {
     const completion = await grok.chat.completions.create({
-      model: 'grok-beta',
+      model: 'grok-3',
       messages: [
         { role: 'system', content: VOICE_ANALYSIS_PROMPT },
         { role: 'user', content: userPrompt },
@@ -130,7 +130,7 @@ Each reply should:
 
   try {
     const completion = await grok.chat.completions.create({
-      model: 'grok-beta',
+      model: 'grok-3',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
@@ -174,7 +174,7 @@ export async function generateThread(topic: string): Promise<Tweet[]> {
 
   try {
     const completion = await grok.chat.completions.create({
-      model: 'grok-beta',
+      model: 'grok-3',
       messages: [
         { role: 'system', content: THREAD_GENERATION_PROMPT },
         { role: 'user', content: userPrompt },
