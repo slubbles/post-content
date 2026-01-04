@@ -38,7 +38,7 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
 
   try {
     const completion = await grok.chat.completions.create({
-      model: 'grok-3',
+      model: 'grok-3-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
