@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
+import { SignInButton, SignUpButton, UserButton, SignedIn, SignedOut } from '@clerk/nextjs';
 
 const navItems = [
   { id: 'generate', label: 'Generate', href: '/', icon: '' },
@@ -50,6 +51,24 @@ export default function Navigation() {
                 </Link>
               );
             })}
+            
+            {/* Auth Buttons */}
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="px-4 lg:px-6 py-2.5 rounded-atome-lg font-medium text-sm lg:text-base text-black bg-primary hover:shadow-atome-yellow transition-all">
+                  Sign In
+                </button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton 
+                appearance={{
+                  elements: {
+                    avatarBox: "w-10 h-10 rounded-atome-lg hover:shadow-atome-yellow transition-all"
+                  }
+                }}
+              />
+            </SignedIn>
           </div>
 
           {/* Tagline */}
