@@ -52,7 +52,8 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
     // Parse the response into individual posts
     const posts = response
       .split('\n')
-      .filter(line => line.trim().length > 0 && !line.match(/^(Post )?[0-9]+[:.)]?$/))
+      .filter(line => line.trim().length > 0)
+      .filter(line => !line.match(/^(###\s*)?Post\s*[0-9]+[:.)]?\s*$/i)) // Remove "Post 1:", "### Post 1:", etc.
       .map(line => line.replace(/^["']|["']$/g, '').trim())
       .filter(post => post.length > 0 && post.length <= 280)
       .slice(0, 3);
