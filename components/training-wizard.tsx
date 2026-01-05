@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { GraduationCap, Loader2, Plus, X, Sparkles } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import { cn } from "@/lib/utils"
 
 export function TrainingWizard() {
   const [examples, setExamples] = useState<string[]>([""])
@@ -15,6 +16,9 @@ export function TrainingWizard() {
   const [tone, setTone] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [saveSuccess, setSaveSuccess] = useState(false)
+
+  const maxExampleChars = 500
+  const maxToneChars = 400
 
   const addExample = () => {
     setExamples([...examples, ""])
@@ -66,6 +70,8 @@ export function TrainingWizard() {
     }
   }
 
+  const filledExamples = examples.filter((e) => e.trim()).length
+
   return (
     <div className="space-y-6">
       <Card className="transition-shadow hover:shadow-md">
@@ -77,27 +83,58 @@ export function TrainingWizard() {
           <CardDescription>Share 2-3 posts that sound like you. The AI will pick up your vibe.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {examples.map((example, index) => (
-            <div key={index} className="flex gap-2">
-              <Textarea
-                placeholder={`Example ${index + 1}: Paste something you've written that captures your style...`}
-                value={example}
-                onChange={(e) => updateExample(index, e.target.value)}
-                rows={3}
-                className="resize-none transition-all focus:ring-2 focus:ring-primary/20"
-              />
-              {examples.length > 1 && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => removeExample(index)}
-                  className="shrink-0 transition-colors hover:bg-destructive hover:text-destructive-foreground"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          ))}
+          {examples.map((example, index) => {
+            const exampleLength = example.length
+            const isNearLimit = exampleLength > maxExampleChars * 0.8
+            const isOverLimit = exampleLength > maxExampleChars
+
+            return (
+              <div key={index} className="space-y-2">
+                <div className="flex gap-2">
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">Example {index + 1}</span>
+                      <span
+                        className={cn(
+                          "text-xs font-medium transition-colors",
+                          isOverLimit && "text-destructive",
+                          isNearLimit && !isOverLimit && "text-amber-600",
+                          !isNearLimit && "text-muted-foreground",
+                        )}
+                      >
+                        {exampleLength}/{maxExampleChars}
+                      </span>
+                    </div>
+                    <Textarea
+                      placeholder={`Paste something you've written that captures your style...`}
+                      value={example}
+                      onChange={(e) => updateExample(index, e.target.value)}
+                      rows={3}
+                      className={cn(
+                        "resize-none transition-all focus:ring-2 focus:ring-primary/20",
+                        isOverLimit && "border-destructive focus:ring-destructive",
+                      )}
+                    />
+                  </div>
+                  {examples.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeExample(index)}
+                      className="shrink-0 transition-colors hover:bg-destructive hover:text-destructive-foreground"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+          {filledExamples < 2 && (
+            <p className="text-xs text-muted-foreground">
+              Add at least 2 examples for best results. The more you add, the better the AI learns your style.
+            </p>
+          )}
           <Button
             variant="outline"
             onClick={addExample}
@@ -157,13 +194,29 @@ export function TrainingWizard() {
           <CardTitle>Your Voice & Vibe</CardTitle>
           <CardDescription>How would you describe your writing style? Be honest!</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-2">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs text-muted-foreground">Writing style</span>
+            <span
+              className={cn(
+                "text-xs font-medium transition-colors",
+                tone.length > maxToneChars && "text-destructive",
+                tone.length > maxToneChars * 0.8 && tone.length <= maxToneChars && "text-amber-600",
+                tone.length <= maxToneChars * 0.8 && "text-muted-foreground",
+              )}
+            >
+              {tone.length}/{maxToneChars}
+            </span>
+          </div>
           <Textarea
             placeholder="I'm casual and friendly, maybe a bit sarcastic. I keep things short and punchy, no fluff. I like to use real examples instead of theory..."
             value={tone}
             onChange={(e) => setTone(e.target.value)}
             rows={4}
-            className="resize-none transition-all focus:ring-2 focus:ring-primary/20"
+            className={cn(
+              "resize-none transition-all focus:ring-2 focus:ring-primary/20",
+              tone.length > maxToneChars && "border-destructive focus:ring-destructive",
+            )}
           />
         </CardContent>
       </Card>

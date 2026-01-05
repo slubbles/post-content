@@ -10,6 +10,7 @@ import { Slider } from "@/components/ui/slider"
 import { Sparkles, Loader2 } from "lucide-react"
 import { GeneratedPosts } from "@/components/generated-posts"
 import { UsageIndicator } from "@/components/usage-indicator"
+import { ConfettiCelebration } from "@/components/confetti-celebration"
 import { cn } from "@/lib/utils"
 
 const platforms = [
@@ -35,6 +36,7 @@ export function PostGenerator() {
   const [variants, setVariants] = useState([3])
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedPosts, setGeneratedPosts] = useState<string[]>([])
+  const [showConfetti, setShowConfetti] = useState(false)
 
   const maxChars = 500
   const charCount = topic.length
@@ -60,6 +62,8 @@ export function PostGenerator() {
       const data = await response.json()
       if (data.posts) {
         setGeneratedPosts(data.posts)
+        setShowConfetti(true)
+        setTimeout(() => setShowConfetti(false), 100)
       }
     } catch (error) {
       console.error("[v0] Generation error:", error)
@@ -79,6 +83,7 @@ export function PostGenerator() {
 
   return (
     <div className="space-y-6">
+      <ConfettiCelebration trigger={showConfetti} />
       <UsageIndicator />
 
       <Card className="transition-shadow hover:shadow-md">

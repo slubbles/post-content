@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MessageSquare, Loader2 } from "lucide-react"
 import { GeneratedPosts } from "@/components/generated-posts"
 import { UsageIndicator } from "@/components/usage-indicator"
+import { cn } from "@/lib/utils"
 
 const replyTones = [
   { value: "agree", label: "Agreeing" },
@@ -25,10 +26,18 @@ export function ReplyGenerator() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedReplies, setGeneratedReplies] = useState<string[]>([])
 
+  const maxPostChars = 500
+  const maxContextChars = 300
   const postLength = originalPost.length
+  const contextLength = context.length
+
+  const isPostNearLimit = postLength > maxPostChars * 0.8
+  const isPostOverLimit = postLength > maxPostChars
+  const isContextNearLimit = contextLength > maxContextChars * 0.8
+  const isContextOverLimit = contextLength > maxContextChars
 
   const handleGenerate = async () => {
-    if (!originalPost.trim()) return
+    if (!originalPost.trim() || isPostOverLimit) return
 
     setIsGenerating(true)
     try {
@@ -69,7 +78,16 @@ export function ReplyGenerator() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="originalPost">Original Post</Label>
-              <span className="text-xs text-muted-foreground">{postLength} characters</span>
+              <span
+                className={cn(
+                  "text-xs font-medium transition-colors",
+                  isPostOverLimit && "text-destructive",
+                  isPostNearLimit && !isPostOverLimit && "text-amber-600",
+                  !isPostNearLimit && "text-muted-foreground",
+                )}
+              >
+                {postLength}/{maxPostChars}
+              </span>
             </div>
             <Textarea
               id="originalPost"
@@ -77,19 +95,42 @@ export function ReplyGenerator() {
               value={originalPost}
               onChange={(e) => setOriginalPost(e.target.value)}
               rows={4}
-              className="resize-none transition-all focus:ring-2 focus:ring-primary/20"
+              className={cn(
+                "resize-none transition-all focus:ring-2 focus:ring-primary/20",
+                isPostOverLimit && "border-destructive focus:ring-destructive",
+              )}
             />
+            {isPostOverLimit && (
+              <p className="text-xs text-destructive">
+                Post is too long. Please keep it under {maxPostChars} characters.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="context">Your Take (Optional)</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="context">Your Take (Optional)</Label>
+              <span
+                className={cn(
+                  "text-xs font-medium transition-colors",
+                  isContextOverLimit && "text-destructive",
+                  isContextNearLimit && !isContextOverLimit && "text-amber-600",
+                  !isContextNearLimit && "text-muted-foreground",
+                )}
+              >
+                {contextLength}/{maxContextChars}
+              </span>
+            </div>
             <Textarea
               id="context"
               placeholder="Got a specific angle or point you want to make? Share it here..."
               value={context}
               onChange={(e) => setContext(e.target.value)}
               rows={3}
-              className="resize-none transition-all focus:ring-2 focus:ring-primary/20"
+              className={cn(
+                "resize-none transition-all focus:ring-2 focus:ring-primary/20",
+                isContextOverLimit && "border-destructive focus:ring-destructive",
+              )}
             />
           </div>
 
@@ -111,7 +152,7 @@ export function ReplyGenerator() {
 
           <Button
             onClick={handleGenerate}
-            disabled={!originalPost.trim() || isGenerating}
+            disabled={!originalPost.trim() || isGenerating || isPostOverLimit}
             className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
             size="lg"
           >

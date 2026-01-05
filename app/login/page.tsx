@@ -1,28 +1,33 @@
 import { LoginForm } from "@/components/login-form"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Sparkles } from "lucide-react"
 import Link from "next/link"
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md space-y-8">
+    <div className="mobile-safe-padding flex min-h-screen items-center justify-center bg-background">
+      <div className="fixed right-4 top-4 sm:right-6 sm:top-6">
+        <ThemeToggle />
+      </div>
+
+      <div className="w-full max-w-md space-y-6 sm:space-y-8">
         <div className="text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-2xl font-bold transition-opacity hover:opacity-80"
+            className="inline-flex items-center gap-2 text-xl font-bold transition-opacity hover:opacity-80 sm:text-2xl"
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary transition-transform hover:scale-110">
               <Sparkles className="h-6 w-6 text-primary-foreground" />
             </div>
             Post Content
           </Link>
-          <h1 className="mt-6 text-3xl font-bold tracking-tight">Hey, welcome back!</h1>
-          <p className="mt-2 text-muted-foreground">Ready to create some awesome content?</p>
+          <h1 className="mt-4 text-2xl font-bold tracking-tight sm:mt-6 sm:text-3xl">Hey, welcome back!</h1>
+          <p className="mt-2 text-sm text-muted-foreground sm:text-base">Ready to create some awesome content?</p>
         </div>
 
         <LoginForm />
 
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-xs text-muted-foreground sm:text-sm">
           New here?{" "}
           <Link href="/signup" className="font-medium text-primary transition-colors hover:underline">
             Create your account

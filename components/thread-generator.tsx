@@ -9,6 +9,7 @@ import { Slider } from "@/components/ui/slider"
 import { List, Loader2 } from "lucide-react"
 import { GeneratedThread } from "@/components/generated-thread"
 import { UsageIndicator } from "@/components/usage-indicator"
+import { cn } from "@/lib/utils"
 
 export function ThreadGenerator() {
   const [topic, setTopic] = useState("")
@@ -17,10 +18,18 @@ export function ThreadGenerator() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedThread, setGeneratedThread] = useState<string[]>([])
 
+  const maxTopicChars = 500
+  const maxKeyPointsChars = 800
   const topicLength = topic.length
+  const keyPointsLength = keyPoints.length
+
+  const isTopicNearLimit = topicLength > maxTopicChars * 0.8
+  const isTopicOverLimit = topicLength > maxTopicChars
+  const isKeyPointsNearLimit = keyPointsLength > maxKeyPointsChars * 0.8
+  const isKeyPointsOverLimit = keyPointsLength > maxKeyPointsChars
 
   const handleGenerate = async () => {
-    if (!topic.trim()) return
+    if (!topic.trim() || isTopicOverLimit) return
 
     setIsGenerating(true)
     try {
@@ -61,7 +70,16 @@ export function ThreadGenerator() {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="topic">Main Topic</Label>
-              <span className="text-xs text-muted-foreground">{topicLength} characters</span>
+              <span
+                className={cn(
+                  "text-xs font-medium transition-colors",
+                  isTopicOverLimit && "text-destructive",
+                  isTopicNearLimit && !isTopicOverLimit && "text-amber-600",
+                  !isTopicNearLimit && "text-muted-foreground",
+                )}
+              >
+                {topicLength}/{maxTopicChars}
+              </span>
             </div>
             <Textarea
               id="topic"
@@ -69,19 +87,47 @@ export function ThreadGenerator() {
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
               rows={3}
-              className="resize-none transition-all focus:ring-2 focus:ring-primary/20"
+              className={cn(
+                "resize-none transition-all focus:ring-2 focus:ring-primary/20",
+                isTopicOverLimit && "border-destructive focus:ring-destructive",
+              )}
             />
+            {!topic && (
+              <p className="text-xs text-muted-foreground">
+                Tip: Be specific! "5 ways to improve productivity" works better than just "productivity"
+              </p>
+            )}
+            {isTopicOverLimit && (
+              <p className="text-xs text-destructive">
+                Topic is too long. Keep it focused under {maxTopicChars} characters.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="keyPoints">Key Points (Optional)</Label>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="keyPoints">Key Points (Optional)</Label>
+              <span
+                className={cn(
+                  "text-xs font-medium transition-colors",
+                  isKeyPointsOverLimit && "text-destructive",
+                  isKeyPointsNearLimit && !isKeyPointsOverLimit && "text-amber-600",
+                  !isKeyPointsNearLimit && "text-muted-foreground",
+                )}
+              >
+                {keyPointsLength}/{maxKeyPointsChars}
+              </span>
+            </div>
             <Textarea
               id="keyPoints"
               placeholder="Got specific points to hit? Add them here (one per line works great)..."
               value={keyPoints}
               onChange={(e) => setKeyPoints(e.target.value)}
               rows={4}
-              className="resize-none transition-all focus:ring-2 focus:ring-primary/20"
+              className={cn(
+                "resize-none transition-all focus:ring-2 focus:ring-primary/20",
+                isKeyPointsOverLimit && "border-destructive focus:ring-destructive",
+              )}
             />
           </div>
 
@@ -104,7 +150,7 @@ export function ThreadGenerator() {
 
           <Button
             onClick={handleGenerate}
-            disabled={!topic.trim() || isGenerating}
+            disabled={!topic.trim() || isGenerating || isTopicOverLimit}
             className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
             size="lg"
           >

@@ -45,13 +45,13 @@ Inspired by **Wise.com** emotional design patterns and **Atome.ph** bold yellow 
 ## Design System
 
 ### Color Palette
-```css
+\`\`\`css
 Primary:    #f0ff5f (Atome yellow/Spriteburst)
 Background: oklch(0.99 0 0) (near white)
 Foreground: oklch(0.15 0 0) (dark gray/black)
 Muted:      oklch(0.96 0 0) (light gray)
 Border:     oklch(0.9 0 0) (subtle gray)
-```
+\`\`\`
 
 ### Typography
 - **Headings**: Manrope Bold (text-balance for optimal line breaks)
@@ -67,7 +67,7 @@ Border:     oklch(0.9 0 0) (subtle gray)
 
 ## Project Structure
 
-```
+\`\`\`
 app/
 ├── page.tsx                 # Landing page (public)
 ├── generate/                # Post generation (auth required)
@@ -107,7 +107,7 @@ lib/
 ├── utils.ts                # cn() helper
 ├── auth.ts                 # Auth utilities (mock)
 └── ai-config.ts            # AI config (mock)
-```
+\`\`\`
 
 ## Key UI Components
 
@@ -172,7 +172,7 @@ The following components use mock data (replace with real API calls):
 
 ### Files to Update with Backend Logic
 
-```
+\`\`\`
 app/api/generate/route.ts    → Your AI generation logic
 app/api/reply/route.ts        → Reply generation logic
 app/api/thread/route.ts       → Thread generation logic
@@ -187,7 +187,7 @@ lib/ai-config.ts              → Connect to AI provider
 
 components/history-list.tsx   → Remove mockHistory, fetch from API
 components/usage-indicator.tsx → Fetch real credit count
-```
+\`\`\`
 
 ## Mobile Responsiveness
 

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Sparkles, MessageSquare, List, GraduationCap, History, Settings, CreditCard, LogOut, Home } from "lucide-react"
 
 const navItems = [
@@ -40,7 +41,7 @@ export function AppNavigation() {
     <>
       {/* Desktop Navigation */}
       <nav className="border-b border-border bg-card">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between mobile-safe-padding">
           <div className="flex items-center gap-8">
             <Link
               href="/generate"
@@ -79,6 +80,7 @@ export function AppNavigation() {
           </div>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link href="/pricing">
               <Button variant="ghost" size="sm" className="gap-2">
                 <CreditCard className="h-4 w-4" />
@@ -110,12 +112,12 @@ export function AppNavigation() {
                   variant="ghost"
                   size="sm"
                   className={cn(
-                    "h-14 w-full flex-col gap-1 rounded-2xl transition-all duration-200",
+                    "h-16 w-full flex-col gap-1 rounded-2xl transition-all duration-200",
                     isActive && "bg-primary/10 text-primary",
                   )}
                 >
-                  <Icon className={cn("h-5 w-5", isActive && "scale-110")} />
-                  <span className="text-xs">{item.label}</span>
+                  <Icon className={cn("h-5 w-5 transition-transform", isActive && "scale-110")} />
+                  <span className="text-xs font-medium">{item.label}</span>
                 </Button>
               </Link>
             )
@@ -126,7 +128,7 @@ export function AppNavigation() {
       <style jsx global>{`
         @media (max-width: 768px) {
           body {
-            padding-bottom: 80px;
+            padding-bottom: 88px;
           }
         }
       `}</style>
