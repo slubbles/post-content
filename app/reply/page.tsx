@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 import Footer from '@/components/Footer';
+import UsageWidget from '@/components/UsageWidget';
 
 interface Reply {
   text: string;
@@ -104,6 +105,8 @@ export default function ReplyPage() {
             Engage without the mental overhead.
           </p>
         </motion.div>
+
+        <UsageWidget />
 
         {/* Input Section */}
         <motion.div

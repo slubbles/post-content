@@ -44,7 +44,12 @@ export async function canUserGeneratePost(userId: string) {
     where: { id: userId },
   });
   
-  // If user has no subscription, check free tier limit
+  // Pro users have unlimited access
+  if (user?.subscribed && user?.subscriptionStatus === 'active') {
+    return true;
+  }
+  
+  // Free users: check monthly limit
   const count = await getUserPostCount(userId);
   return count < FREE_TIER_LIMIT;
 }

@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generatePosts } from '@/lib/grok';
+import { auth } from '@/lib/auth';
+import { canUserGeneratePost, trackPostGeneration } from '@/lib/usage';
 
 export async function POST(request: NextRequest) {
   try {
+    // Check authentication
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized. Please sign in.' },
+        { status: 401 }
+      );
+    }
+
     const { input, tone } = await request.json();
 
     if (!input || !tone) {
@@ -12,10 +23,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check usage limits
+    const canGenerate = await canUserGeneratePost(session.user.id);
+    if (!canGenerate) {
+      return NextResponse.json(
+        { 
+          error: 'Monthly limit reached. Upgrade to Pro for unlimited posts.',
+          upgradeUrl: '/pricing'
+        },
+        { status: 403 }
+      );
+    }
+
     // TODO: Get user voice profile from database if exists
-    const userVoice = undefined; // Will implement after auth
+    const userVoice = undefined;
 
     const posts = await generatePosts({ input, tone, userVoice });
+
+    // Track post generation for usage limits
+    await trackPostGeneration(session.user.id, posts[0], 'generate');
 
     return NextResponse.json({ posts });
   } catch (error) {

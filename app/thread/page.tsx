@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Footer from '@/components/Footer';
+import UsageWidget from '@/components/UsageWidget';
 import toast from 'react-hot-toast';
 import clsx from 'clsx';
 
@@ -138,15 +139,17 @@ export default function ThreadPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-            Thread Generator
+          <h1 className="text-5xl font-display font-bold mb-4">
+            <span className="text-primary">Thread</span> Generator
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-xl text-gray-400">
             Turn your ideas into viral threads.
             <br />
             <span className="text-sm text-gray-600">Or at least threads that don't suck.</span>
           </p>
         </motion.div>
+
+        <UsageWidget />
 
         {/* Input Section */}
         <motion.div

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import PostGenerator from '@/components/PostGenerator';
 import GeneratedPosts from '@/components/GeneratedPosts';
+import UsageWidget from '@/components/UsageWidget';
 import Footer from '@/components/Footer';
 import { motion } from 'framer-motion';
 import { trackEvent } from '@/lib/analytics';
@@ -132,6 +133,8 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-12 bg-white pb-24 md:pb-12">
+        <UsageWidget />
+        
         <PostGenerator 
           onGenerate={handleGenerate}
           isGenerating={isGenerating}

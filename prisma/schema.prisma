@@ -19,6 +19,13 @@ model User {
   accounts      Account[]
   sessions      Session[]
   posts         Post[]
+  
+  // Subscription fields
+  subscribed         Boolean   @default(false)
+  subscriptionId     String?
+  subscriptionStatus String?   // active, canceled, expired
+  subscriptionEndsAt DateTime?
+  
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
