@@ -1,23 +1,7 @@
-import { neon } from '@neondatabase/serverless';
+import { PrismaClient } from '@prisma/client';
 
-// Optional database connection (not required for Week 3)
-export const sql = process.env.DATABASE_URL 
-  ? neon(process.env.DATABASE_URL)
-  : null;
+const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-// Test connection
-export async function testConnection() {
-  if (!sql) {
-    console.log('Database not configured');
-    return false;
-  }
-  
-  try {
-    const result = await sql`SELECT NOW()`;
-    console.log('✓ Database connected:', result[0].now);
-    return true;
-  } catch (error) {
-    console.error('✗ Database connection failed:', error);
-    return false;
-  }
-}
+export const prisma = globalForPrisma.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
