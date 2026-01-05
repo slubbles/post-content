@@ -116,7 +116,7 @@ export default async function PricingPage() {
             </ul>
 
             <a 
-              href="https://polar.sh/slubbles/subscriptions"
+              href="https://buy.polar.sh/polar_cl_wqQ8TgLRsG7HXeqwr6Aj7ErbEz0VMvyVJp18K27Lk7D"
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full py-3 px-6 bg-primary text-black font-bold rounded-atome-lg hover:shadow-atome-yellow transition-all hover:scale-105 text-center"
