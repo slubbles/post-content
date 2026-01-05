@@ -44,6 +44,7 @@ export default {
         'atome-lg': '34px',
         'atome-xl': '45px',
         'atome-pill': '100px',
+        'wise': '9999px', // Wise pill buttons
       },
       boxShadow: {
         'atome': 'rgba(0, 0, 0, 0.15) 0px 5px 12px 0px',

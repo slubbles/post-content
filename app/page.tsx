@@ -1,179 +1,232 @@
-'use client';
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Sparkles, MessageSquare, List, GraduationCap, Zap, TrendingUp } from "lucide-react"
+import { Footer } from "@/components/footer"
+import { AppNavigation } from "@/components/app-navigation"
 
-import { useState } from 'react';
-import PostGenerator from '@/components/PostGenerator';
-import GeneratedPosts from '@/components/GeneratedPosts';
-import UsageWidget from '@/components/UsageWidget';
-import Footer from '@/components/Footer';
-import { motion } from 'framer-motion';
-import { trackEvent } from '@/lib/analytics';
-
-export default function Home() {
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [generatedPosts, setGeneratedPosts] = useState<string[]>([]);
-  const [currentTone, setCurrentTone] = useState<string>('sarcastic');
-
-  const handleGenerate = async (input: string, tone: string) => {
-    setIsGenerating(true);
-    setShowResults(false);
-    setCurrentTone(tone);
-
-    const startTime = Date.now();
-
-    try {
-      const response = await fetch('/api/generate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input, tone }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to generate posts');
-      }
-
-      const data = await response.json();
-      setGeneratedPosts(data.posts);
-      setShowResults(true);
-      
-      // Track analytics
-      trackEvent('post_generated', { 
-        tone, 
-        duration: Date.now() - startTime,
-        success: true 
-      });
-    } catch (error) {
-      console.error('Generation error:', error);
-      // Fallback to mock data if API fails
-      const mockPosts = getMockPosts(tone);
-      setGeneratedPosts(mockPosts);
-      setShowResults(true);
-      
-      // Track analytics (mock data)
-      trackEvent('post_generated', { 
-        tone, 
-        duration: Date.now() - startTime,
-        success: false,
-        fallback: true
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  const handleRegenerate = async () => {
-    setIsGenerating(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Generate different mocks
-    const allMocks = [
-      "Day 5: Shipped a feature. Already found 3 bugs. Progress? Questionable.",
-      "Built this in 4 hours. Spent 6 hours naming variables. Priorities? Flawless.",
-      "Finally deployed. Immediately broke production. At least it's consistent.",
-      "Wrote 200 lines of code. Deleted 180. Net gain: 20 lines of confusion.",
-      "My code works. I don't know why. Scared to touch it now.",
-      "Refactored my code. Still a mess but organized chaos now. Progress?",
-      "Added a feature no one asked for. Broke two features people use. Classic.",
-      "Debugging: The art of removing the bugs you added while debugging.",
-      "Ship fast, they said. It'll be fine, they said. Production is on fire.",
-      "Implemented AI. Now the app makes mistakes with confidence.",
-    ];
-    
-    const shuffled = allMocks.sort(() => Math.random() - 0.5);
-    setGeneratedPosts(shuffled.slice(0, 3));
-    setIsGenerating(false);
-  };
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
+      <AppNavigation />
+
       {/* Hero Section */}
-      {!showResults && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="bg-primary px-4 py-12 sm:py-16 md:py-20"
-        >
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.1 }}
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-black/10 border border-black/20 rounded-atome-pill mb-6 sm:mb-8">
-                <span className="text-black text-xs sm:text-sm font-semibold">Built for builders who hate writing</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-display font-bold mb-4 sm:mb-6 text-balance leading-tight text-black px-4">
-                Stop staring at{' '}
-                <span className="italic">blank tweets</span>
-              </h2>
-              <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-black/80 mb-6 sm:mb-8 text-balance max-w-3xl mx-auto px-4">
-                AI-powered X posts that sound like you. Not some soulless bot.
-              </p>
-              
-              {/* Stats Row */}
-              <div className="flex flex-wrap gap-4 sm:gap-6 md:gap-8 justify-center px-4">
-                <div className="text-center min-w-[80px]">
-                  <div className="text-2xl sm:text-3xl font-bold text-black mb-1">3</div>
-                  <div className="text-xs sm:text-sm text-black/60">Variations per idea</div>
-                </div>
-                <div className="text-center min-w-[80px]">
-                  <div className="text-2xl sm:text-3xl font-bold text-black mb-1">&lt;5s</div>
-                  <div className="text-xs sm:text-sm text-black/60">Generation time</div>
-                </div>
-                <div className="text-center min-w-[80px]">
-                  <div className="text-2xl sm:text-3xl font-bold text-black mb-1">100%</div>
-                  <div className="text-xs sm:text-sm text-black/60">Your vibe</div>
-                </div>
-              </div>
-            </motion.div>
+      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20">
+        <div className="text-center">
+          <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-7xl">
+            Create better posts
+            <br />
+            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+              in half the time.
+            </span>
+          </h1>
+          <p className="mx-auto mt-4 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg lg:text-xl">
+            Skip the blank page stress. Get ready-to-post content for all your social channels, fast. More posts, less
+            time, better results.
+          </p>
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
+            <Link href="/signup" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                className="w-full rounded-full bg-primary px-6 text-base hover:scale-105 hover:bg-primary/90 sm:w-auto sm:px-8"
+              >
+                <Sparkles className="mr-2 h-5 w-5" />
+                Start Creating Free
+              </Button>
+            </Link>
+            <Link href="/pricing" className="w-full sm:w-auto">
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full rounded-full bg-transparent px-6 text-base hover:scale-105 sm:w-auto sm:px-8"
+              >
+                View Pricing
+              </Button>
+            </Link>
           </div>
-        </motion.div>
-      )}
+        </div>
+      </section>
 
-      {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-3 sm:px-4 py-8 sm:py-12 bg-white pb-24 md:pb-12">
-        <UsageWidget />
-        
-        <PostGenerator 
-          onGenerate={handleGenerate}
-          isGenerating={isGenerating}
-        />
+      {/* Features Section */}
+      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20">
+        <div className="text-center">
+          <h2 className="text-balance text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+            Everything you need to create better content
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-pretty text-base text-muted-foreground sm:mt-4 sm:text-lg">
+            Powered by AI, designed for humans. Create, reply, and engage without the stress.
+          </p>
+        </div>
 
-        {showResults && (
-          <GeneratedPosts 
-            posts={generatedPosts}
-            onRegenerate={handleRegenerate}
-            isRegenerating={isGenerating}
-            tone={currentTone}
-          />
-        )}
-      </main>
+        <div className="mt-10 grid gap-4 sm:mt-16 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
+          <Card className="group border-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <CardContent className="p-6">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <Sparkles className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold">AI-Powered Generation</h3>
+              <p className="mt-2 leading-relaxed text-muted-foreground">
+                Generate platform-optimized posts for Twitter, LinkedIn, Facebook, and Instagram in seconds.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="group border-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <CardContent className="p-6">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <MessageSquare className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold">Smart Replies</h3>
+              <p className="mt-2 leading-relaxed text-muted-foreground">
+                Craft perfect responses to comments and posts with context-aware AI that matches your tone.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="group border-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <CardContent className="p-6">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <List className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold">Thread Builder</h3>
+              <p className="mt-2 leading-relaxed text-muted-foreground">
+                Create compelling multi-post threads that tell your story and keep readers engaged.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="group border-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <CardContent className="p-6">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <GraduationCap className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold">AI Training</h3>
+              <p className="mt-2 leading-relaxed text-muted-foreground">
+                Train the AI on your writing style, brand voice, and preferred keywords for personalized content.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="group border-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <CardContent className="p-6">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <Zap className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold">Lightning Fast</h3>
+              <p className="mt-2 leading-relaxed text-muted-foreground">
+                Generate content in seconds, not hours. Spend less time writing, more time engaging.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="group border-border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+            <CardContent className="p-6">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 transition-colors group-hover:bg-primary/20">
+                <TrendingUp className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold">Better Engagement</h3>
+              <p className="mt-2 leading-relaxed text-muted-foreground">
+                Create content that resonates with your audience and drives real engagement.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Social Proof Section */}
+      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20">
+        <div className="text-center">
+          <h2 className="text-balance text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
+            Loved by creators everywhere
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-pretty text-base text-muted-foreground sm:mt-4 sm:text-lg">
+            See what people are saying about Post Content
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-4 sm:mt-16 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3 lg:gap-8">
+          <Card className="border-border transition-all duration-300 hover:shadow-lg">
+            <CardContent className="p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <span className="text-sm font-semibold text-primary">SM</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">Sarah Mitchell</p>
+                  <p className="text-xs text-muted-foreground">Content Creator</p>
+                </div>
+              </div>
+              <p className="leading-relaxed text-muted-foreground text-sm">
+                "This tool saved me hours every week. I can focus on engaging with my audience instead of staring at a
+                blank screen."
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border transition-all duration-300 hover:shadow-lg">
+            <CardContent className="p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <span className="text-sm font-semibold text-primary">JC</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">James Chen</p>
+                  <p className="text-xs text-muted-foreground">Marketing Manager</p>
+                </div>
+              </div>
+              <p className="leading-relaxed text-muted-foreground text-sm">
+                "The AI understands my brand voice perfectly. It's like having a writing assistant who actually gets
+                me."
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border transition-all duration-300 hover:shadow-lg">
+            <CardContent className="p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <span className="text-sm font-semibold text-primary">ER</span>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">Emily Rodriguez</p>
+                  <p className="text-xs text-muted-foreground">Entrepreneur</p>
+                </div>
+              </div>
+              <p className="leading-relaxed text-muted-foreground text-sm">
+                "Finally, a tool that doesn't make my posts sound robotic. The variety of tones is perfect for different
+                platforms."
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20">
+        <Card className="border-primary/20 bg-gradient-to-br from-card to-card/50">
+          <CardContent className="p-12 text-center">
+            <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
+              Ready to transform your content creation?
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-pretty text-lg text-muted-foreground sm:text-xl">
+              Join thousands of creators who've ditched writer's block and started posting with confidence.
+            </p>
+            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link href="/signup">
+                <Button
+                  size="lg"
+                  className="rounded-full bg-primary px-8 text-base hover:scale-105 hover:bg-primary/90"
+                >
+                  Get Started Free
+                </Button>
+              </Link>
+              <p className="text-sm text-muted-foreground">No credit card required</p>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
 
       <Footer />
     </div>
-  );
-}
-
-// Mock post generator based on tone
-function getMockPosts(tone: string): string[] {
-  const toneMap: Record<string, string[]> = {
-    sarcastic: [
-      "Day 5: Shipped a feature. Already found 3 bugs. Progress? Questionable.",
-      "Built this in 4 hours. Spent 6 hours naming variables. Priorities? Flawless.",
-      "Finally deployed. Immediately broke production. At least it's consistent.",
-    ],
-    raw: [
-      "Shipped the thing. It works. Barely. But it works.",
-      "Today: Wrote code. Deleted code. Wrote better code. Maybe.",
-      "Built a feature no one asked for. Tomorrow: Build what they need.",
-    ],
-    roast: [
-      "My code works. I don't know why. Scared to touch it now.",
-      "Refactored my code. Still a mess but organized chaos now.",
-      "Added a feature. Broke two others. This is fine 🔥",
-    ],
-  };
-
-  return toneMap[tone] || toneMap.sarcastic;
+  )
 }

@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,23 +8,22 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  
-  // Subscription fields
+  id                 String    @id @default(cuid())
+  name               String?
+  email              String?   @unique
+  emailVerified      DateTime?
+  image              String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
   subscribed         Boolean   @default(false)
-  subscriptionId     String?
-  subscriptionStatus String?   // active, canceled, expired
   subscriptionEndsAt DateTime?
-  
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  subscriptionId     String?
+  subscriptionStatus String?
+  password           String?
+  preferences        String?
+  accounts           Account[]
+  posts              Post[]
+  sessions           Session[]
 }
 
 model Account {
@@ -59,11 +55,11 @@ model Session {
 model Post {
   id        String   @id @default(cuid())
   content   String
-  type      String   // 'generate', 'reply', 'thread', etc.
+  type      String
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
-  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([createdAt])
 }

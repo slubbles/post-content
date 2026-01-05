@@ -34,7 +34,7 @@ const tonePresets = [
 ];
 
 export default function PostGenerator({ onGenerate, isGenerating }: PostGeneratorProps) {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState('Built a feature that... well, it exists now.');
   const [selectedTone, setSelectedTone] = useState('sarcastic');
   const charCount = input.length;
 
@@ -93,7 +93,7 @@ export default function PostGenerator({ onGenerate, isGenerating }: PostGenerato
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 className={clsx(
-                  'relative p-3 sm:p-4 rounded-atome-lg border-2 transition-all text-left',
+                  'relative p-4 sm:p-5 rounded-full border-2 transition-all text-left',
                   selectedTone === preset.id
                     ? 'border-primary bg-primary/10'
                     : 'border-gray-200 bg-gray-50 hover:border-gray-300',
@@ -132,7 +132,7 @@ export default function PostGenerator({ onGenerate, isGenerating }: PostGenerato
           whileHover={{ scale: input.trim() && !isGenerating ? 1.02 : 1 }}
           whileTap={{ scale: input.trim() && !isGenerating ? 0.98 : 1 }}
           className={clsx(
-            'w-full py-4 sm:py-5 px-6 sm:px-8 rounded-atome-pill font-bold text-lg sm:text-xl transition-all relative overflow-hidden min-h-[52px]',
+            'w-full py-5 sm:py-6 px-8 sm:px-10 rounded-full font-bold text-lg sm:text-xl transition-all relative overflow-hidden min-h-[56px]',
             input.trim() && !isGenerating
               ? 'bg-primary hover:shadow-atome-yellow text-black shadow-atome'
               : 'bg-gray-300 text-gray-400 cursor-not-allowed'

@@ -72,7 +72,7 @@ export default function GeneratedPosts({ posts, onRegenerate, isRegenerating, to
           whileHover={{ scale: isRegenerating ? 1 : 1.05 }}
           whileTap={{ scale: isRegenerating ? 1 : 0.95 }}
           className={clsx(
-            'flex items-center gap-2 px-4 py-2 rounded-atome-lg font-medium transition-all',
+            'flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all',
             isRegenerating
               ? 'bg-gray-300 text-gray-400 cursor-not-allowed'
               : 'bg-white border border-gray-200 hover:border-primary text-black'

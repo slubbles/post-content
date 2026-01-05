@@ -25,7 +25,7 @@ export default function UsageIndicator({ used, limit, remaining, percentage }: U
         </div>
         {isAtLimit && (
           <Link href="/pricing">
-            <button className="px-4 py-2 bg-primary text-black font-bold rounded-atome-lg hover:shadow-atome-yellow transition-all hover:scale-105">
+            <button className="px-4 py-2 bg-primary text-black font-bold rounded-full hover:shadow-atome-yellow transition-all hover:scale-105">
               Upgrade
             </button>
           </Link>

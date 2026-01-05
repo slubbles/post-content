@@ -42,7 +42,7 @@ export default function Navigation() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className={clsx(
-                      'px-4 lg:px-6 py-2.5 rounded-atome-lg font-medium transition-all text-sm lg:text-base',
+                      'px-4 lg:px-6 py-2.5 rounded-full font-medium transition-all text-sm lg:text-base',
                       isActive
                         ? 'text-black bg-primary'
                         : 'text-gray-600 hover:text-black hover:bg-gray-100'
@@ -64,14 +64,14 @@ export default function Navigation() {
                 </span>
                 <button
                   onClick={() => signOut({ redirectTo: '/login' })}
-                  className="px-4 lg:px-6 py-2.5 rounded-atome-lg font-medium text-sm lg:text-base text-gray-600 hover:text-black hover:bg-gray-100 transition-all"
+                  className="px-4 lg:px-6 py-2.5 rounded-full font-medium text-sm lg:text-base text-gray-600 hover:text-black hover:bg-gray-100 transition-all"
                 >
                   Sign Out
                 </button>
               </div>
             ) : (
               <Link href="/login">
-                <button className="px-4 lg:px-6 py-2.5 rounded-atome-lg font-medium text-sm lg:text-base text-black bg-primary hover:shadow-atome-yellow transition-all">
+                <button className="px-4 lg:px-6 py-2.5 rounded-full font-medium text-sm lg:text-base text-black bg-primary hover:shadow-atome-yellow transition-all">
                   Sign In
                 </button>
               </Link>
