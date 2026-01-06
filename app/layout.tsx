@@ -4,6 +4,7 @@ import { Manrope } from "next/font/google"
 import { Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
+import { SessionProvider } from "next-auth/react"
 import "./globals.css"
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans" })
@@ -74,7 +75,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${manrope.variable} ${geistMono.variable} font-sans antialiased`}>
-        {children}
+        <SessionProvider>
+          {children}
+        </SessionProvider>
         <Analytics />
         <Toaster />
       </body>
