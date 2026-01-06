@@ -56,15 +56,9 @@ export const metadata: Metadata = {
   },
   generator: "v0.app",
   icons: {
-    icon: [
-      {
-        url: "/postcontent logo - no text.png",
-        sizes: "32x32",
-        type: "image/png",
-      },
-    ],
-    shortcut: "/postcontent logo - no text.png",
-    apple: "/postcontent logo - no text.png",
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
   },
 }
 

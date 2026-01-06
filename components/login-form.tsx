@@ -74,7 +74,7 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
-      window.location.href = "/api/auth/signin/google"
+      window.location.href = "/api/auth/signIn/google"
     } catch (err) {
       toast({
         title: "Sign in failed",
