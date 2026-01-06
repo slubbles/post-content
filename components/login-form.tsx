@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -74,8 +75,11 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
-      // NextAuth v5 Google OAuth flow
-      window.location.href = "/api/auth/signin?provider=google"
+      // Use NextAuth v5 signIn function with Google provider
+      await signIn("google", { 
+        callbackUrl: "/",
+        redirect: true
+      })
     } catch (err) {
       toast({
         title: "Sign in failed",
