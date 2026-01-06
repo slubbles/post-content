@@ -9,19 +9,37 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export function SignupForm() {
   const router = useRouter()
+  const { toast } = useToast()
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [validationErrors, setValidationErrors] = useState<{ name?: string; email?: string; password?: string }>({})
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
+    setValidationErrors({})
     setIsLoading(true)
+
+    const errors: { name?: string; email?: string; password?: string } = {}
+    if (!name || name.trim().length < 2) {
+      errors.name = "Name must be at least 2 characters"
+    }
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Please enter a valid email address"
+    }
+    if (!password || password.length < 8) {
+      errors.password = "Password must be at least 8 characters"
+    }
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors)
+      setIsLoading(false)
+      return
+    }
 
     try {
       const response = await fetch("/api/auth/signup", {
@@ -33,13 +51,25 @@ export function SignupForm() {
       const data = await response.json()
 
       if (response.ok) {
+        toast({
+          title: "Account created!",
+          description: "Welcome to Post Content. Let's get started.",
+        })
         router.push("/generate")
         router.refresh()
       } else {
-        setError(data.error || "Failed to create account")
+        toast({
+          title: "Signup failed",
+          description: data.error || "Unable to create account. Please try again.",
+          variant: "destructive",
+        })
       }
     } catch (err) {
-      setError("An error occurred. Please try again.")
+      toast({
+        title: "Connection error",
+        description: "Unable to connect to server. Please check your connection and try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -50,12 +80,6 @@ export function SignupForm() {
       <CardHeader />
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive animate-in fade-in slide-in-from-top-2">
-              {error}
-            </div>
-          )}
-
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
             <Input
@@ -68,6 +92,9 @@ export function SignupForm() {
               disabled={isLoading}
               className="transition-all focus:ring-2"
             />
+            {validationErrors.name && (
+              <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">{validationErrors.name}</p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -82,6 +109,11 @@ export function SignupForm() {
               disabled={isLoading}
               className="transition-all focus:ring-2"
             />
+            {validationErrors.email && (
+              <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">
+                {validationErrors.email}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -97,6 +129,11 @@ export function SignupForm() {
               disabled={isLoading}
               className="transition-all focus:ring-2"
             />
+            {validationErrors.password && (
+              <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">
+                {validationErrors.password}
+              </p>
+            )}
           </div>
 
           <Button

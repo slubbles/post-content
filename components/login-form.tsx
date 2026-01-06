@@ -9,18 +9,33 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
 
 export function LoginForm() {
   const router = useRouter()
+  const { toast } = useToast()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [validationErrors, setValidationErrors] = useState<{ email?: string; password?: string }>({})
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
+    setValidationErrors({})
     setIsLoading(true)
+
+    const errors: { email?: string; password?: string } = {}
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Please enter a valid email address"
+    }
+    if (!password || password.length < 8) {
+      errors.password = "Password must be at least 8 characters"
+    }
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors)
+      setIsLoading(false)
+      return
+    }
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -32,13 +47,25 @@ export function LoginForm() {
       const data = await response.json()
 
       if (response.ok) {
+        toast({
+          title: "Welcome back!",
+          description: "You've successfully logged in.",
+        })
         router.push("/")
         router.refresh()
       } else {
-        setError(data.error || "Failed to sign in")
+        toast({
+          title: "Login failed",
+          description: data.error || "Invalid email or password. Please try again.",
+          variant: "destructive",
+        })
       }
     } catch (err) {
-      setError("An error occurred. Please try again.")
+      toast({
+        title: "Connection error",
+        description: "Unable to connect to server. Please check your connection and try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsLoading(false)
     }
@@ -47,10 +74,13 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true)
     try {
-      // Call NextAuth Google provider sign-in
       window.location.href = "/api/auth/signin/google"
     } catch (err) {
-      setError("Failed to sign in with Google")
+      toast({
+        title: "Sign in failed",
+        description: "Unable to sign in with Google. Please try again.",
+        variant: "destructive",
+      })
       setIsLoading(false)
     }
   }
@@ -60,12 +90,6 @@ export function LoginForm() {
       <CardHeader />
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="animate-in fade-in slide-in-from-top-2 rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-              {error}
-            </div>
-          )}
-
           <Button
             type="button"
             variant="outline"
@@ -115,6 +139,11 @@ export function LoginForm() {
               disabled={isLoading}
               className="transition-all focus:ring-2 focus:ring-primary/20"
             />
+            {validationErrors.email && (
+              <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">
+                {validationErrors.email}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -133,6 +162,11 @@ export function LoginForm() {
               disabled={isLoading}
               className="transition-all focus:ring-2 focus:ring-primary/20"
             />
+            {validationErrors.password && (
+              <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">
+                {validationErrors.password}
+              </p>
+            )}
           </div>
 
           <Button

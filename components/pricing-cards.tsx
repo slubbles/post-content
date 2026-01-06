@@ -3,8 +3,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Check } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 import { useState } from "react"
+import { useToast } from "@/hooks/use-toast"
 
 const plans = [
   {
@@ -51,6 +52,8 @@ const plans = [
 
 export function PricingCards() {
   const [isAnnual, setIsAnnual] = useState(false)
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+  const { toast } = useToast()
 
   const handleSubscribe = async (planName: string, price: number) => {
     if (planName === "Free") {
@@ -63,20 +66,41 @@ export function PricingCards() {
       return
     }
 
-    // In a real app, this would create a checkout session with Polar.sh
+    setLoadingPlan(planName)
     try {
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planName, isAnnual }),
+        body: JSON.stringify({
+          plan: planName.toLowerCase(),
+          billingCycle: isAnnual ? "annual" : "monthly",
+        }),
       })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || "Failed to start checkout")
+      }
 
       const data = await response.json()
       if (data.checkoutUrl) {
+        toast({
+          title: "Redirecting to checkout",
+          description: "Please wait while we redirect you to secure payment...",
+        })
         window.location.href = data.checkoutUrl
+      } else {
+        throw new Error("No checkout URL received")
       }
     } catch (error) {
-      console.error("Checkout error:", error)
+      console.error("[v0] Checkout error:", error)
+      toast({
+        title: "Checkout failed",
+        description:
+          error instanceof Error ? error.message : "Unable to start checkout. Please try again or contact support.",
+        variant: "destructive",
+      })
+      setLoadingPlan(null)
     }
   }
 
@@ -92,6 +116,7 @@ export function PricingCards() {
           onClick={() => setIsAnnual(!isAnnual)}
           className="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
           aria-label="Toggle annual billing"
+          disabled={loadingPlan !== null}
         >
           <span
             className={`inline-block h-4 w-4 transform rounded-full bg-background shadow-sm transition-transform ${
@@ -112,6 +137,7 @@ export function PricingCards() {
       <div className="grid gap-8 lg:grid-cols-3">
         {plans.map((plan) => {
           const displayPrice = isAnnual && plan.price > 0 ? Math.floor(plan.price * 0.8 * 12) : plan.price
+          const isLoading = loadingPlan === plan.name
 
           return (
             <Card
@@ -144,8 +170,16 @@ export function PricingCards() {
                   className="w-full rounded-full transition-transform hover:scale-105"
                   variant={plan.popular ? "default" : "outline"}
                   onClick={() => handleSubscribe(plan.name, displayPrice)}
+                  disabled={loadingPlan !== null}
                 >
-                  {plan.cta}
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Starting checkout...
+                    </>
+                  ) : (
+                    plan.cta
+                  )}
                 </Button>
               </CardFooter>
             </Card>
