@@ -130,6 +130,15 @@
     scroll-behavior: smooth;
   }
 
+  /* Fix dark mode button text visibility on hover */
+  .dark button:hover {
+    color: inherit;
+  }
+
+  .dark button:hover:where([data-variant="destructive"]) {
+    color: var(--destructive-foreground);
+  }
+
   /* Enhanced page transitions */
   @keyframes fadeIn {
     from {
@@ -209,6 +218,12 @@
 
   .smooth-hover {
     @apply transition-all duration-200 ease-out;
+  }
+
+  /* Add overflow-x hidden to prevent horizontal scroll */
+  .overflow-x-safe {
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   /* Enhanced shimmer with gradient effect */

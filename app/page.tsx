@@ -8,7 +8,7 @@ import { AppNavigation } from "@/components/app-navigation"
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
-      <AppNavigation />
+      <AppNavigation isAuthenticated={false} />
 
       {/* Hero Section */}
       <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20">
@@ -21,8 +21,8 @@ export default function LandingPage() {
             </span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg lg:text-xl">
-            Skip the blank page stress. Get ready-to-post content for all your social channels, fast. More posts, less
-            time, better results.
+            Generate X/Twitter posts that sound like you, not ChatGPT. Built for developers and creators who code more
+            than they copywrite.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
             <Link href="/signup" className="w-full sm:w-auto">

@@ -46,12 +46,9 @@ export function ThreadGenerator() {
       const data = await response.json()
       if (data.thread) {
         setGeneratedThread(data.thread)
-      } else if (data.error) {
-        alert(data.error)
       }
     } catch (error) {
       console.error("Thread generation error:", error)
-      alert("Failed to generate thread. Please try again.")
     } finally {
       setIsGenerating(false)
     }

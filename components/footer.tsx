@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Sparkles } from "lucide-react"
+import Image from "next/image"
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -8,14 +8,18 @@ export function Footer() {
     <footer className="border-t border-border bg-card/50">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <div>
-            <Link href="/" className="flex items-center gap-2 text-xl font-bold">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary">
-                <Sparkles className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span>Post Content</span>
+          <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
+            <Link href="/" className="inline-block transition-opacity hover:opacity-80">
+              <Image
+                src="/images/postcontent-20logo-20-20with-20text.png"
+                alt="Post Content"
+                width={321}
+                height={180}
+                className="h-[45px] w-auto sm:h-[60px] lg:h-[90px]"
+                priority
+              />
             </Link>
-            <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Stop overthinking. Start posting. Create engaging social media content in seconds.
             </p>
           </div>

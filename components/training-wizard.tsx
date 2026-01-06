@@ -53,20 +53,18 @@ export function TrainingWizard() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          posts: examples.filter((e) => e.trim()),  // Backend expects 'posts'
+          examples: examples.filter((e) => e.trim()),
+          keywords,
+          tone,
         }),
       })
 
-      const data = await response.json()
       if (response.ok) {
         setSaveSuccess(true)
         setTimeout(() => setSaveSuccess(false), 3000)
-      } else if (data.error) {
-        alert(data.error)
       }
     } catch (error) {
       console.error("Training save error:", error)
-      alert("Failed to save training data. Please try again.")
     } finally {
       setIsSaving(false)
     }

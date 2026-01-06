@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { History, Trash2, Copy, Check, RotateCcw, Search } from "lucide-react"
@@ -10,45 +10,47 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { ConfirmationModal } from "@/components/confirmation-modal"
 
-interface HistoryItem {
-  id: string
-  type: string
-  platform: string
-  topic: string
-  createdAt: string
-  posts: string[]
-}
+// Mock data - will be replaced with real data from API
+const mockHistory = [
+  {
+    id: "1",
+    type: "generate",
+    platform: "twitter",
+    topic: "AI trends in 2026",
+    createdAt: "2026-01-05T10:30:00Z",
+    posts: [
+      "AI is transforming how we work and live. Here's what to watch in 2026...",
+      "The future of AI isn't just about technology...",
+    ],
+  },
+  {
+    id: "2",
+    type: "thread",
+    platform: "twitter",
+    topic: "Building startups",
+    createdAt: "2026-01-04T15:20:00Z",
+    posts: [
+      "Starting a business is scary. Here's what I wish I knew...",
+      "Key lessons from my first year as a founder...",
+      "The biggest myth about entrepreneurship...",
+    ],
+  },
+  {
+    id: "3",
+    type: "reply",
+    platform: "linkedin",
+    topic: "Comment on product launch",
+    createdAt: "2026-01-03T09:15:00Z",
+    posts: ["Congratulations on the launch! This looks really promising..."],
+  },
+]
 
 export function HistoryList() {
   const [searchQuery, setSearchQuery] = useState("")
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [itemToDelete, setItemToDelete] = useState<string | null>(null)
-  const [history, setHistory] = useState<HistoryItem[]>([])
-  const [loading, setLoading] = useState(true)
   const { toast } = useToast()
-
-  // Fetch history on mount
-  useEffect(() => {
-    async function fetchHistory() {
-      try {
-        const response = await fetch("/api/history")
-        if (!response.ok) throw new Error("Failed to fetch history")
-        const data = await response.json()
-        setHistory(data.history || [])
-      } catch (error) {
-        console.error("Error fetching history:", error)
-        toast({
-          title: "Failed to load history",
-          description: "Please try refreshing the page.",
-          variant: "destructive",
-        })
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchHistory()
-  }, [])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -80,38 +82,18 @@ export function HistoryList() {
     setDeleteModalOpen(true)
   }
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = () => {
     if (itemToDelete) {
-      try {
-        const response = await fetch("/api/history", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: itemToDelete }),
-        })
-        
-        if (!response.ok) throw new Error("Failed to delete")
-        
-        // Remove from local state
-        setHistory((prev) => prev.filter((item) => item.id !== itemToDelete))
-        
-        toast({
-          title: "Content deleted",
-          description: "The item has been removed from your history.",
-        })
-      } catch (error) {
-        toast({
-          title: "Failed to delete",
-          description: "Please try again.",
-          variant: "destructive",
-        })
-      } finally {
-        setDeleteModalOpen(false)
-        setItemToDelete(null)
-      }
+      toast({
+        title: "Content deleted",
+        description: "The item has been removed from your history.",
+      })
+      setDeleteModalOpen(false)
+      setItemToDelete(null)
     }
   }
 
-  const filteredHistory = history.filter(
+  const filteredHistory = mockHistory.filter(
     (item) =>
       item.topic.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.posts.some((post) => post.toLowerCase().includes(searchQuery.toLowerCase())),
@@ -129,13 +111,7 @@ export function HistoryList() {
         />
       </div>
 
-      {loading ? (
-        <Card className="transition-shadow hover:shadow-md">
-          <CardContent className="flex flex-col items-center justify-center py-16">
-            <p className="text-lg font-medium">Loading history...</p>
-          </CardContent>
-        </Card>
-      ) : filteredHistory.length === 0 ? (
+      {filteredHistory.length === 0 ? (
         <Card className="transition-shadow hover:shadow-md">
           <CardContent className="flex flex-col items-center justify-center py-16">
             <div className="rounded-full bg-muted p-4">

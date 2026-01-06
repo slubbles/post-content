@@ -7,11 +7,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { Sparkles, Loader2 } from "lucide-react"
+import { Sparkles, Loader2, AlertCircle, RefreshCw } from "lucide-react"
 import { GeneratedPosts } from "@/components/generated-posts"
 import { UsageIndicator } from "@/components/usage-indicator"
 import { ConfettiCelebration } from "@/components/confetti-celebration"
 import { cn } from "@/lib/utils"
+import { useToast } from "@/hooks/use-toast"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 const platforms = [
   { value: "twitter", label: "Twitter/X" },
@@ -30,6 +32,7 @@ const tones = [
 ]
 
 export function PostGenerator() {
+  const { toast } = useToast()
   const [topic, setTopic] = useState("")
   const [platform, setPlatform] = useState("twitter")
   const [tone, setTone] = useState("professional")
@@ -37,6 +40,7 @@ export function PostGenerator() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedPosts, setGeneratedPosts] = useState<string[]>([])
   const [showConfetti, setShowConfetti] = useState(false)
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const maxChars = 500
   const charCount = topic.length
@@ -47,27 +51,48 @@ export function PostGenerator() {
     if (!topic.trim() || isOverLimit) return
 
     setIsGenerating(true)
+    setApiError(null)
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          input: topic,  // Backend expects 'input', not 'topic'
+          topic,
+          platform,
           tone,
+          variants: variants[0],
         }),
       })
 
       const data = await response.json()
+
+      if (!response.ok) {
+        setApiError(data.error || "Failed to generate posts. Please try again.")
+        toast({
+          title: "Generation failed",
+          description: data.error || "Unable to generate posts. Please try again.",
+          variant: "destructive",
+        })
+        return
+      }
+
       if (data.posts) {
         setGeneratedPosts(data.posts)
         setShowConfetti(true)
         setTimeout(() => setShowConfetti(false), 100)
-      } else if (data.error) {
-        alert(data.error)
+        toast({
+          title: "Posts generated!",
+          description: `Created ${data.posts.length} post${data.posts.length > 1 ? "s" : ""} for you.`,
+        })
       }
     } catch (error) {
-      console.error("Generation error:", error)
-      alert("Failed to generate posts. Please try again.")
+      console.error("[v0] Generation error:", error)
+      setApiError("Network error. Please check your connection and try again.")
+      toast({
+        title: "Connection error",
+        description: "Unable to connect to server. Please check your connection.",
+        variant: "destructive",
+      })
     } finally {
       setIsGenerating(false)
     }
@@ -86,6 +111,24 @@ export function PostGenerator() {
     <div className="space-y-6">
       <ConfettiCelebration trigger={showConfetti} />
       <UsageIndicator />
+
+      {apiError && (
+        <Alert variant="destructive" className="animate-in fade-in slide-in-from-top-2">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>{apiError}</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleGenerate}
+              className="ml-4 hover:scale-105 bg-transparent"
+            >
+              <RefreshCw className="mr-2 h-3 w-3" />
+              Retry
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Card className="transition-shadow hover:shadow-md">
         <CardHeader>

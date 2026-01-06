@@ -8,32 +8,28 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Separator } from "@/components/ui/separator"
-import { Loader2, Save, Key, User, Palette, Sparkles } from "lucide-react"
+import { Loader2, Save, User, Palette, Sparkles, Trash2, Download } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { ConfirmationModal } from "@/components/confirmation-modal"
 
 export function SettingsForm() {
+  const { toast } = useToast()
   const [isSaving, setIsSaving] = useState(false)
-  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
 
-  // Account settings
   const [name, setName] = useState("John Doe")
   const [email, setEmail] = useState("john@example.com")
-
-  // AI preferences
   const [defaultPlatform, setDefaultPlatform] = useState("twitter")
   const [defaultTone, setDefaultTone] = useState("professional")
   const [defaultVariants, setDefaultVariants] = useState("3")
-
-  // Advanced settings
   const [temperature, setTemperature] = useState("0.8")
   const [enableHistory, setEnableHistory] = useState(true)
   const [autoSave, setAutoSave] = useState(true)
 
-  // API settings
-  const [xaiApiKey, setXaiApiKey] = useState("")
-
   const handleSave = async () => {
     setIsSaving(true)
-    setSaveSuccess(false)
     try {
       const response = await fetch("/api/settings", {
         method: "POST",
@@ -49,31 +45,98 @@ export function SettingsForm() {
             enableHistory,
             autoSave,
           },
-          apiKeys: {
-            xai: xaiApiKey || undefined,
-          },
         }),
       })
 
       if (response.ok) {
-        setSaveSuccess(true)
-        setTimeout(() => setSaveSuccess(false), 3000)
+        toast({
+          title: "Settings saved",
+          description: "Your preferences have been updated successfully.",
+        })
+      } else {
+        const data = await response.json()
+        toast({
+          title: "Save failed",
+          description: data.error || "Unable to save settings. Please try again.",
+          variant: "destructive",
+        })
       }
     } catch (error) {
-      console.error("Settings save error:", error)
+      console.error("[v0] Settings save error:", error)
+      toast({
+        title: "Connection error",
+        description: "Unable to connect to server. Please check your connection.",
+        variant: "destructive",
+      })
     } finally {
       setIsSaving(false)
     }
   }
 
+  const handleExportData = async () => {
+    setIsExporting(true)
+    try {
+      const response = await fetch("/api/export-data", {
+        method: "GET",
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement("a")
+        a.href = url
+        a.download = `postcontent-data-${new Date().toISOString().split("T")[0]}.json`
+        a.click()
+        URL.revokeObjectURL(url)
+        toast({
+          title: "Data exported",
+          description: "Your data has been downloaded successfully.",
+        })
+      } else {
+        throw new Error("Export failed")
+      }
+    } catch (error) {
+      console.error("[v0] Export error:", error)
+      toast({
+        title: "Export failed",
+        description: "Unable to export data. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true)
+    try {
+      const response = await fetch("/api/delete-account", {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        toast({
+          title: "Account deleted",
+          description: "Your account has been permanently deleted.",
+        })
+        window.location.href = "/"
+      } else {
+        throw new Error("Delete failed")
+      }
+    } catch (error) {
+      console.error("[v0] Delete error:", error)
+      toast({
+        title: "Delete failed",
+        description: "Unable to delete account. Please contact support.",
+        variant: "destructive",
+      })
+      setIsDeleting(false)
+    }
+  }
+
   return (
     <div className="space-y-6">
-      {saveSuccess && (
-        <div className="rounded-lg bg-primary/10 border border-primary/20 p-4 text-sm text-primary animate-in fade-in slide-in-from-top-2">
-          Settings saved successfully!
-        </div>
-      )}
-
       <Card className="transition-all hover:shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -216,34 +279,37 @@ export function SettingsForm() {
         </CardContent>
       </Card>
 
-      <Card className="transition-all hover:shadow-sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Key className="h-5 w-5 text-primary" />
-            API Configuration
-          </CardTitle>
-          <CardDescription className="text-pretty">Optional: Use your own API keys for AI generation</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="xaiApiKey">xAI API Key (Optional)</Label>
-            <Input
-              id="xaiApiKey"
-              type="password"
-              placeholder="xai-..."
-              value={xaiApiKey}
-              onChange={(e) => setXaiApiKey(e.target.value)}
-              className="transition-all focus:ring-2"
-            />
-            <p className="text-sm text-muted-foreground text-pretty">Leave empty to use default API keys</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
+        <div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
+          <Button
+            variant="outline"
+            onClick={handleExportData}
+            disabled={isExporting}
+            className="rounded-full bg-transparent transition-transform hover:scale-105"
+          >
+            {isExporting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Exporting...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Export Data
+              </>
+            )}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowDeleteModal(true)}
+            disabled={isDeleting}
+            className="rounded-full bg-transparent text-destructive hover:text-destructive transition-transform hover:scale-105"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete Account
+          </Button>
+        </div>
 
-      <div className="flex justify-end gap-4">
-        <Button variant="outline" className="rounded-full bg-transparent transition-transform hover:scale-105">
-          Cancel
-        </Button>
         <Button onClick={handleSave} disabled={isSaving} className="rounded-full transition-transform hover:scale-105">
           {isSaving ? (
             <>
@@ -258,6 +324,16 @@ export function SettingsForm() {
           )}
         </Button>
       </div>
+
+      <ConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDeleteAccount}
+        title="Delete Account"
+        description="Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted."
+        confirmText="Delete Account"
+        isDestructive={true}
+      />
     </div>
   )
 }

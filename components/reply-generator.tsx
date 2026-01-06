@@ -45,20 +45,18 @@ export function ReplyGenerator() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          postToReply: originalPost,  // Backend expects 'postToReply'
-          context: context || undefined,
+          originalPost,
+          context,
+          replyTone,
         }),
       })
 
       const data = await response.json()
       if (data.replies) {
         setGeneratedReplies(data.replies)
-      } else if (data.error) {
-        alert(data.error)
       }
     } catch (error) {
       console.error("Reply generation error:", error)
-      alert("Failed to generate replies. Please try again.")
     } finally {
       setIsGenerating(false)
     }
