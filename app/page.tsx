@@ -13,16 +13,20 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20">
         <div className="text-center">
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium text-primary">Stop staring at blank screens</span>
+          </div>
           <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-7xl">
-            Create better posts
+            Create X/Twitter posts
             <br />
             <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              in half the time.
+              10x faster with AI
             </span>
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:mt-6 sm:text-lg lg:text-xl">
-            Generate X/Twitter posts that sound like you, not ChatGPT. Built for developers and creators who code more
-            than they copywrite.
+            AI-powered content generator for X/Twitter. Train it on your writing style, generate posts in seconds that
+            sound like you—not generic ChatGPT.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
             <Link href="/signup" className="w-full sm:w-auto">
@@ -31,30 +35,86 @@ export default function LandingPage() {
                 className="w-full rounded-full bg-primary px-6 text-base hover:scale-105 hover:bg-primary/90 sm:w-auto sm:px-8"
               >
                 <Sparkles className="mr-2 h-5 w-5" />
-                Start Creating Free
+                Get Started Free
               </Button>
             </Link>
-            <Link href="/pricing" className="w-full sm:w-auto">
+            <Link href="#features" className="w-full sm:w-auto">
               <Button
                 size="lg"
                 variant="outline"
                 className="w-full rounded-full bg-transparent px-6 text-base hover:scale-105 sm:w-auto sm:px-8"
               >
-                View Pricing
+                See Features
               </Button>
             </Link>
+          </div>
+          <p className="mt-4 text-sm text-muted-foreground">10 free posts/month. No credit card needed.</p>
+        </div>
+      </section>
+
+      {/* Story: Show the transformation */}
+      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-16">
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-destructive/20 bg-destructive/10 px-4 py-1.5 mb-4">
+              <span className="text-sm font-medium text-destructive">Without PostContent</span>
+            </div>
+            <h3 className="text-2xl font-bold mb-4">Posting feels like work</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3">
+                <span className="mt-1 text-destructive">✗</span>
+                <span className="text-muted-foreground">Spending hours writing one post</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 text-destructive">✗</span>
+                <span className="text-muted-foreground">Generic AI that sounds robotic</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 text-destructive">✗</span>
+                <span className="text-muted-foreground">Inconsistent posting schedule</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 text-destructive">✗</span>
+                <span className="text-muted-foreground">Content that doesn't sound like you</span>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 mb-4">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-primary">With PostContent</span>
+            </div>
+            <h3 className="text-2xl font-bold mb-4">Posting becomes effortless</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3">
+                <span className="mt-1 text-primary">✓</span>
+                <span className="text-muted-foreground">10+ posts generated in 5 minutes</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 text-primary">✓</span>
+                <span className="text-muted-foreground">AI trained on YOUR voice</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 text-primary">✓</span>
+                <span className="text-muted-foreground">Post daily without burnout</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="mt-1 text-primary">✓</span>
+                <span className="text-muted-foreground">Authentic content that builds trust</span>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20">
+      <section id="features" className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20">
         <div className="text-center">
           <h2 className="text-balance text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
-            Everything you need to create better content
+            Everything you need to dominate your content game
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-pretty text-base text-muted-foreground sm:mt-4 sm:text-lg">
-            Powered by AI, designed for humans. Create, reply, and engage without the stress.
+            Built for creators who want quality content without burning out.
           </p>
         </div>
 

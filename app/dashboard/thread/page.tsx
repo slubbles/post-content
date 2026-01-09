@@ -1,32 +1,28 @@
-import { AppNavigation } from "@/components/app-navigation"
 import { ThreadGenerator } from "@/components/thread-generator"
 import { Breadcrumbs } from "@/components/breadcrumbs"
-import { KeyboardShortcuts } from "@/components/keyboard-shortcuts"
-import { QuickActionButton } from "@/components/quick-action-button"
-import { Suspense } from "react"
+import { HistorySection } from "@/components/history-section"
 
-export default function ThreadPage() {
+export default function DashboardThreadPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <AppNavigation />
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-        <Breadcrumbs />
+    <div className="space-y-8">
+      <div>
+        <Breadcrumbs
+          items={[
+            { label: "Dashboard", href: "/dashboard/generate" },
+            { label: "Thread", href: "/dashboard/thread" },
+          ]}
+        />
+        <h1 className="mt-2 text-3xl font-bold tracking-tight">Thread Builder</h1>
+        <p className="mt-2 text-muted-foreground">
+          Create compelling multi-post threads that tell a story and keep readers engaged.
+        </p>
+      </div>
 
-        <div className="mb-8 text-center">
-          <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl">
-            Tell your story, one post at a time
-          </h1>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Turn big ideas into engaging threads that people actually read
-          </p>
-        </div>
+      <ThreadGenerator />
 
-        <Suspense fallback={<div>Loading...</div>}>
-          <ThreadGenerator />
-        </Suspense>
-      </main>
-      <KeyboardShortcuts />
-      <QuickActionButton />
+      <div className="pt-8 border-t">
+        <HistorySection type="thread" title="Recent Threads" limit={10} />
+      </div>
     </div>
   )
 }

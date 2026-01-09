@@ -4,9 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Loader2 } from "lucide-react"
-import { useState } from "react"
-import { useSession } from "next-auth/react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 
 const plans = [
   {
@@ -14,7 +14,7 @@ const plans = [
     price: 0,
     description: "Perfect for trying out the platform",
     features: ["10 generations per month", "Basic AI models", "3 variants per generation", "Email support"],
-    cta: "Get Started",
+    cta: "Start Free",
     popular: false,
   },
   {
@@ -29,7 +29,7 @@ const plans = [
       "AI training with examples",
       "Generation history",
     ],
-    cta: "Upgrade to Pro",
+    cta: "Select Plan",
     popular: true,
   },
   {
@@ -46,19 +46,39 @@ const plans = [
       "API access",
       "Custom integrations",
     ],
-    cta: "Contact Sales",
+    cta: "Select Plan",
     popular: false,
   },
 ]
 
 export function PricingCards() {
-  const [isAnnual, setIsAnnual] = useState(false)
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const { toast } = useToast()
-  const { data: session, status } = useSession()
-  const isAuthenticated = status === "authenticated"
+  const router = useRouter()
 
-  const handleSubscribe = async (planName: string, price: number) => {
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me")
+        setIsAuthenticated(response.ok)
+      } catch {
+        setIsAuthenticated(false)
+      }
+    }
+    checkAuth()
+  }, [])
+
+  const handleSubscribe = async (planName: string) => {
+    if (!isAuthenticated && planName !== "Free") {
+      toast({
+        title: "Login required",
+        description: "Please sign in to upgrade your plan",
+      })
+      router.push("/login")
+      return
+    }
+
     if (planName === "Free") {
       window.location.href = "/signup"
       return
@@ -69,15 +89,6 @@ export function PricingCards() {
       return
     }
 
-    // Redirect to login if not authenticated
-    if (!isAuthenticated) {
-      // Store the selected plan in sessionStorage
-      sessionStorage.setItem("selectedPlan", planName.toLowerCase())
-      sessionStorage.setItem("selectedBillingCycle", isAnnual ? "annual" : "monthly")
-      window.location.href = "/login?redirect=checkout"
-      return
-    }
-
     setLoadingPlan(planName)
     try {
       const response = await fetch("/api/checkout", {
@@ -85,7 +96,6 @@ export function PricingCards() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           plan: planName.toLowerCase(),
-          billingCycle: isAnnual ? "annual" : "monthly",
         }),
       })
 
@@ -118,37 +128,8 @@ export function PricingCards() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-center gap-4">
-        <span
-          className={`text-sm transition-colors ${isAnnual ? "text-muted-foreground" : "font-medium text-foreground"}`}
-        >
-          Monthly
-        </span>
-        <button
-          onClick={() => setIsAnnual(!isAnnual)}
-          className="relative inline-flex h-6 w-11 items-center rounded-full bg-primary transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          aria-label="Toggle annual billing"
-          disabled={loadingPlan !== null}
-        >
-          <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-background shadow-sm transition-transform ${
-              isAnnual ? "translate-x-6" : "translate-x-1"
-            }`}
-          />
-        </button>
-        <span
-          className={`text-sm transition-colors ${!isAnnual ? "text-muted-foreground" : "font-medium text-foreground"}`}
-        >
-          Annual{" "}
-          <Badge variant="secondary" className="ml-1">
-            Save 20%
-          </Badge>
-        </span>
-      </div>
-
       <div className="grid gap-8 lg:grid-cols-3">
         {plans.map((plan) => {
-          const displayPrice = isAnnual && plan.price > 0 ? Math.floor(plan.price * 0.8 * 12) : plan.price
           const isLoading = loadingPlan === plan.name
 
           return (
@@ -163,8 +144,8 @@ export function PricingCards() {
                 </div>
                 <CardDescription className="text-pretty">{plan.description}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">${displayPrice}</span>
-                  {plan.price > 0 && <span className="text-muted-foreground">/{isAnnual ? "year" : "month"}</span>}
+                  <span className="text-4xl font-bold">${plan.price}</span>
+                  {plan.price > 0 && <span className="text-muted-foreground">/month</span>}
                 </div>
               </CardHeader>
               <CardContent>
@@ -181,7 +162,7 @@ export function PricingCards() {
                 <Button
                   className="w-full rounded-full transition-transform hover:scale-105"
                   variant={plan.popular ? "default" : "outline"}
-                  onClick={() => handleSubscribe(plan.name, displayPrice)}
+                  onClick={() => handleSubscribe(plan.name)}
                   disabled={loadingPlan !== null}
                 >
                   {isLoading ? (

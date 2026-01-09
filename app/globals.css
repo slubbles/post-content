@@ -3,49 +3,14 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Enhanced color system with better dark mode support */
+/* Removed all light mode CSS variables - dark mode only */
 :root {
-  --background: oklch(0.99 0 0);
-  --foreground: oklch(0.15 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0 0);
-  --primary: oklch(0.95 0.2 105);
-  --primary-foreground: oklch(0.15 0 0);
-  --secondary: oklch(0.25 0 0);
-  --secondary-foreground: oklch(0.99 0 0);
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.5 0 0);
-  --accent: oklch(0.95 0.2 105);
-  --accent-foreground: oklch(0.15 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.9 0 0);
-  --input: oklch(0.9 0 0);
-  --ring: oklch(0.95 0.2 105);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --radius: 0.75rem;
-  --sidebar: oklch(0.99 0 0);
-  --sidebar-foreground: oklch(0.15 0 0);
-  --sidebar-primary: oklch(0.95 0.2 105);
-  --sidebar-primary-foreground: oklch(0.15 0 0);
-  --sidebar-accent: oklch(0.96 0 0);
-  --sidebar-accent-foreground: oklch(0.15 0 0);
-  --sidebar-border: oklch(0.9 0 0);
-  --sidebar-ring: oklch(0.95 0.2 105);
-}
-
-.dark {
-  --background: oklch(0.12 0 0);
+  /* Using dark mode colors as the only theme */
+  --background: #0a0a0a;
   --foreground: oklch(0.99 0 0);
-  --card: oklch(0.15 0 0);
+  --card: #1a1a1a;
   --card-foreground: oklch(0.99 0 0);
-  --popover: oklch(0.15 0 0);
+  --popover: #1a1a1a;
   --popover-foreground: oklch(0.99 0 0);
   --primary: oklch(0.95 0.2 105);
   --primary-foreground: oklch(0.15 0 0);
@@ -57,23 +22,26 @@
   --accent-foreground: oklch(0.15 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.25 0 0);
-  --input: oklch(0.25 0 0);
+  --border: #2a2a2a;
+  --input: #2a2a2a;
   --ring: oklch(0.95 0.2 105);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.12 0 0);
-  --sidebar-foreground: oklch(0.99 0 0);
+  --radius: 0.75rem;
+  --sidebar: #0a0a0a;
+  --sidebar-foreground: #fafafa;
   --sidebar-primary: oklch(0.95 0.2 105);
-  --sidebar-primary-foreground: oklch(0.15 0 0);
-  --sidebar-accent: oklch(0.2 0 0);
-  --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(0.25 0 0);
+  --sidebar-primary-foreground: #0a0a0a;
+  --sidebar-accent: #1a1a1a;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #2a2a2a;
   --sidebar-ring: oklch(0.95 0.2 105);
 }
+
+/* Removed .dark class - all colors are dark by default */
 
 @theme inline {
   --font-sans: "Manrope", "Manrope Fallback", system-ui, -apple-system, sans-serif;
@@ -122,8 +90,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* Smooth theme transitions */
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   html {
@@ -228,7 +194,7 @@
 
   /* Enhanced shimmer with gradient effect */
   .shimmer {
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
     background-size: 1000px 100%;
     animation: shimmer 2s infinite;
   }

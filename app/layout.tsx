@@ -13,14 +13,14 @@ const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.postcontent.io'),
   title: {
-    default: "Post Content - AI Social Media Post Generator",
-    template: "%s | Post Content"
+    default: "PostContent - AI Content Generator for X/Twitter",
+    template: "%s | PostContent"
   },
-  description: "Create engaging social media posts in seconds with AI. Generate X/Twitter posts, threads, and replies that sound like you. Stop overthinking, start posting.",
+  description: "Generate X/Twitter posts in seconds. AI trained on your writing style. Create content that sounds like you, not ChatGPT.",
   keywords: ["AI content generator", "social media posts", "Twitter post generator", "X posts", "content creation", "AI writing", "social media marketing", "content marketing"],
-  authors: [{ name: "Post Content" }],
-  creator: "Post Content",
-  publisher: "Post Content",
+  authors: [{ name: "PostContent" }],
+  creator: "PostContent",
+  publisher: "PostContent",
   robots: {
     index: true,
     follow: true,
@@ -36,22 +36,22 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://www.postcontent.io",
-    siteName: "Post Content",
-    title: "Post Content - AI Social Media Post Generator",
-    description: "Create engaging social media posts in seconds with AI. Generate posts, threads, and replies that sound like you.",
+    siteName: "PostContent",
+    title: "PostContent - AI Content Generator for X/Twitter",
+    description: "Generate X/Twitter posts in seconds. AI trained on your writing style. Create content that sounds like you, not ChatGPT.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Post Content - AI Social Media Generator",
+        alt: "PostContent - AI Content Generator",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Post Content - AI Social Media Post Generator",
-    description: "Create engaging social media posts in seconds with AI. Stop overthinking, start posting.",
+    title: "PostContent - AI Content Generator for X/Twitter",
+    description: "Generate X/Twitter posts in seconds. Stop overthinking, start posting.",
     creator: "@postcontent",
     images: ["/og-image.png"],
   },
@@ -77,7 +77,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${manrope.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className={`${manrope.variable} ${geistMono.variable} font-sans antialiased overflow-x-hidden`}>
         <SessionProvider>
           {children}
         </SessionProvider>

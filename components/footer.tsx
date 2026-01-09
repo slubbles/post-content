@@ -6,16 +6,17 @@ export function Footer() {
 
   return (
     <footer className="border-t border-border bg-card/50">
-      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="flex flex-col items-center text-center sm:items-start sm:text-left">
+      <div className="mx-auto max-w-7xl mobile-safe-padding py-12 sm:py-16">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
+          {/* Logo and tagline */}
+          <div className="flex flex-col items-center text-center sm:items-start sm:text-left lg:col-span-1">
             <Link href="/" className="inline-block transition-opacity hover:opacity-80">
               <Image
                 src="/images/postcontent-20logo-20-20with-20text.png"
                 alt="Post Content"
                 width={321}
                 height={180}
-                className="h-[45px] w-auto sm:h-[60px] lg:h-[90px]"
+                className="h-[45px] w-auto sm:h-[55px]"
                 priority
               />
             </Link>
@@ -32,23 +33,62 @@ export function Footer() {
                   href="/dashboard/generate"
                   className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  Generate Posts
+                  Generate
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard/reply" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  Smart Replies
+                <Link
+                  href="/dashboard/reply"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Reply
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard/thread" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  Thread Builder
+                <Link
+                  href="/dashboard/thread"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Thread
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard/train" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  AI Training
+                <Link
+                  href="/dashboard/train"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Train
                 </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold">Resources</h3>
+            <ul className="mt-4 space-y-2">
+              <li>
+                <a
+                  href="https://postcontent.io/blog"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Blog
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://postcontent.io/docs"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Docs
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://postcontent.io/help"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Help Center
+                </a>
               </li>
             </ul>
           </div>
@@ -63,10 +103,18 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://postcontent.io"
+                  href="https://postcontent.io/about"
                   className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
                   About
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://postcontent.io/careers"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Careers
                 </a>
               </li>
               <li>
@@ -81,16 +129,32 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold">Legal</h3>
+            <h3 className="font-semibold">Support</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <a href="/privacy" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  Privacy Policy
+                <a
+                  href="https://postcontent.io/faq"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  FAQ
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://postcontent.io/contact"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Contact
                 </a>
               </li>
               <li>
                 <a href="/terms" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
-                  Terms of Service
+                  Terms
+                </a>
+              </li>
+              <li>
+                <a href="/privacy" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                  Privacy
                 </a>
               </li>
             </ul>
