@@ -146,6 +146,56 @@
 
 - [ ] **NO standalone /history page** - History integrated into each feature page
 
+### Visual Design Details (Match Polar.sh)
+- [ ] **Typography:**
+  - Same font hierarchy as Polar.sh
+  - Page titles: ~24px, bold
+  - Body text: ~14px, regular
+  - Muted text: Gray-400 for labels/secondary info
+
+- [ ] **Spacing & Layout:**
+  - Generous padding: 24-32px on main content
+  - Card spacing: 16-24px between sections
+  - Consistent border-radius: 8px on cards
+
+- [ ] **Colors (Dark Theme):**
+  - Background: ~#0a0a0a
+  - Cards/elevated surfaces: ~#1a1a1a
+  - Borders: Subtle gray (#2a2a2a)
+  - Accent: Keep PostContent yellow (#f0ff5f)
+  - Text: White/gray hierarchy
+
+- [ ] **Interactions:**
+  - Smooth hover states (150ms transitions)
+  - Subtle shadows on elevated elements
+  - Button states matching Polar.sh (hover, active, disabled)
+
+### Responsive Design (Match Polar.sh behavior)
+- [ ] **Desktop (1024px+):**
+  - Full sidebar visible (240px width)
+  - Main content fills remaining space
+  - Layout exactly as shown in reference images
+
+- [ ] **Tablet (768px - 1023px):**
+  - Collapsible sidebar (hamburger icon)
+  - Full-width content when sidebar closed
+  - Overlay sidebar when opened (slides over content)
+
+- [ ] **Mobile (< 768px):**
+  - Sidebar hidden by default
+  - Hamburger menu in top-left
+  - Sidebar slides in as overlay (full-height)
+  - Close button/backdrop to dismiss
+  
+### Global UI Polish
+- [ ] **Apply Hook, Story, Offer framework** to marketing pages:
+  - Landing page
+  - Pricing page
+  - Authentication pages (login/signup)
+  
+- [ ] **Ensure consistency** across all breakpoints
+- [ ] **Test all interactions** - Hover, click, keyboard navigation
+
 ### Footer
 - [ ] Restructure footer sections:
   - Features (not "Product")
