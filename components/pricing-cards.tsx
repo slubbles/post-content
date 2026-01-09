@@ -4,9 +4,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Loader2 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 const plans = [
   {
@@ -53,21 +54,11 @@ const plans = [
 
 export function PricingCards() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { data: session, status } = useSession()
   const { toast } = useToast()
   const router = useRouter()
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("/api/auth/me")
-        setIsAuthenticated(response.ok)
-      } catch {
-        setIsAuthenticated(false)
-      }
-    }
-    checkAuth()
-  }, [])
+  const isAuthenticated = status === "authenticated" && !!session
 
   const handleSubscribe = async (planName: string) => {
     if (!isAuthenticated && planName !== "Free") {
@@ -75,7 +66,7 @@ export function PricingCards() {
         title: "Login required",
         description: "Please sign in to upgrade your plan",
       })
-      router.push("/")
+      router.push("/login")
       return
     }
 
