@@ -1,4 +1,3 @@
-import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { CreditCard, Download } from "lucide-react"
@@ -6,16 +5,9 @@ import Link from "next/link"
 
 export default function BillingPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
-        <Breadcrumbs
-          items={[
-            { label: "Dashboard", href: "/dashboard/generate" },
-            { label: "Account", href: "/dashboard/account/general" },
-            { label: "Billing", href: "/dashboard/account/billing" },
-          ]}
-        />
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Billing & Subscription</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Billing & Subscription</h1>
         <p className="mt-2 text-muted-foreground">Manage your subscription and billing information.</p>
       </div>
 

@@ -13,6 +13,7 @@ import {
   Target,
   Shield,
   Users,
+  User,
 } from "lucide-react"
 import { Footer } from "@/components/footer"
 import { AppNavigation } from "@/components/app-navigation"
@@ -52,15 +53,6 @@ export default function LandingPage() {
                 Start Creating Now - It's Free
               </Button>
             </Link>
-            <Link href="#features" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full rounded-full bg-transparent px-6 text-base hover:scale-105 sm:w-auto sm:px-8"
-              >
-                See How It Works
-              </Button>
-            </Link>
           </div>
           <div className="mt-6 flex items-center justify-center gap-6 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
@@ -75,6 +67,73 @@ export default function LandingPage() {
           <p className="mt-4 text-sm text-muted-foreground">
             Join 10,000+ creators. No credit card needed. Cancel anytime.
           </p>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20 animate-fade-in-up animate-delay-400 animate-on-load">
+        <div className="text-center mb-12">
+          <h2 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl mb-4">How It Works</h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            From idea to published post in 4 simple steps
+          </p>
+        </div>
+
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          <div className="relative group">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:bg-primary/20 group-hover:scale-110">
+                <User className="h-8 w-8 text-primary" />
+              </div>
+              <div className="mb-2 text-sm font-semibold text-primary">Step 1</div>
+              <h3 className="text-xl font-bold mb-2">Sign up free</h3>
+              <p className="text-sm text-muted-foreground">
+                Create account in 30 seconds. No credit card needed. Start with 100 free posts monthly.
+              </p>
+            </div>
+            <div className="hidden lg:block absolute top-8 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
+          </div>
+
+          <div className="relative group">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:bg-primary/20 group-hover:scale-110">
+                <GraduationCap className="h-8 w-8 text-primary" />
+              </div>
+              <div className="mb-2 text-sm font-semibold text-primary">Step 2 (Optional)</div>
+              <h3 className="text-xl font-bold mb-2">Train your AI</h3>
+              <p className="text-sm text-muted-foreground">
+                Feed it your best posts. AI learns your voice, style, and tone. Skip this if you want generic output.
+              </p>
+            </div>
+            <div className="hidden lg:block absolute top-8 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
+          </div>
+
+          <div className="relative group">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:bg-primary/20 group-hover:scale-110">
+                <Sparkles className="h-8 w-8 text-primary" />
+              </div>
+              <div className="mb-2 text-sm font-semibold text-primary">Step 3</div>
+              <h3 className="text-xl font-bold mb-2">Generate content</h3>
+              <p className="text-sm text-muted-foreground">
+                Pick platform, tone, topic. Click generate. Get 5 variants instantly. Choose your favorite.
+              </p>
+            </div>
+            <div className="hidden lg:block absolute top-8 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
+          </div>
+
+          <div className="relative group">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:bg-primary/20 group-hover:scale-110">
+                <Zap className="h-8 w-8 text-primary" />
+              </div>
+              <div className="mb-2 text-sm font-semibold text-primary">Step 4</div>
+              <h3 className="text-xl font-bold mb-2">Post & engage</h3>
+              <p className="text-sm text-muted-foreground">
+                Copy with one click. Post to your platform. Spend saved time engaging with your audience instead.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -157,9 +216,77 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* New Section Added */}
+      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20 animate-fade-in-up animate-delay-200 animate-on-load">
+        <div className="text-center">
+          <h2 className="text-balance text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">How It Works</h2>
+          <p className="mx-auto mt-3 max-w-2xl text-pretty text-base text-muted-foreground sm:mt-4 sm:text-lg">
+            Step-by-step guide to using PostContent
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-6 sm:mt-16 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="relative group">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:bg-primary/20 group-hover:scale-110">
+                <User className="h-8 w-8 text-primary" />
+              </div>
+              <div className="mb-2 text-sm font-semibold text-primary">Step 1</div>
+              <h3 className="text-xl font-bold mb-2">Sign up free</h3>
+              <p className="text-sm text-muted-foreground">
+                Create account in 30 seconds. No credit card needed. Start with 100 free posts monthly.
+              </p>
+            </div>
+            <div className="hidden lg:block absolute top-8 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
+          </div>
+
+          <div className="relative group">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:bg-primary/20 group-hover:scale-110">
+                <GraduationCap className="h-8 w-8 text-primary" />
+              </div>
+              <div className="mb-2 text-sm font-semibold text-primary">Step 2 (Optional)</div>
+              <h3 className="text-xl font-bold mb-2">Train your AI</h3>
+              <p className="text-sm text-muted-foreground">
+                Feed it your best posts. AI learns your voice, style, and tone. Skip this if you want generic output.
+              </p>
+            </div>
+            <div className="hidden lg:block absolute top-8 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
+          </div>
+
+          <div className="relative group">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:bg-primary/20 group-hover:scale-110">
+                <Sparkles className="h-8 w-8 text-primary" />
+              </div>
+              <div className="mb-2 text-sm font-semibold text-primary">Step 3</div>
+              <h3 className="text-xl font-bold mb-2">Generate content</h3>
+              <p className="text-sm text-muted-foreground">
+                Pick platform, tone, topic. Click generate. Get 5 variants instantly. Choose your favorite.
+              </p>
+            </div>
+            <div className="hidden lg:block absolute top-8 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
+          </div>
+
+          <div className="relative group">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:bg-primary/20 group-hover:scale-110">
+                <Zap className="h-8 w-8 text-primary" />
+              </div>
+              <div className="mb-2 text-sm font-semibold text-primary">Step 4</div>
+              <h3 className="text-xl font-bold mb-2">Post & engage</h3>
+              <p className="text-sm text-muted-foreground">
+                Copy with one click. Post to your platform. Spend saved time engaging with your audience instead.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
       <section
         id="features"
-        className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20 animate-fade-in-up animate-delay-200 animate-on-load"
+        className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20 animate-fade-in-up animate-delay-300 animate-on-load"
       >
         <div className="text-center">
           <h2 className="text-balance text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
@@ -292,7 +419,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20 animate-fade-in-up animate-delay-300 animate-on-load">
+      {/* Real Marketers Section */}
+      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20 animate-fade-in-up animate-delay-400 animate-on-load">
         <div className="text-center">
           <h2 className="text-balance text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl">
             Real marketers. Real results.
@@ -438,7 +566,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20 animate-scale-in animate-delay-400 animate-on-load">
+      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-20 animate-scale-in animate-delay-500 animate-on-load">
         <Card className="border-primary/20 bg-gradient-to-br from-card to-card/50 relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 bg-primary/10 border-b border-primary/20 py-2 text-center">
             <p className="text-sm font-medium text-primary">

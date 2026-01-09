@@ -5,22 +5,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Slider } from "@/components/ui/slider"
-import { Sparkles, Loader2, AlertCircle, RefreshCw } from "lucide-react"
+import { Sparkles, AlertCircle, RefreshCw, Zap } from "lucide-react"
 import { GeneratedPosts } from "@/components/generated-posts"
-import { UsageIndicator } from "@/components/usage-indicator"
 import { ConfettiCelebration } from "@/components/confetti-celebration"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Progress } from "@/components/ui/progress"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import Link from "next/link"
 
 const platforms = [
-  { value: "twitter", label: "Twitter/X" },
-  { value: "linkedin", label: "LinkedIn" },
-  { value: "instagram", label: "Instagram" },
-  { value: "facebook", label: "Facebook" },
-  { value: "threads", label: "Threads" },
+  { value: "twitter", label: "Twitter/X", shortLabel: "X" },
+  { value: "linkedin", label: "LinkedIn", shortLabel: "In" },
+  { value: "instagram", label: "Instagram", shortLabel: "IG" },
+  { value: "facebook", label: "Facebook", shortLabel: "FB" },
+  { value: "threads", label: "Threads", shortLabel: "Th" },
 ]
 
 const tones = [
@@ -38,9 +39,13 @@ export function PostGenerator() {
   const [tone, setTone] = useState("professional")
   const [variants, setVariants] = useState([3])
   const [isGenerating, setIsGenerating] = useState(false)
+  const [generatingProgress, setGeneratingProgress] = useState(0)
   const [generatedPosts, setGeneratedPosts] = useState<string[]>([])
   const [showConfetti, setShowConfetti] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+
+  const used = 45
+  const limit = 100
 
   const maxChars = 500
   const charCount = topic.length
@@ -51,7 +56,19 @@ export function PostGenerator() {
     if (!topic.trim() || isOverLimit) return
 
     setIsGenerating(true)
+    setGeneratingProgress(0)
     setApiError(null)
+
+    const progressInterval = setInterval(() => {
+      setGeneratingProgress((prev) => {
+        if (prev >= 95) {
+          clearInterval(progressInterval)
+          return 95
+        }
+        return prev + Math.random() * 15
+      })
+    }, 300)
+
     try {
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -66,6 +83,9 @@ export function PostGenerator() {
 
       const data = await response.json()
 
+      clearInterval(progressInterval)
+      setGeneratingProgress(100)
+
       if (!response.ok) {
         setApiError(data.error || "Failed to generate posts. Please try again.")
         toast({
@@ -77,15 +97,18 @@ export function PostGenerator() {
       }
 
       if (data.posts) {
-        setGeneratedPosts(data.posts)
-        setShowConfetti(true)
-        setTimeout(() => setShowConfetti(false), 100)
-        toast({
-          title: "Posts generated!",
-          description: `Created ${data.posts.length} post${data.posts.length > 1 ? "s" : ""} for you.`,
-        })
+        setTimeout(() => {
+          setGeneratedPosts(data.posts)
+          setShowConfetti(true)
+          setTimeout(() => setShowConfetti(false), 100)
+          toast({
+            title: "Posts generated!",
+            description: `Created ${data.posts.length} post${data.posts.length > 1 ? "s" : ""} for you.`,
+          })
+        }, 200)
       }
     } catch (error) {
+      clearInterval(progressInterval)
       console.error("[v0] Generation error:", error)
       setApiError("Network error. Please check your connection and try again.")
       toast({
@@ -94,23 +117,16 @@ export function PostGenerator() {
         variant: "destructive",
       })
     } finally {
-      setIsGenerating(false)
+      setTimeout(() => {
+        setIsGenerating(false)
+        setGeneratingProgress(0)
+      }, 500)
     }
   }
-
-  const loadingMessages = [
-    "Cooking up some fire content...",
-    "Channeling your inner influencer...",
-    "Making it sound less boring...",
-    "Adding a sprinkle of personality...",
-    "Teaching AI to be funny...",
-  ]
-  const [loadingMessage] = useState(loadingMessages[Math.floor(Math.random() * loadingMessages.length)])
 
   return (
     <div className="space-y-6">
       <ConfettiCelebration trigger={showConfetti} />
-      <UsageIndicator />
 
       {apiError && (
         <Alert variant="destructive" className="animate-in fade-in slide-in-from-top-2">
@@ -132,11 +148,23 @@ export function PostGenerator() {
 
       <Card className="transition-shadow hover:shadow-md">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            Generate Posts
-          </CardTitle>
-          <CardDescription>Tell us what you want to post about. We'll make it sound good.</CardDescription>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                Generate Posts
+              </CardTitle>
+              <CardDescription>Tell us what you want to post about. We'll make it sound good.</CardDescription>
+            </div>
+            <Link href="/pricing">
+              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted cursor-pointer">
+                <Zap className="h-3 w-3" />
+                <span className="font-medium tabular-nums">
+                  {used}/{limit}
+                </span>
+              </div>
+            </Link>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
@@ -169,38 +197,45 @@ export function PostGenerator() {
             )}
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="platform">Platform</Label>
-              <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger id="platform">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {platforms.map((p) => (
-                    <SelectItem key={p.value} value={p.value}>
-                      {p.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label>Platform</Label>
+            <ToggleGroup
+              type="single"
+              value={platform}
+              onValueChange={(v) => v && setPlatform(v)}
+              className="justify-start flex-wrap"
+            >
+              {platforms.map((p) => (
+                <ToggleGroupItem
+                  key={p.value}
+                  value={p.value}
+                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                >
+                  <span className="hidden sm:inline">{p.label}</span>
+                  <span className="sm:hidden">{p.shortLabel}</span>
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="tone">Tone</Label>
-              <Select value={tone} onValueChange={setTone}>
-                <SelectTrigger id="tone">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {tones.map((t) => (
-                    <SelectItem key={t.value} value={t.value}>
-                      {t.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <Label>Tone</Label>
+            <ToggleGroup
+              type="single"
+              value={tone}
+              onValueChange={(v) => v && setTone(v)}
+              className="justify-start flex-wrap"
+            >
+              {tones.map((t) => (
+                <ToggleGroupItem
+                  key={t.value}
+                  value={t.value}
+                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                >
+                  {t.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
 
           <div className="space-y-2">
@@ -222,24 +257,23 @@ export function PostGenerator() {
             <p className="text-xs text-muted-foreground">More variants = more options to choose from</p>
           </div>
 
-          <Button
-            onClick={handleGenerate}
-            disabled={!topic.trim() || isGenerating || isOverLimit}
-            className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
-            size="lg"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {loadingMessage}
-              </>
-            ) : (
-              <>
-                <Sparkles className="mr-2 h-4 w-4" />
-                Generate Posts
-              </>
-            )}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              onClick={handleGenerate}
+              disabled={!topic.trim() || isGenerating || isOverLimit}
+              className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              size="lg"
+            >
+              {!isGenerating && (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Generate Posts
+                </>
+              )}
+              {isGenerating && <span className="w-full">Generating...</span>}
+            </Button>
+            {isGenerating && <Progress value={generatingProgress} className="h-1.5 w-full" />}
+          </div>
         </CardContent>
       </Card>
 

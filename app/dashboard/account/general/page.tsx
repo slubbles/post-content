@@ -3,7 +3,7 @@ import { Breadcrumbs } from "@/components/breadcrumbs"
 
 export default function GeneralSettingsPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
         <Breadcrumbs
           items={[

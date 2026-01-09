@@ -1,5 +1,13 @@
 import Link from "next/link"
 import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Linkedin, Facebook, Instagram, Youtube } from "lucide-react"
+
+const XIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+)
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -23,6 +31,79 @@ export function Footer() {
             <p className="mt-2 max-w-xs text-sm leading-relaxed text-muted-foreground">
               Stop overthinking. Start posting. Create engaging social media content in seconds.
             </p>
+
+            <div className="mt-4 flex gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 hover:bg-black hover:text-white transition-colors"
+                asChild
+              >
+                <a href="https://x.com/postcontent" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                  <XIcon className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 hover:bg-[#0A66C2] hover:text-white transition-colors"
+                asChild
+              >
+                <a
+                  href="https://linkedin.com/company/postcontent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                >
+                  <Linkedin className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 hover:bg-[#1877F2] hover:text-white transition-colors"
+                asChild
+              >
+                <a
+                  href="https://facebook.com/postcontent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                >
+                  <Facebook className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 hover:bg-gradient-to-tr hover:from-[#FD5949] hover:via-[#D6249F] hover:to-[#285AEB] hover:text-white transition-colors"
+                asChild
+              >
+                <a
+                  href="https://instagram.com/postcontent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="h-4 w-4" />
+                </a>
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 hover:bg-[#FF0000] hover:text-white transition-colors"
+                asChild
+              >
+                <a
+                  href="https://youtube.com/@postcontent"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube"
+                >
+                  <Youtube className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
           </div>
 
           <div>

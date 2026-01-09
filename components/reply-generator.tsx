@@ -5,11 +5,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { MessageSquare, Loader2 } from "lucide-react"
+import { MessageSquare, Zap } from "lucide-react"
 import { GeneratedPosts } from "@/components/generated-posts"
-import { UsageIndicator } from "@/components/usage-indicator"
 import { cn } from "@/lib/utils"
+import { Progress } from "@/components/ui/progress"
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
+import Link from "next/link"
 
 const replyTones = [
   { value: "agree", label: "Agreeing" },
@@ -24,7 +25,11 @@ export function ReplyGenerator() {
   const [context, setContext] = useState("")
   const [replyTone, setReplyTone] = useState("supportive")
   const [isGenerating, setIsGenerating] = useState(false)
+  const [generatingProgress, setGeneratingProgress] = useState(0)
   const [generatedReplies, setGeneratedReplies] = useState<string[]>([])
+
+  const used = 45
+  const limit = 100
 
   const maxPostChars = 500
   const maxContextChars = 300
@@ -40,6 +45,18 @@ export function ReplyGenerator() {
     if (!originalPost.trim() || isPostOverLimit) return
 
     setIsGenerating(true)
+    setGeneratingProgress(0)
+
+    const progressInterval = setInterval(() => {
+      setGeneratingProgress((prev) => {
+        if (prev >= 95) {
+          clearInterval(progressInterval)
+          return 95
+        }
+        return prev + Math.random() * 15
+      })
+    }, 300)
+
     try {
       const response = await fetch("/api/reply", {
         method: "POST",
@@ -52,27 +69,46 @@ export function ReplyGenerator() {
       })
 
       const data = await response.json()
+      clearInterval(progressInterval)
+      setGeneratingProgress(100)
+
       if (data.replies) {
-        setGeneratedReplies(data.replies)
+        setTimeout(() => {
+          setGeneratedReplies(data.replies)
+        }, 200)
       }
     } catch (error) {
+      clearInterval(progressInterval)
       console.error("Reply generation error:", error)
     } finally {
-      setIsGenerating(false)
+      setTimeout(() => {
+        setIsGenerating(false)
+        setGeneratingProgress(0)
+      }, 500)
     }
   }
 
   return (
     <div className="space-y-6">
-      <UsageIndicator />
-
       <Card className="transition-shadow hover:shadow-md">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-primary" />
-            Smart Reply Generator
-          </CardTitle>
-          <CardDescription>Drop the post you're replying to, we'll craft the perfect response</CardDescription>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-primary" />
+                Smart Reply Generator
+              </CardTitle>
+              <CardDescription>Drop the post you're replying to, we'll craft the perfect response</CardDescription>
+            </div>
+            <Link href="/pricing">
+              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted cursor-pointer">
+                <Zap className="h-3 w-3" />
+                <span className="font-medium tabular-nums">
+                  {used}/{limit}
+                </span>
+              </div>
+            </Link>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
@@ -133,44 +169,44 @@ export function ReplyGenerator() {
               )}
             />
           </div>
-
           <div className="space-y-2">
-            <Label htmlFor="replyTone">Reply Vibe</Label>
-            <Select value={replyTone} onValueChange={setReplyTone}>
-              <SelectTrigger id="replyTone" className="transition-all focus:ring-2 focus:ring-primary/20">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {replyTones.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>Reply Vibe</Label>
+            <ToggleGroup
+              type="single"
+              value={replyTone}
+              onValueChange={(v) => v && setReplyTone(v)}
+              className="justify-start flex-wrap"
+            >
+              {replyTones.map((t) => (
+                <ToggleGroupItem
+                  key={t.value}
+                  value={t.value}
+                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                >
+                  {t.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
-
-          <Button
-            onClick={handleGenerate}
-            disabled={!originalPost.trim() || isGenerating || isPostOverLimit}
-            className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
-            size="lg"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Crafting your reply...
-              </>
-            ) : (
-              <>
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Generate Reply
-              </>
-            )}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              onClick={handleGenerate}
+              disabled={!originalPost.trim() || isGenerating || isPostOverLimit}
+              className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
+              size="lg"
+            >
+              {!isGenerating && (
+                <>
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Generate Reply
+                </>
+              )}
+              {isGenerating && <span className="w-full">Crafting reply...</span>}
+            </Button>
+            {isGenerating && <Progress value={generatingProgress} className="h-1.5 w-full" />}
+          </div>
         </CardContent>
       </Card>
-
       {generatedReplies.length > 0 && <GeneratedPosts posts={generatedReplies} platform="reply" />}
     </div>
   )

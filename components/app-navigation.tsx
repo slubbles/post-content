@@ -14,21 +14,34 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
-import { Sparkles, MessageSquare, List, GraduationCap, History, Settings, LogOut, Home } from "lucide-react"
+import {
+  Sparkles,
+  MessageSquare,
+  List,
+  GraduationCap,
+  History,
+  Settings,
+  LogOut,
+  Home,
+  Crown,
+  User,
+} from "lucide-react"
 import Image from "next/image"
 
 const navItems = [
-  { href: "/dashboard/generate", label: "Generate", icon: Sparkles },
-  { href: "/dashboard/reply", label: "Reply", icon: MessageSquare },
-  { href: "/dashboard/thread", label: "Thread", icon: List },
-  { href: "/dashboard/train", label: "Train", icon: GraduationCap },
+  { href: "/generate", label: "Generate", icon: Sparkles },
+  { href: "/reply", label: "Reply", icon: MessageSquare },
+  { href: "/thread", label: "Thread", icon: List },
+  { href: "/train", label: "Train", icon: GraduationCap },
+  { href: "/history", label: "History", icon: History },
 ]
 
 const bottomNavItems = [
-  { href: "/dashboard/generate", label: "Generate", icon: Home },
-  { href: "/dashboard/reply", label: "Reply", icon: MessageSquare },
-  { href: "/dashboard/train", label: "Train", icon: GraduationCap },
-  { href: "/dashboard/account", label: "Account", icon: Settings },
+  { href: "/generate", label: "Generate", icon: Home },
+  { href: "/reply", label: "Reply", icon: MessageSquare },
+  { href: "/history", label: "History", icon: History },
+  { href: "/train", label: "Train", icon: GraduationCap },
+  { href: "/settings", label: "Settings", icon: Settings },
 ]
 
 interface AppNavigationProps {
@@ -37,6 +50,7 @@ interface AppNavigationProps {
     name?: string
     email?: string
     image?: string
+    plan?: string
   }
 }
 
@@ -51,7 +65,7 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" })
-      router.push("/login")
+      router.push("/")
       router.refresh()
     } catch (error) {
       console.error("[v0] Logout error:", error)
@@ -73,13 +87,18 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
     return "U"
   }
 
+  const getPlanBadge = () => {
+    const plan = user?.plan || "free"
+    return plan.charAt(0).toUpperCase() + plan.slice(1) + " Plan"
+  }
+
   return (
     <>
       {/* Desktop Navigation */}
       <nav className="border-b border-border bg-card">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between mobile-safe-padding">
           <div className="flex items-center gap-8">
-            <Link href={isAuthenticated ? "/dashboard/generate" : "/"} className="flex items-center gap-2 transition-transform hover:scale-105">
+            <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
               <Image
                 src="/images/postcontent-20logo-20-20with-20text.png"
                 alt="Post Content"
@@ -119,18 +138,23 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
               <>
+                {/* Reorganized profile dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                       <Avatar className="h-10 w-10 transition-transform hover:scale-105">
-                        <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
+                        <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
                         <AvatarFallback className="bg-primary/10 text-primary">{getUserInitials()}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-72" align="end">
                     <DropdownMenuLabel>
-                      <div className="flex flex-col space-y-1">
+                      <div className="flex flex-col space-y-2">
+                        <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                          {/* Backend will provide: {user.plan} */}
+                          {getPlanBadge()}
+                        </div>
                         <p className="text-sm font-medium leading-none">{user?.name || "User"}</p>
                         <p className="text-xs leading-none text-muted-foreground">
                           {user?.email || "user@example.com"}
@@ -139,6 +163,20 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
 
+                    <DropdownMenuItem asChild>
+                      <Link href="/dashboard/account" className="cursor-pointer">
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/pricing" className="cursor-pointer text-primary font-medium">
+                        <Crown className="mr-2 h-4 w-4" />
+                        Upgrade Plan
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
                     <div className="px-2 py-3">
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
@@ -152,13 +190,6 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
                       </div>
                     </div>
 
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/dashboard/account" className="cursor-pointer">
-                        <Settings className="mr-2 h-4 w-4" />
-                        Account
-                      </Link>
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
                       <LogOut className="mr-2 h-4 w-4" />

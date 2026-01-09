@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
@@ -22,35 +22,23 @@ import {
   MessageSquare,
   List,
   GraduationCap,
-  Settings,
   LogOut,
-  Search,
   Menu,
   X,
   User,
-  CreditCard,
-  HelpCircle,
-  FileText,
-  Zap,
-  LayoutGrid,
+  ChevronLeft,
+  ChevronRight,
+  MessageCircle,
+  Crown,
 } from "lucide-react"
+import { FeedbackModal } from "@/components/feedback-modal"
 
 const mainNavItems = [
   { href: "/dashboard/generate", label: "Generate", icon: Sparkles },
   { href: "/dashboard/reply", label: "Reply", icon: MessageSquare },
   { href: "/dashboard/thread", label: "Thread", icon: List },
   { href: "/dashboard/train", label: "Train", icon: GraduationCap },
-]
-
-const bottomNavItems = [
-  { href: "#", label: "Support", icon: HelpCircle, external: false },
-  { href: "#", label: "Documentation", icon: FileText, external: false },
-]
-
-const accountSubItems = [
-  { href: "/dashboard/account/general", label: "General", icon: User },
-  { href: "/dashboard/account/preferences", label: "Preferences", icon: Settings },
-  { href: "/dashboard/account/billing", label: "Billing", icon: CreditCard },
+  { href: "#feedback", label: "Feedback", icon: MessageCircle, action: "feedback" },
 ]
 
 interface DashboardSidebarProps {
@@ -58,6 +46,7 @@ interface DashboardSidebarProps {
     name?: string
     email?: string
     image?: string
+    plan?: "free" | "pro" | "enterprise"
   }
 }
 
@@ -65,15 +54,30 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
 
   const used = 45
   const limit = 100
   const percentage = (used / limit) * 100
 
+  useEffect(() => {
+    const saved = localStorage.getItem("sidebar-collapsed")
+    if (saved !== null) {
+      setIsCollapsed(saved === "true")
+    }
+  }, [])
+
+  const toggleCollapse = () => {
+    const newState = !isCollapsed
+    setIsCollapsed(newState)
+    localStorage.setItem("sidebar-collapsed", String(newState))
+  }
+
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" })
-      router.push("/login")
+      router.push("/")
       router.refresh()
     } catch (error) {
       console.error("[v0] Logout error:", error)
@@ -95,10 +99,17 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
     return "U"
   }
 
+  const getPlanBadge = () => {
+    const plan = user?.plan || "free"
+    return plan.charAt(0).toUpperCase() + plan.slice(1) + " Plan"
+  }
+
   const closeMobileMenu = () => setIsMobileMenuOpen(false)
 
   return (
     <TooltipProvider delayDuration={0}>
+      <FeedbackModal open={isFeedbackOpen} onOpenChange={setIsFeedbackOpen} />
+
       {/* Mobile Header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-sidebar-border bg-sidebar px-4 lg:hidden">
         <Button
@@ -132,11 +143,27 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-72">
             <DropdownMenuLabel>
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-2">
+                <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                  {getPlanBadge()}
+                </div>
                 <p className="text-sm font-medium">{user?.name || "User"}</p>
                 <p className="text-xs text-muted-foreground">{user?.email || "user@example.com"}</p>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard/account" className="cursor-pointer">
+                <User className="mr-2 h-4 w-4" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/pricing" className="cursor-pointer text-primary">
+                <Crown className="mr-2 h-4 w-4" />
+                Upgrade Plan
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <div className="px-2 py-3">
               <div className="space-y-2">
@@ -165,14 +192,32 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
 
       <aside
         className={cn(
-          "fixed left-0 z-40 flex h-screen w-16 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-300 ease-in-out lg:translate-x-0",
-          isMobileMenuOpen ? "translate-x-0 w-60" : "-translate-x-full lg:translate-x-0",
+          "fixed left-0 z-40 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 ease-in-out lg:translate-x-0",
+          isCollapsed ? "w-16" : "w-60",
+          isMobileMenuOpen && "w-60",
+          !isMobileMenuOpen && "-translate-x-full lg:translate-x-0",
         )}
         style={{ top: "0", paddingTop: "0" }}
       >
+        <div className="hidden lg:block absolute -right-3 top-16 z-50">
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-6 w-6 rounded-full bg-background shadow-md hover:scale-110"
+            onClick={toggleCollapse}
+          >
+            {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+          </Button>
+        </div>
+
+        {/* Logo Section */}
         <div className="flex h-14 items-center justify-center border-b border-sidebar-border">
           <Link href="/dashboard/generate" className="flex items-center">
             <div className="hidden lg:block">
+              {/* TODO: Replace with actual logo image path when provided */}
+              {/* <Image src="/images/logo-icon-32x32.png" alt="Logo" width={32} height={32} /> */}
+              {/* TODO: Replace with your logo icon image when provided (32x32px recommended) */}
+              {/* Example: <Image src="/images/logo-icon.png" alt="PostContent Logo" width={32} height={32} /> */}
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
                 P
               </div>
@@ -190,41 +235,32 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           </Link>
         </div>
 
-        <div className="flex items-center justify-center gap-1 border-b border-sidebar-border p-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent">
-                <Zap className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right">Quick Actions</TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent">
-                <LayoutGrid className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right">Dashboard</TooltipContent>
-          </Tooltip>
-        </div>
-
-        <div className="border-b border-sidebar-border p-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent">
-                <Search className="h-4 w-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="right">Search (⌘K)</TooltipContent>
-          </Tooltip>
-        </div>
-
+        {/* Main Navigation */}
         <nav className="flex-1 space-y-1 overflow-y-auto p-2">
           {mainNavItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
+
+            if (item.action === "feedback") {
+              return (
+                <Tooltip key="feedback">
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setIsFeedbackOpen(true)}
+                      className={cn(
+                        "h-10 w-10 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">{item.label}</TooltipContent>
+                </Tooltip>
+              )
+            }
+
             return (
               <Tooltip key={item.href}>
                 <TooltipTrigger asChild>
@@ -249,6 +285,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           })}
         </nav>
 
+        {/* Credits Widget */}
         <div className="border-t border-sidebar-border p-2">
           <Tooltip>
             <TooltipTrigger asChild>
@@ -273,63 +310,13 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           </Tooltip>
         </div>
 
-        <div className="border-t border-sidebar-border p-2 space-y-1">
-          {bottomNavItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <Tooltip key={item.href}>
-                <TooltipTrigger asChild>
-                  <Link href={item.href} onClick={closeMobileMenu}>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                    >
-                      <Icon className="h-4 w-4" />
-                    </Button>
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">{item.label}</TooltipContent>
-              </Tooltip>
-            )
-          })}
-
+        {/* Profile Avatar */}
+        <div className="border-t border-sidebar-border p-2">
           <DropdownMenu>
             <Tooltip>
               <TooltipTrigger asChild>
                 <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent"
-                  >
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent side="right">Settings</TooltipContent>
-            </Tooltip>
-            <DropdownMenuContent align="end" side="right" className="w-48">
-              {accountSubItems.map((item) => {
-                const Icon = item.icon
-                const isActive = pathname === item.href
-                return (
-                  <DropdownMenuItem key={item.href} asChild>
-                    <Link href={item.href} className={cn(isActive && "bg-accent")}>
-                      <Icon className="mr-2 h-4 w-4" />
-                      {item.label}
-                    </Link>
-                  </DropdownMenuItem>
-                )
-              })}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-10 w-10 rounded-full p-0 mt-2">
+                  <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
                       <AvatarFallback className="bg-primary/10 text-primary text-xs">
@@ -343,11 +330,27 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
             </Tooltip>
             <DropdownMenuContent align="end" side="right" className="w-56">
               <DropdownMenuLabel>
-                <div className="flex flex-col space-y-1">
+                <div className="flex flex-col space-y-2">
+                  <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                    {getPlanBadge()}
+                  </div>
                   <p className="text-sm font-medium">{user?.name || "User"}</p>
                   <p className="text-xs text-muted-foreground">{user?.email || "user@example.com"}</p>
                 </div>
               </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link href="/dashboard/account" className="cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  Profile
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/pricing" className="cursor-pointer text-primary font-medium">
+                  <Crown className="mr-2 h-4 w-4" />
+                  Upgrade Plan
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
                 <LogOut className="mr-2 h-4 w-4" />

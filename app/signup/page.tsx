@@ -1,6 +1,7 @@
 import { SignupForm } from "@/components/signup-form"
 import Image from "next/image"
 import Link from "next/link"
+import { ArrowLeft } from "lucide-react"
 
 export const metadata = {
   title: "Sign Up | Post Content - AI Social Media Content Generator",
@@ -10,6 +11,14 @@ export const metadata = {
 export default function SignupPage() {
   return (
     <div className="mobile-safe-padding flex min-h-screen items-center justify-center bg-background">
+      <Link
+        href="/"
+        className="fixed top-4 left-4 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+      >
+        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+        <span>Back to Home</span>
+      </Link>
+
       <div className="w-full max-w-md space-y-6 sm:space-y-8 animate-fade-in">
         <div className="text-center">
           <Link href="/" className="inline-block transition-opacity hover:opacity-80">

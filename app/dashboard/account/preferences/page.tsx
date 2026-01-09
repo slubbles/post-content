@@ -1,4 +1,3 @@
-import { Breadcrumbs } from "@/components/breadcrumbs"
 import { Card } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -8,16 +7,9 @@ import { Button } from "@/components/ui/button"
 
 export default function PreferencesPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div>
-        <Breadcrumbs
-          items={[
-            { label: "Dashboard", href: "/dashboard/generate" },
-            { label: "Account", href: "/dashboard/account/general" },
-            { label: "Preferences", href: "/dashboard/account/preferences" },
-          ]}
-        />
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">AI Preferences</h1>
+        <h1 className="text-3xl font-bold tracking-tight">AI Preferences</h1>
         <p className="mt-2 text-muted-foreground">Configure your AI generation settings.</p>
       </div>
 

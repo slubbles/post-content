@@ -1,18 +1,11 @@
 import { ThreadGenerator } from "@/components/thread-generator"
-import { Breadcrumbs } from "@/components/breadcrumbs"
 import { HistorySection } from "@/components/history-section"
 
 export default function DashboardThreadPage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       <div>
-        <Breadcrumbs
-          items={[
-            { label: "Dashboard", href: "/dashboard/generate" },
-            { label: "Thread", href: "/dashboard/thread" },
-          ]}
-        />
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Thread Builder</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Thread Builder</h1>
         <p className="mt-2 text-muted-foreground">
           Create compelling multi-post threads that tell a story and keep readers engaged.
         </p>

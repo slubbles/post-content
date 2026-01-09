@@ -6,17 +6,22 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-import { List, Loader2 } from "lucide-react"
+import { List, Zap } from "lucide-react"
 import { GeneratedThread } from "@/components/generated-thread"
-import { UsageIndicator } from "@/components/usage-indicator"
 import { cn } from "@/lib/utils"
+import { Progress } from "@/components/ui/progress"
+import Link from "next/link"
 
 export function ThreadGenerator() {
   const [topic, setTopic] = useState("")
   const [keyPoints, setKeyPoints] = useState("")
   const [threadLength, setThreadLength] = useState([5])
   const [isGenerating, setIsGenerating] = useState(false)
+  const [generatingProgress, setGeneratingProgress] = useState(0)
   const [generatedThread, setGeneratedThread] = useState<string[]>([])
+
+  const used = 45
+  const limit = 100
 
   const maxTopicChars = 500
   const maxKeyPointsChars = 800
@@ -32,6 +37,18 @@ export function ThreadGenerator() {
     if (!topic.trim() || isTopicOverLimit) return
 
     setIsGenerating(true)
+    setGeneratingProgress(0)
+
+    const progressInterval = setInterval(() => {
+      setGeneratingProgress((prev) => {
+        if (prev >= 95) {
+          clearInterval(progressInterval)
+          return 95
+        }
+        return prev + Math.random() * 12
+      })
+    }, 350)
+
     try {
       const response = await fetch("/api/thread", {
         method: "POST",
@@ -44,27 +61,46 @@ export function ThreadGenerator() {
       })
 
       const data = await response.json()
+      clearInterval(progressInterval)
+      setGeneratingProgress(100)
+
       if (data.thread) {
-        setGeneratedThread(data.thread)
+        setTimeout(() => {
+          setGeneratedThread(data.thread)
+        }, 200)
       }
     } catch (error) {
+      clearInterval(progressInterval)
       console.error("Thread generation error:", error)
     } finally {
-      setIsGenerating(false)
+      setTimeout(() => {
+        setIsGenerating(false)
+        setGeneratingProgress(0)
+      }, 500)
     }
   }
 
   return (
     <div className="space-y-6">
-      <UsageIndicator />
-
       <Card className="transition-shadow hover:shadow-md">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <List className="h-5 w-5 text-primary" />
-            Thread Builder
-          </CardTitle>
-          <CardDescription>Break down your big ideas into bite-sized brilliance</CardDescription>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <List className="h-5 w-5 text-primary" />
+                Thread Builder
+              </CardTitle>
+              <CardDescription>Break down your big ideas into bite-sized brilliance</CardDescription>
+            </div>
+            <Link href="/pricing">
+              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted cursor-pointer">
+                <Zap className="h-3 w-3" />
+                <span className="font-medium tabular-nums">
+                  {used}/{limit}
+                </span>
+              </div>
+            </Link>
+          </div>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
@@ -148,24 +184,23 @@ export function ThreadGenerator() {
             <p className="text-xs text-muted-foreground">Tip: 5-7 posts hit the sweet spot for engagement</p>
           </div>
 
-          <Button
-            onClick={handleGenerate}
-            disabled={!topic.trim() || isGenerating || isTopicOverLimit}
-            className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
-            size="lg"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Crafting your thread...
-              </>
-            ) : (
-              <>
-                <List className="mr-2 h-4 w-4" />
-                Generate Thread
-              </>
-            )}
-          </Button>
+          <div className="space-y-2">
+            <Button
+              onClick={handleGenerate}
+              disabled={!topic.trim() || isGenerating || isTopicOverLimit}
+              className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
+              size="lg"
+            >
+              {!isGenerating && (
+                <>
+                  <List className="mr-2 h-4 w-4" />
+                  Generate Thread
+                </>
+              )}
+              {isGenerating && <span className="w-full">Crafting thread...</span>}
+            </Button>
+            {isGenerating && <Progress value={generatingProgress} className="h-1.5 w-full" />}
+          </div>
         </CardContent>
       </Card>
 

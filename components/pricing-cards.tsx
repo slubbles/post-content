@@ -75,7 +75,7 @@ export function PricingCards() {
         title: "Login required",
         description: "Please sign in to upgrade your plan",
       })
-      router.push("/login")
+      router.push("/")
       return
     }
 
