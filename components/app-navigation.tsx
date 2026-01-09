@@ -117,11 +117,6 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
           </div>
 
           <div className="flex items-center gap-2">
-<<<<<<< HEAD
-            {/* Theme toggle removed - dark mode default */}
-
-=======
->>>>>>> v0-frontend/main
             {isAuthenticated ? (
               <>
                 <DropdownMenu>
