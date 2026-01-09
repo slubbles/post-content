@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import Link from "next/link"
 
 const platforms = [
@@ -199,43 +198,37 @@ export function PostGenerator() {
 
           <div className="space-y-2">
             <Label>Platform</Label>
-            <ToggleGroup
-              type="single"
-              value={platform}
-              onValueChange={(v) => v && setPlatform(v)}
-              className="justify-start flex-wrap"
-            >
+            <div className="flex flex-wrap gap-2">
               {platforms.map((p) => (
-                <ToggleGroupItem
+                <Button
                   key={p.value}
-                  value={p.value}
-                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                  type="button"
+                  variant={platform === p.value ? "default" : "outline"}
+                  onClick={() => setPlatform(p.value)}
+                  className="transition-all hover:scale-105"
                 >
                   <span className="hidden sm:inline">{p.label}</span>
                   <span className="sm:hidden">{p.shortLabel}</span>
-                </ToggleGroupItem>
+                </Button>
               ))}
-            </ToggleGroup>
+            </div>
           </div>
 
           <div className="space-y-2">
             <Label>Tone</Label>
-            <ToggleGroup
-              type="single"
-              value={tone}
-              onValueChange={(v) => v && setTone(v)}
-              className="justify-start flex-wrap"
-            >
+            <div className="flex flex-wrap gap-2">
               {tones.map((t) => (
-                <ToggleGroupItem
+                <Button
                   key={t.value}
-                  value={t.value}
-                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                  type="button"
+                  variant={tone === t.value ? "default" : "outline"}
+                  onClick={() => setTone(t.value)}
+                  className="transition-all hover:scale-105"
                 >
                   {t.label}
-                </ToggleGroupItem>
+                </Button>
               ))}
-            </ToggleGroup>
+            </div>
           </div>
 
           <div className="space-y-2">

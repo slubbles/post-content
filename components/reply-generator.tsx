@@ -1,5 +1,7 @@
 "use client"
 
+import Link from "next/link"
+
 import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -9,8 +11,6 @@ import { MessageSquare, Zap } from "lucide-react"
 import { GeneratedPosts } from "@/components/generated-posts"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
-import Link from "next/link"
 
 const replyTones = [
   { value: "agree", label: "Agreeing" },
@@ -171,22 +171,19 @@ export function ReplyGenerator() {
           </div>
           <div className="space-y-2">
             <Label>Reply Vibe</Label>
-            <ToggleGroup
-              type="single"
-              value={replyTone}
-              onValueChange={(v) => v && setReplyTone(v)}
-              className="justify-start flex-wrap"
-            >
+            <div className="flex flex-wrap gap-2">
               {replyTones.map((t) => (
-                <ToggleGroupItem
+                <Button
                   key={t.value}
-                  value={t.value}
-                  className="data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+                  type="button"
+                  variant={replyTone === t.value ? "default" : "outline"}
+                  onClick={() => setReplyTone(t.value)}
+                  className="transition-all hover:scale-105"
                 >
                   {t.label}
-                </ToggleGroupItem>
+                </Button>
               ))}
-            </ToggleGroup>
+            </div>
           </div>
           <div className="space-y-2">
             <Button
