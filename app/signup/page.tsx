@@ -10,7 +10,7 @@ export const metadata = {
 export default function SignupPage() {
   return (
     <div className="mobile-safe-padding flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-md space-y-6 sm:space-y-8">
+      <div className="w-full max-w-md space-y-6 sm:space-y-8 animate-fade-in">
         <div className="text-center">
           <Link href="/" className="inline-block transition-opacity hover:opacity-80">
             <Image

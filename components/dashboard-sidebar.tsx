@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,11 +27,12 @@ import {
   Search,
   Menu,
   X,
-  ChevronDown,
   User,
   CreditCard,
   HelpCircle,
   FileText,
+  Zap,
+  LayoutGrid,
 } from "lucide-react"
 
 const mainNavItems = [
@@ -63,7 +65,6 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isAccountExpanded, setIsAccountExpanded] = useState(false)
 
   const used = 45
   const limit = 100
@@ -97,7 +98,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
   const closeMobileMenu = () => setIsMobileMenuOpen(false)
 
   return (
-    <>
+    <TooltipProvider delayDuration={0}>
       {/* Mobile Header */}
       <div className="fixed top-0 left-0 right-0 z-50 flex h-14 items-center justify-between border-b border-sidebar-border bg-sidebar px-4 lg:hidden">
         <Button
@@ -162,153 +163,203 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         <div className="fixed inset-0 z-40 bg-black/50 lg:hidden" onClick={closeMobileMenu} style={{ top: "56px" }} />
       )}
 
-      {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 z-40 flex h-screen w-60 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-300 ease-in-out lg:translate-x-0",
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full",
+          "fixed left-0 z-40 flex h-screen w-16 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-300 ease-in-out lg:translate-x-0",
+          isMobileMenuOpen ? "translate-x-0 w-60" : "-translate-x-full lg:translate-x-0",
         )}
-        style={{ top: "0", paddingTop: "56px" }}
+        style={{ top: "0", paddingTop: "0" }}
       >
-        {/* Desktop Logo */}
-        <div className="hidden border-b border-sidebar-border p-4 lg:block">
-          <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/images/postcontent-20logo-20-20with-20text.png"
-              alt="Post Content"
-              width={321}
-              height={180}
-              className="h-[35px] w-auto"
-              priority
-            />
-          </Link>
-        </div>
-
-        {/* Search Bar */}
-        <div className="border-b border-sidebar-border p-3">
-          <button className="flex w-full items-center gap-2 rounded-lg border border-sidebar-border bg-sidebar-accent px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent/80">
-            <Search className="h-4 w-4" />
-            <span>Search...</span>
-            <kbd className="ml-auto rounded border border-sidebar-border bg-sidebar px-1.5 py-0.5 text-xs">⌘K</kbd>
-          </button>
-        </div>
-
-        {/* Main Navigation */}
-        <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {mainNavItems.map((item) => {
-            const Icon = item.icon
-            const isActive = pathname === item.href
-            return (
-              <Link key={item.href} href={item.href} onClick={closeMobileMenu}>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "w-full justify-start gap-3 px-3 py-2 text-sm font-medium transition-all",
-                    isActive
-                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              </Link>
-            )
-          })}
-        </nav>
-
-        {/* Credits Widget Section */}
-        <div className="border-t border-sidebar-border p-3">
-          <Link href="/pricing" className="block">
-            <div className="rounded-lg border border-sidebar-border bg-sidebar-accent/50 p-3 transition-colors hover:bg-sidebar-accent">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium text-sidebar-foreground">Generations</span>
-                  <span className="text-xs text-muted-foreground">
-                    {used} / {limit}
-                  </span>
-                </div>
-                <Progress value={percentage} className="h-2" />
-                <p className="text-xs text-muted-foreground">{limit - used} credits remaining</p>
+        <div className="flex h-14 items-center justify-center border-b border-sidebar-border">
+          <Link href="/" className="flex items-center">
+            <div className="hidden lg:block">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
+                P
               </div>
+            </div>
+            <div className="lg:hidden">
+              <Image
+                src="/images/postcontent-20logo-20-20with-20text.png"
+                alt="Post Content"
+                width={321}
+                height={180}
+                className="h-[30px] w-auto"
+                priority
+              />
             </div>
           </Link>
         </div>
 
-        {/* Bottom Section */}
-        <div className="border-t border-sidebar-border p-3 space-y-1">
+        <div className="flex items-center justify-center gap-1 border-b border-sidebar-border p-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent">
+                <Zap className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Quick Actions</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent">
+                <LayoutGrid className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Dashboard</TooltipContent>
+          </Tooltip>
+        </div>
+
+        <div className="border-b border-sidebar-border p-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent">
+                <Search className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="right">Search (⌘K)</TooltipContent>
+          </Tooltip>
+        </div>
+
+        <nav className="flex-1 space-y-1 overflow-y-auto p-2">
+          {mainNavItems.map((item) => {
+            const Icon = item.icon
+            const isActive = pathname === item.href
+            return (
+              <Tooltip key={item.href}>
+                <TooltipTrigger asChild>
+                  <Link href={item.href} onClick={closeMobileMenu}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={cn(
+                        "h-10 w-10",
+                        isActive
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">{item.label}</TooltipContent>
+              </Tooltip>
+            )
+          })}
+        </nav>
+
+        <div className="border-t border-sidebar-border p-2">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Link href="/pricing">
+                <div className="rounded-lg border border-sidebar-border bg-sidebar-accent/50 p-2 transition-colors hover:bg-sidebar-accent cursor-pointer">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-lg font-bold text-sidebar-foreground">{used}</span>
+                    <Progress value={percentage} className="h-1 w-8" />
+                  </div>
+                </div>
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent side="right">
+              <div className="space-y-1">
+                <p className="font-medium">Generations</p>
+                <p className="text-xs text-muted-foreground">
+                  {used} / {limit} used
+                </p>
+                <p className="text-xs">{limit - used} credits remaining</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
+        <div className="border-t border-sidebar-border p-2 space-y-1">
           {bottomNavItems.map((item) => {
             const Icon = item.icon
             return (
-              <Link key={item.href} href={item.href} onClick={closeMobileMenu}>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start gap-3 px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                >
-                  <Icon className="h-4 w-4" />
-                  {item.label}
-                </Button>
-              </Link>
+              <Tooltip key={item.href}>
+                <TooltipTrigger asChild>
+                  <Link href={item.href} onClick={closeMobileMenu}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                    >
+                      <Icon className="h-4 w-4" />
+                    </Button>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">{item.label}</TooltipContent>
+              </Tooltip>
             )
           })}
 
-          <div className="pt-2">
-            <Button
-              variant="ghost"
-              onClick={() => setIsAccountExpanded(!isAccountExpanded)}
-              className={cn(
-                "w-full justify-between gap-2 px-3 py-2 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent",
-                isAccountExpanded && "bg-sidebar-accent",
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
-                  <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
-                </Avatar>
-                <span className="truncate">{user?.name || "User"}</span>
-              </div>
-              <ChevronDown className={cn("h-4 w-4 transition-transform", isAccountExpanded && "rotate-180")} />
-            </Button>
-
-            {isAccountExpanded && (
-              <div className="mt-1 space-y-1 pl-3">
-                {accountSubItems.map((item) => {
-                  const Icon = item.icon
-                  const isActive = pathname === item.href
-                  return (
-                    <Link key={item.href} href={item.href} onClick={closeMobileMenu}>
-                      <Button
-                        variant="ghost"
-                        className={cn(
-                          "w-full justify-start gap-3 px-3 py-2 text-sm",
-                          isActive
-                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                            : "text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                        )}
-                      >
-                        <Icon className="h-3.5 w-3.5" />
-                        {item.label}
-                      </Button>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-sidebar-foreground hover:bg-sidebar-accent"
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="right">Settings</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end" side="right" className="w-48">
+              {accountSubItems.map((item) => {
+                const Icon = item.icon
+                const isActive = pathname === item.href
+                return (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link href={item.href} className={cn(isActive && "bg-accent")}>
+                      <Icon className="mr-2 h-4 w-4" />
+                      {item.label}
                     </Link>
-                  )
-                })}
-                <Button
-                  variant="ghost"
-                  onClick={handleLogout}
-                  className="w-full justify-start gap-3 px-3 py-2 text-sm text-destructive hover:bg-destructive/10"
-                >
-                  <LogOut className="h-3.5 w-3.5" />
-                  Logout
-                </Button>
-              </div>
-            )}
-          </div>
+                  </DropdownMenuItem>
+                )
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="h-10 w-10 rounded-full p-0 mt-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        {getUserInitials()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="right">{user?.name || "Account"}</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end" side="right" className="w-56">
+              <DropdownMenuLabel>
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium">{user?.name || "User"}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email || "user@example.com"}</p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-destructive">
+                <LogOut className="mr-2 h-4 w-4" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </aside>
 
       {/* Spacer for mobile to prevent content being hidden under header */}
       <div className="h-14 lg:hidden" />
-    </>
+    </TooltipProvider>
   )
 }

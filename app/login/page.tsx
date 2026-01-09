@@ -5,7 +5,7 @@ import Link from "next/link"
 export default function LoginPage() {
   return (
     <div className="mobile-safe-padding flex min-h-screen items-center justify-center bg-background">
-      <div className="w-full max-w-md space-y-6 sm:space-y-8">
+      <div className="w-full max-w-md space-y-6 sm:space-y-8 animate-fade-in">
         <div className="text-center">
           <Link href="/" className="inline-block transition-opacity hover:opacity-80">
             <Image

@@ -67,28 +67,19 @@ export function Footer() {
             <h3 className="font-semibold">Resources</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <a
-                  href="https://postcontent.io/blog"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
+                <Link href="/blog" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Blog
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="https://postcontent.io/docs"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
+                <Link href="/docs" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Docs
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="https://postcontent.io/help"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
+                <Link href="/help" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Help Center
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -102,28 +93,19 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <a
-                  href="https://postcontent.io/about"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
+                <Link href="/about" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="https://postcontent.io/careers"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
+                <Link href="/careers" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Careers
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="https://postcontent.io/contact"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
+                <Link href="/contact" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -132,30 +114,24 @@ export function Footer() {
             <h3 className="font-semibold">Support</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <a
-                  href="https://postcontent.io/faq"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
+                <Link href="/faq" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   FAQ
-                </a>
+                </Link>
               </li>
               <li>
-                <a
-                  href="https://postcontent.io/contact"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
+                <Link href="/contact" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Contact
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/terms" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                <Link href="/terms" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Terms
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/privacy" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                <Link href="/privacy" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Privacy
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
