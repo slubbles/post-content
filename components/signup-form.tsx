@@ -55,7 +55,7 @@ export function SignupForm() {
           title: "Account created!",
           description: "Welcome to Post Content. Let's get started.",
         })
-        router.push("/generate")
+        router.push("/dashboard/generate")
         router.refresh()
       } else {
         toast({

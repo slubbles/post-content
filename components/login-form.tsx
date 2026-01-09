@@ -77,7 +77,7 @@ export function LoginForm() {
     try {
       // Use NextAuth v5 signIn function with Google provider
       await signIn("google", { 
-        callbackUrl: "/generate",
+        callbackUrl: "/dashboard/generate",
         redirect: true
       })
     } catch (err) {

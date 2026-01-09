@@ -20,24 +20,24 @@ export default function Footer() {
           
           {/* Links */}
           <div className="space-y-3">
-            <h4 className="font-display font-semibold text-white">Navigate</h4>
+            <h4 className="font-display font-semibold text-white">Features</h4>
             <nav className="flex flex-col space-y-2">
               <Link href="/" className="text-gray-400 hover:text-primary text-sm transition-colors">
                 Generate
               </Link>
-              <Link href="/train" className="text-gray-400 hover:text-primary text-sm transition-colors">
+              <Link href="/dashboard/train" className="text-gray-400 hover:text-primary text-sm transition-colors">
                 Train Voice
               </Link>
-              <Link href="/reply" className="text-gray-400 hover:text-primary text-sm transition-colors">
+              <Link href="/dashboard/reply" className="text-gray-400 hover:text-primary text-sm transition-colors">
                 Reply
               </Link>
-              <Link href="/thread" className="text-gray-400 hover:text-primary text-sm transition-colors">
+              <Link href="/dashboard/thread" className="text-gray-400 hover:text-primary text-sm transition-colors">
                 Thread
               </Link>
-              <Link href="/history" className="text-gray-400 hover:text-primary text-sm transition-colors">
+              <Link href="/dashboard/account" className="text-gray-400 hover:text-primary text-sm transition-colors">
                 History
               </Link>
-              <Link href="/settings" className="text-gray-400 hover:text-primary text-sm transition-colors">
+              <Link href="/dashboard/account" className="text-gray-400 hover:text-primary text-sm transition-colors">
                 Settings
               </Link>
             </nav>

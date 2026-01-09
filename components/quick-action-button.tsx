@@ -10,7 +10,7 @@ export function QuickActionButton() {
   const [open, setOpen] = useState(false)
 
   const actions = [
-    { icon: Sparkles, label: "Generate Post", href: "/generate", color: "text-primary" },
+    { icon: Sparkles, label: "Generate Post", href: "/dashboard/generate", color: "text-primary" },
     { icon: MessageSquare, label: "Create Reply", href: "/reply", color: "text-blue-500" },
     { icon: List, label: "Start Thread", href: "/thread", color: "text-purple-500" },
     { icon: GraduationCap, label: "Train AI", href: "/train", color: "text-green-500" },

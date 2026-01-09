@@ -47,7 +47,7 @@ export default function SuccessPage() {
                   Start Creating
                 </Button>
               </Link>
-              <Link href="/settings" className="flex-1">
+              <Link href="/dashboard/account" className="flex-1">
                 <Button variant="outline" className="w-full bg-transparent transition-all hover:scale-[1.02]" size="lg">
                   Tweak Settings
                 </Button>

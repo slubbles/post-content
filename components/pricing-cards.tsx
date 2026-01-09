@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Loader2 } from "lucide-react"
 import { useState } from "react"
+import { useSession } from "next-auth/react"
 import { useToast } from "@/hooks/use-toast"
 
 const plans = [
@@ -54,6 +55,8 @@ export function PricingCards() {
   const [isAnnual, setIsAnnual] = useState(false)
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
   const { toast } = useToast()
+  const { data: session, status } = useSession()
+  const isAuthenticated = status === "authenticated"
 
   const handleSubscribe = async (planName: string, price: number) => {
     if (planName === "Free") {
@@ -63,6 +66,15 @@ export function PricingCards() {
 
     if (planName === "Enterprise") {
       window.location.href = "mailto:sales@postcontent.io"
+      return
+    }
+
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      // Store the selected plan in sessionStorage
+      sessionStorage.setItem("selectedPlan", planName.toLowerCase())
+      sessionStorage.setItem("selectedBillingCycle", isAnnual ? "annual" : "monthly")
+      window.location.href = "/login?redirect=checkout"
       return
     }
 

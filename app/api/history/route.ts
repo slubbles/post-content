@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = await auth();
     
@@ -10,10 +10,22 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Get optional type filter from query params
+    const { searchParams } = new URL(request.url)
+    const typeFilter = searchParams.get("type") // "generate", "reply", "thread"
+    const limit = parseInt(searchParams.get("limit") || "20")
+
+    // Build where clause with optional type filter
+    const whereClause: any = { userId: session.user.id }
+    if (typeFilter) {
+      whereClause.type = typeFilter
+    }
+
     // Fetch user's posts ordered by most recent
     const posts = await prisma.post.findMany({
-      where: { userId: session.user.id },
+      where: whereClause,
       orderBy: { createdAt: 'desc' },
+      take: limit,
       select: {
         id: true,
         content: true,

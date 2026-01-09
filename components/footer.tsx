@@ -25,28 +25,28 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold">Product</h3>
+            <h3 className="font-semibold">Features</h3>
             <ul className="mt-4 space-y-2">
               <li>
                 <Link
-                  href="/generate"
+                  href="/dashboard/generate"
                   className="text-sm text-muted-foreground transition-colors hover:text-foreground"
                 >
                   Generate Posts
                 </Link>
               </li>
               <li>
-                <Link href="/reply" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                <Link href="/dashboard/reply" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Smart Replies
                 </Link>
               </li>
               <li>
-                <Link href="/thread" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                <Link href="/dashboard/thread" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Thread Builder
                 </Link>
               </li>
               <li>
-                <Link href="/train" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+                <Link href="/dashboard/train" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   AI Training
                 </Link>
               </li>

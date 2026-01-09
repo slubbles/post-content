@@ -12,7 +12,11 @@ export async function POST(request: Request) {
       )
     }
 
-    const { plan, isAnnual } = await request.json()
+    const { plan, billingCycle } = await request.json()
+    const isAnnual = billingCycle === "annual"
+    
+    // Normalize plan name to match keys (capitalize first letter)
+    const normalizedPlan = plan.charAt(0).toUpperCase() + plan.slice(1)
 
     // Polar.sh checkout URL - Update with your actual product URLs
     const polarCheckoutUrls: Record<string, string> = {
@@ -22,7 +26,9 @@ export async function POST(request: Request) {
       Enterprise: process.env.POLAR_ENTERPRISE_URL || "https://polar.sh/slubbles/subscriptions/postcontent-enterprise",
     }
 
-    const checkoutUrl = polarCheckoutUrls[plan]
+    const checkoutUrl = polarCheckoutUrls[normalizedPlan]
+    
+    console.log("Checkout request:", { plan, normalizedPlan, billingCycle, isAnnual, checkoutUrl })
 
     if (!checkoutUrl) {
       return NextResponse.json(

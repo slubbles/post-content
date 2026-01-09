@@ -28,7 +28,7 @@ export function OnboardingChecklist() {
   if (!visible || allCompleted) return null
 
   const tasks = [
-    { id: "firstPost", label: "Generate your first post", link: "/generate" },
+    { id: "firstPost", label: "Generate your first post", link: "/dashboard/generate" },
     { id: "trainAI", label: "Train your AI voice", link: "/train" },
     { id: "exploreReply", label: "Try the reply feature", link: "/reply" },
   ]

@@ -22,7 +22,7 @@ export default function NotFound() {
             <Link href="/">Go home</Link>
           </Button>
           <Button asChild variant="outline" className="rounded-full bg-transparent">
-            <Link href="/generate">Start generating</Link>
+            <Link href="/dashboard/generate">Start generating</Link>
           </Button>
         </div>
       </div>

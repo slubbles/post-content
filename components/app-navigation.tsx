@@ -19,19 +19,17 @@ import { Sparkles, MessageSquare, List, GraduationCap, History, Settings, LogOut
 import Image from "next/image"
 
 const navItems = [
-  { href: "/generate", label: "Generate", icon: Sparkles },
-  { href: "/reply", label: "Reply", icon: MessageSquare },
-  { href: "/thread", label: "Thread", icon: List },
-  { href: "/train", label: "Train", icon: GraduationCap },
-  { href: "/history", label: "History", icon: History },
+  { href: "/dashboard/generate", label: "Generate", icon: Sparkles },
+  { href: "/dashboard/reply", label: "Reply", icon: MessageSquare },
+  { href: "/dashboard/thread", label: "Thread", icon: List },
+  { href: "/dashboard/train", label: "Train", icon: GraduationCap },
 ]
 
 const bottomNavItems = [
-  { href: "/generate", label: "Generate", icon: Home },
-  { href: "/reply", label: "Reply", icon: MessageSquare },
-  { href: "/history", label: "History", icon: History },
-  { href: "/train", label: "Train", icon: GraduationCap },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/dashboard/generate", label: "Generate", icon: Home },
+  { href: "/dashboard/reply", label: "Reply", icon: MessageSquare },
+  { href: "/dashboard/train", label: "Train", icon: GraduationCap },
+  { href: "/dashboard/account", label: "Account", icon: Settings },
 ]
 
 interface AppNavigationProps {
@@ -120,7 +118,7 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
           </div>
 
           <div className="flex items-center gap-2">
-            <ThemeToggle />
+            {/* Theme toggle removed - dark mode default */}
 
             {isAuthenticated ? (
               <>
@@ -159,15 +157,9 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
 
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/settings" className="cursor-pointer">
+                      <Link href="/dashboard/account" className="cursor-pointer">
                         <Settings className="mr-2 h-4 w-4" />
-                        Settings
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/history" className="cursor-pointer">
-                        <History className="mr-2 h-4 w-4" />
-                        History
+                        Account
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
