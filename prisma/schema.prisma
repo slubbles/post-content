@@ -8,14 +8,14 @@ datasource db {
 }
 
 model User {
-  id                 String    @id @default(cuid())
+  id                 String     @id @default(cuid())
   name               String?
-  email              String?   @unique
+  email              String?    @unique
   emailVerified      DateTime?
   image              String?
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-  subscribed         Boolean   @default(false)
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+  subscribed         Boolean    @default(false)
   subscriptionEndsAt DateTime?
   subscriptionId     String?
   subscriptionStatus String?
@@ -24,6 +24,7 @@ model User {
   accounts           Account[]
   posts              Post[]
   sessions           Session[]
+  feedback           Feedback[]
 }
 
 model Account {
@@ -70,4 +71,16 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Feedback {
+  id        String   @id @default(cuid())
+  userId    String
+  message   String
+  email     String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
 }

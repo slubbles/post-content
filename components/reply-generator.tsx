@@ -62,7 +62,7 @@ export function ReplyGenerator() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          originalPost,
+          postToReply: originalPost,
           context,
           replyTone,
         }),

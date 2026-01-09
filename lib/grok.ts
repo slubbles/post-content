@@ -179,12 +179,24 @@ interface Tweet {
   number: number;
 }
 
-export async function generateThread(topic: string): Promise<Tweet[]> {
+export async function generateThread(
+  topic: string, 
+  keyPoints?: string, 
+  threadLength?: number
+): Promise<Tweet[]> {
   if (!grok) {
     throw new Error('XAI_API_KEY is not configured. Add it to .env.local');
   }
 
-  const userPrompt = `Create a thread about: "${topic}"`;
+  let userPrompt = `Create a thread about: "${topic}"`;
+  
+  if (keyPoints && keyPoints.trim()) {
+    userPrompt += `\n\nKey points to cover:\n${keyPoints}`;
+  }
+  
+  if (threadLength && threadLength > 0) {
+    userPrompt += `\n\nTarget thread length: ${threadLength} tweets`;
+  }
 
   try {
     const completion = await grok.chat.completions.create({
@@ -200,11 +212,12 @@ export async function generateThread(topic: string): Promise<Tweet[]> {
     const response = completion.choices[0]?.message?.content || '';
     
     // Parse tweets from response
+    const maxTweets = threadLength || 7;
     const tweetTexts = response
       .split(/\n\n+/)
       .map(line => line.replace(/^[0-9]+[:.\/)\]]\s*/, '').trim())
       .filter(text => text.length > 0 && text.length <= 280)
-      .slice(0, 7);
+      .slice(0, maxTweets);
 
     // Convert to Tweet objects
     const tweets: Tweet[] = tweetTexts.map((text, index) => ({

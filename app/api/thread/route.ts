@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { topic } = await request.json();
+    const { topic, keyPoints, threadLength } = await request.json();
 
     if (!topic || typeof topic !== 'string') {
       return NextResponse.json(
@@ -35,13 +35,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate thread using Grok API
-    const tweets = await generateThread(topic);
+    // Generate thread using Grok API with optional parameters
+    const tweets = await generateThread(topic, keyPoints, threadLength);
 
     // Track thread generation for usage limits (count as 1 post, not per tweet)
     await trackPostGeneration(session.user.id, topic, 'thread');
 
-    return NextResponse.json({ tweets });
+    return NextResponse.json({ thread: tweets, tweets });
   } catch (error) {
     console.error('Thread generation error:', error);
     return NextResponse.json(
