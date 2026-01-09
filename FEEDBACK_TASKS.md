@@ -70,22 +70,61 @@
 ## 🎨 FRONTEND/UI TASKS (v0.app)
 
 ### Landing Page
-- [ ] Change browser tab tagline/meta title
-- [ ] Update headline/subheadline to explain what PostContent does clearly
-- [ ] Improve CTA copy and design
-- [ ] Apply Hook, Story, Offer framework to landing page
-- [ ] Better value proposition messaging
+- [ ] **Change browser tab tagline/meta title** - Update the page title that shows in browser tabs
+- [ ] **Update headline/subheadline** to explain what PostContent does clearly
+  - Current: Generic messaging
+  - Needed: Clear value prop like "Create X/Twitter posts in seconds with AI that sounds like you"
+- [ ] **Improve CTA copy and design** - Make primary CTA more compelling
+- [ ] **Apply Hook, Story, Offer framework** to landing page
+  - Hook: Grab attention with pain point
+  - Story: Show transformation/benefit
+  - Offer: Clear CTA with value
+- [ ] Better value proposition messaging throughout
 
 ### Authentication Pages
-- [ ] `/signup` - Change logo to HD version
-- [ ] Email verification UI/flow after signup
+- [ ] **`/signup` - Change logo to HD version** - Current logo appears low quality
+- [ ] **Email verification UI/flow** after signup
+  - Show "Check your email" message
+  - Verification page UI
+  - Resend verification link option
+  
+- [ ] **After account creation redirect** - Instead of going straight to /dashboard/generate:
+  - Show welcome/onboarding screen first
+  - Guide user through setup (like polar.sh does)
+  - Then redirect to dashboard
 
-### Dashboard Layout (Like polar.sh)
-- [ ] **Complete redesign** - Sidebar navigation instead of top navbar
-  - Sidebar with: Generate, Reply, Thread, Train, Account
-  - Credits section in sidebar
-  - Remove top navbar
-  - Remove plus sign action button
+### Dashboard Layout (Complete Redesign - Like polar.sh)
+- [ ] **Sidebar navigation** - Move from top navbar to left sidebar
+  - Generate (with icon)
+  - Re**Restructure footer sections** - Current has wrong labels:
+  - **Features** (not "Product") - Generate, Reply, Thread, Train
+  - **Resources** (add section) - Blog, Docs, Help Center
+  - **Company** (keep) - About, Careers, Contact
+  - **Support** (not "Legal") - FAQ, Contact, Terms, Privacy
+
+### Pricing Page (`/pricing`)
+- [ ] **Change headline** to just "Plans and Pricing" (simpler)
+- [ ] **Update CTA button text:**
+  - Free tier: "Start Free" (not "Get Started")
+  - Pro tier: "Select Plan" (not "Upgrade to Pro")
+  - Enterprise: "Select Plan" (not "Contact Sales")
+- [ ] **Remove yearly/monthly toggle** - Show monthly pricing only
+- [ ] **Apply Hook, Story, Offer framework** to all UI pages with marketing content:
+  - Landing page
+  - Pricing page
+  - Authentication pages (login/signup)
+  - Feature pages (above the fold)
+  
+- [ ] **Mobile optimization** - Make sure ALL changes work on:
+  - Mobile (320px - 767px)
+  - Tablet (768px - 1023px)
+  - Desktop (1024px+)
+  
+- [ ] **Ensure consistency** - All breakpoints should have smooth transitions
+- [ ] **Test sidebar** - Especially important for mobile (should collapse to hamburger menu)ected plan
+  - Already implemented in backend ✅bar only
+- [ ] **Remove plus sign action button** - Simplify dashboard UI
+- [ ] **Authenticated pages structure** - All feature pages use sidebar layout
   
 ### Feature Pages
 - [ ] **Integrate history into pages**
