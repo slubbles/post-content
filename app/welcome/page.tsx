@@ -29,7 +29,7 @@ export default function WelcomePage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center mobile-safe-padding bg-background py-12">
-      <div className="mb-8">
+      <div className="mb-8 animate-fade-in">
         <Link href="/">
           <Image
             src="/images/postcontent-20logo-20-20with-20text.png"
@@ -42,7 +42,7 @@ export default function WelcomePage() {
         </Link>
       </div>
 
-      <Card className="w-full max-w-2xl">
+      <Card key={step} className="w-full max-w-2xl animate-scale-in">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-2xl">Welcome to Post Content</CardTitle>

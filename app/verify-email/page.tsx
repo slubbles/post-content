@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Mail, ArrowLeft } from "lucide-react"
+import { LoadingSpinner } from "@/components/loading-spinner"
 
 export const metadata = {
   title: "Verify Your Email | Post Content",
@@ -13,7 +14,7 @@ export const metadata = {
 export default function VerifyEmailPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center mobile-safe-padding bg-background py-12">
-      <div className="mb-8">
+      <div className="mb-8 animate-fade-in">
         <Link href="/">
           <Image
             src="/images/postcontent-20logo-20-20with-20text.png"
@@ -26,7 +27,7 @@ export default function VerifyEmailPage() {
         </Link>
       </div>
 
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md animate-scale-in animate-delay-100 animate-on-load">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
             <Mail className="h-8 w-8 text-primary" />
@@ -37,7 +38,8 @@ export default function VerifyEmailPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Suspense fallback={<div>Loading...</div>}>
+          {/* Replace generic "Loading..." with LoadingSpinner component */}
+          <Suspense fallback={<LoadingSpinner />}>
             <ResendEmailButton />
           </Suspense>
 

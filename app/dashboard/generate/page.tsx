@@ -4,7 +4,7 @@ import { HistorySection } from "@/components/history-section"
 
 export default function DashboardGeneratePage() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fade-in">
       <div>
         <Breadcrumbs
           items={[
