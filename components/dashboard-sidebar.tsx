@@ -110,7 +110,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
 
-        <Link href="/" className="flex items-center">
+        <Link href="/dashboard/generate" className="flex items-center">
           <Image
             src="/images/postcontent-20logo-20-20with-20text.png"
             alt="Post Content"
@@ -125,7 +125,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-9 w-9 rounded-full p-0">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
+                <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
                 <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
               </Avatar>
             </Button>
@@ -171,7 +171,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         style={{ top: "0", paddingTop: "0" }}
       >
         <div className="flex h-14 items-center justify-center border-b border-sidebar-border">
-          <Link href="/" className="flex items-center">
+          <Link href="/dashboard/generate" className="flex items-center">
             <div className="hidden lg:block">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
                 P
@@ -331,7 +331,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="h-10 w-10 rounded-full p-0 mt-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
+                      <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
                       <AvatarFallback className="bg-primary/10 text-primary text-xs">
                         {getUserInitials()}
                       </AvatarFallback>

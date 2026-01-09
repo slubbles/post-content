@@ -79,7 +79,7 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
       <nav className="border-b border-border bg-card">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between mobile-safe-padding">
           <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
+            <Link href={isAuthenticated ? "/dashboard/generate" : "/"} className="flex items-center gap-2 transition-transform hover:scale-105">
               <Image
                 src="/images/postcontent-20logo-20-20with-20text.png"
                 alt="Post Content"
@@ -123,7 +123,7 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                       <Avatar className="h-10 w-10 transition-transform hover:scale-105">
-                        <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
+                        <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
                         <AvatarFallback className="bg-primary/10 text-primary">{getUserInitials()}</AvatarFallback>
                       </Avatar>
                     </Button>
