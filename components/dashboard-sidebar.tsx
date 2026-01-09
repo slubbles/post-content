@@ -34,11 +34,11 @@ import {
 import { FeedbackModal } from "@/components/feedback-modal"
 
 const mainNavItems = [
-  { href: "/dashboard/generate", label: "Generate", icon: Sparkles },
-  { href: "/dashboard/reply", label: "Reply", icon: MessageSquare },
-  { href: "/dashboard/thread", label: "Thread", icon: List },
-  { href: "/dashboard/train", label: "Train", icon: GraduationCap },
-  { href: "#feedback", label: "Feedback", icon: MessageCircle, action: "feedback" },
+  { href: "/dashboard/generate", label: "Generate Posts", icon: Sparkles },
+  { href: "/dashboard/reply", label: "Reply to Posts", icon: MessageSquare },
+  { href: "/dashboard/thread", label: "Create Threads", icon: List },
+  { href: "/dashboard/train", label: "Train AI", icon: GraduationCap },
+  { href: "#feedback", label: "Give Feedback", icon: MessageCircle, action: "feedback" },
 ]
 
 interface DashboardSidebarProps {
@@ -48,30 +48,41 @@ interface DashboardSidebarProps {
     image?: string
     plan?: "free" | "pro" | "enterprise"
   }
+  isCollapsed?: boolean
+  onToggleCollapse?: (collapsed: boolean) => void
 }
 
-export function DashboardSidebar({ user }: DashboardSidebarProps) {
+export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggleCollapse }: DashboardSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [internalCollapsed, setInternalCollapsed] = useState(false)
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
+
+  const isCollapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed
 
   const used = 45
   const limit = 100
   const percentage = (used / limit) * 100
 
   useEffect(() => {
-    const saved = localStorage.getItem("sidebar-collapsed")
-    if (saved !== null) {
-      setIsCollapsed(saved === "true")
+    if (externalCollapsed === undefined) {
+      const saved = localStorage.getItem("sidebar-collapsed")
+      if (saved !== null) {
+        setInternalCollapsed(saved === "true")
+      }
     }
-  }, [])
+  }, [externalCollapsed])
 
   const toggleCollapse = () => {
     const newState = !isCollapsed
-    setIsCollapsed(newState)
+    if (onToggleCollapse) {
+      onToggleCollapse(newState)
+    } else {
+      setInternalCollapsed(newState)
+    }
     localStorage.setItem("sidebar-collapsed", String(newState))
+    window.dispatchEvent(new Event("sidebar-toggle"))
   }
 
   const handleLogout = async () => {
@@ -121,7 +132,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
 
-        <Link href="/dashboard/generate" className="flex items-center">
+        <Link href="/" className="flex items-center">
           <Image
             src="/images/postcontent-20logo-20-20with-20text.png"
             alt="Post Content"
@@ -136,7 +147,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-9 w-9 rounded-full p-0">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
+                <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
                 <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
               </Avatar>
             </Button>
@@ -193,7 +204,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
       <aside
         className={cn(
           "fixed left-0 z-40 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 ease-in-out lg:translate-x-0",
-          isCollapsed ? "w-16" : "w-60",
+          isCollapsed ? "w-[60px]" : "w-[240px]",
           isMobileMenuOpen && "w-60",
           !isMobileMenuOpen && "-translate-x-full lg:translate-x-0",
         )}
@@ -211,8 +222,8 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
         </div>
 
         {/* Logo Section */}
-        <div className="flex h-14 items-center justify-center border-b border-sidebar-border">
-          <Link href="/dashboard/generate" className="flex items-center">
+        <div className="flex h-14 items-center justify-center border-b border-sidebar-border px-4">
+          <Link href="/dashboard/generate" className="flex items-center gap-3">
             <div className="hidden lg:block">
               {/* TODO: Replace with actual logo image path when provided */}
               {/* <Image src="/images/logo-icon-32x32.png" alt="Logo" width={32} height={32} /> */}
@@ -222,6 +233,9 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                 P
               </div>
             </div>
+            {!isCollapsed && (
+              <span className="hidden lg:block font-semibold text-lg text-sidebar-foreground">PostContent</span>
+            )}
             <div className="lg:hidden">
               <Image
                 src="/images/postcontent-20logo-20-20with-20text.png"
@@ -242,7 +256,7 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
             const isActive = pathname === item.href
 
             if (item.action === "feedback") {
-              return (
+              return isCollapsed ? (
                 <Tooltip key="feedback">
                   <TooltipTrigger asChild>
                     <Button
@@ -250,18 +264,30 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                       size="icon"
                       onClick={() => setIsFeedbackOpen(true)}
                       className={cn(
-                        "h-10 w-10 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                        "h-10 w-full justify-center text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       )}
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-5 w-5 shrink-0" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="right">{item.label}</TooltipContent>
                 </Tooltip>
+              ) : (
+                <Button
+                  key="feedback"
+                  variant="ghost"
+                  onClick={() => setIsFeedbackOpen(true)}
+                  className={cn(
+                    "h-10 w-full justify-start gap-3 px-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  )}
+                >
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </Button>
               )
             }
 
-            return (
+            return isCollapsed ? (
               <Tooltip key={item.href}>
                 <TooltipTrigger asChild>
                   <Link href={item.href} onClick={closeMobileMenu}>
@@ -269,65 +295,114 @@ export function DashboardSidebar({ user }: DashboardSidebarProps) {
                       variant="ghost"
                       size="icon"
                       className={cn(
-                        "h-10 w-10",
+                        "h-10 w-full justify-center",
                         isActive
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                       )}
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-5 w-5 shrink-0" />
                     </Button>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right">{item.label}</TooltipContent>
               </Tooltip>
+            ) : (
+              <Link key={item.href} href={item.href} onClick={closeMobileMenu}>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "h-10 w-full justify-start gap-3 px-3",
+                    isActive
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  )}
+                >
+                  <Icon className="h-5 w-5 shrink-0" />
+                  <span className="text-sm font-medium">{item.label}</span>
+                </Button>
+              </Link>
             )
           })}
         </nav>
 
         {/* Credits Widget */}
         <div className="border-t border-sidebar-border p-2">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Link href="/pricing">
-                <div className="rounded-lg border border-sidebar-border bg-sidebar-accent/50 p-2 transition-colors hover:bg-sidebar-accent cursor-pointer">
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-lg font-bold text-sidebar-foreground">{used}</span>
-                    <Progress value={percentage} className="h-1 w-8" />
+          {isCollapsed ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Link href="/pricing">
+                  <div className="rounded-lg border border-sidebar-border bg-sidebar-accent/50 p-2 transition-colors hover:bg-sidebar-accent cursor-pointer">
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-lg font-bold text-sidebar-foreground">{used}</span>
+                      <Progress value={percentage} className="h-1 w-8" />
+                    </div>
                   </div>
+                </Link>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <div className="space-y-1">
+                  <p className="font-medium">Generations</p>
+                  <p className="text-xs text-muted-foreground">
+                    {used} / {limit} used
+                  </p>
+                  <p className="text-xs">{limit - used} remaining</p>
                 </div>
-              </Link>
-            </TooltipTrigger>
-            <TooltipContent side="right">
-              <div className="space-y-1">
-                <p className="font-medium">Generations</p>
-                <p className="text-xs text-muted-foreground">
-                  {used} / {limit} used
-                </p>
-                <p className="text-xs">{limit - used} credits remaining</p>
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Link href="/pricing">
+              <div className="rounded-lg border border-sidebar-border bg-sidebar-accent/50 p-3 transition-colors hover:bg-sidebar-accent cursor-pointer">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-sidebar-foreground">Credits</span>
+                    <span className="text-xs text-muted-foreground">
+                      {used} / {limit}
+                    </span>
+                  </div>
+                  <Progress value={percentage} className="h-2" />
+                  <p className="text-xs text-muted-foreground">{limit - used} remaining</p>
+                </div>
               </div>
-            </TooltipContent>
-          </Tooltip>
+            </Link>
+          )}
         </div>
 
         {/* Profile Avatar */}
         <div className="border-t border-sidebar-border p-2">
           <DropdownMenu>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="h-10 w-10 rounded-full p-0">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user?.image || ""} alt={user?.name || "User"} />
-                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                        {getUserInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-              </TooltipTrigger>
-              <TooltipContent side="right">{user?.name || "Account"}</TooltipContent>
-            </Tooltip>
+            {isCollapsed ? (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-10 w-full justify-center p-0">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="right">{user?.name || "Account"}</TooltipContent>
+              </Tooltip>
+            ) : (
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-auto w-full justify-start gap-3 px-3 py-2">
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col items-start overflow-hidden">
+                    <span className="text-sm font-medium text-sidebar-foreground truncate w-full">
+                      {user?.name || "User"}
+                    </span>
+                    <span className="text-xs text-muted-foreground">{user?.plan || "Free"} Plan</span>
+                  </div>
+                </Button>
+              </DropdownMenuTrigger>
+            )}
             <DropdownMenuContent align="end" side="right" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-2">
