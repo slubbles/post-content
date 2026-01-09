@@ -126,13 +126,25 @@
 - [ ] **Remove plus sign action button** - Simplify dashboard UI
 - [ ] **Authenticated pages structure** - All feature pages use sidebar layout
   
-### Feature Pages
-- [ ] **Integrate history into pages**
-  - Show history below main feature UI on:
-    - `/dashboard/generate`
-    - `/dashboard/reply`
-    - `/dashboard/thread`
-  - Delete standalone `/history` page
+### Feature Pages (Generate, Reply, Thread, Train)
+- [ ] **Page structure matching Polar.sh Home/Revenue view:**
+  - Page title at top (H1)
+  - Main feature UI (form/input) in card/section
+  - Below main feature: "Recent History" section
+  - History items in list/grid format
+  - Each history item clickable to view/reuse
+
+- [ ] **Integrate history below main feature:**
+  - Title: "Recent {Feature} History" (e.g., "Recent Generates")
+  - Show last 10 items by default
+  - Each item shows:
+    - Generated content preview (truncated)
+    - Timestamp (relative: "2 hours ago")
+    - Copy/Reuse buttons
+  - "View All History" link → opens modal or dedicated section
+  - Fetch from: `GET /api/history?type={generate|reply|thread}&limit=10`
+
+- [ ] **NO standalone /history page** - History integrated into each feature page
 
 ### Footer
 - [ ] Restructure footer sections:
