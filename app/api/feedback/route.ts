@@ -1,9 +1,13 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { Resend } from "resend"
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Initialize Resend only if API key is available
+let resend: any = null
+if (process.env.RESEND_API_KEY) {
+  const { Resend } = require("resend")
+  resend = new Resend(process.env.RESEND_API_KEY)
+}
 
 export async function POST(request: Request) {
   try {
@@ -41,16 +45,17 @@ export async function POST(request: Request) {
       },
     })
 
-    // Send email notification to developer using Resend
+    // Send email notification to developer using Resend (if configured)
     const developerEmail = process.env.DEVELOPER_EMAIL || "idderfsalem98@gmail.com"
     
-    try {
-      await resend.emails.send({
-        from: "PostContent Feedback <feedback@postcontent.io>",
-        to: developerEmail,
-        replyTo: email || session.user.email || undefined,
-        subject: `💛 New Feedback from ${session.user.name || session.user.email}`,
-        html: `
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: "PostContent Feedback <feedback@postcontent.io>",
+          to: developerEmail,
+          replyTo: email || session.user.email || undefined,
+          subject: `💛 New Feedback from ${session.user.name || session.user.email}`,
+          html: `
           <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2 style="color: #f0ff5f; margin-bottom: 20px;">New Feedback Received</h2>
             
@@ -73,10 +78,13 @@ export async function POST(request: Request) {
             </div>
           </div>
         `,
-      })
-    } catch (emailError) {
-      console.error("Failed to send feedback email:", emailError)
-      // Don't fail the request if email fails - feedback is still saved to database
+        })
+      } catch (emailError) {
+        console.error("Failed to send feedback email:", emailError)
+        // Don't fail the request if email fails - feedback is still saved to database
+      }
+    } else {
+      console.log("Resend not configured - feedback saved to database only")
     }
 
     return NextResponse.json({
