@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { signIn } from "next-auth/react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -75,8 +76,21 @@ export function SignupForm() {
     }
   }
 
-  const handleGoogleSignup = () => {
-    window.location.href = "/api/auth/google"
+  const handleGoogleSignup = async () => {
+    setIsLoading(true)
+    try {
+      await signIn("google", { 
+        callbackUrl: "/dashboard/generate",
+        redirect: true
+      })
+    } catch (err) {
+      toast({
+        title: "Sign in failed",
+        description: "Unable to sign in with Google. Please try again.",
+        variant: "destructive",
+      })
+      setIsLoading(false)
+    }
   }
 
   return (
