@@ -27,6 +27,7 @@ import {
   User,
 } from "lucide-react"
 import Image from "next/image"
+import { useUsage } from "@/hooks/use-usage"
 
 const navItems = [
   { href: "/generate", label: "Generate", icon: Sparkles },
@@ -57,10 +58,9 @@ interface AppNavigationProps {
 export function AppNavigation({ isAuthenticated = true, user }: AppNavigationProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const { usage } = useUsage()
 
-  const used = 45
-  const limit = 100
-  const percentage = (used / limit) * 100
+  const { used, limit, percentage } = usage
 
   const handleLogout = async () => {
     try {

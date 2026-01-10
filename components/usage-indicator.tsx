@@ -6,13 +6,12 @@ import { Button } from "@/components/ui/button"
 import { Zap, TrendingUp } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useUsage } from "@/hooks/use-usage"
 
 export function UsageIndicator() {
-  // Mock data - will be replaced with real data from API
-  const used = 45
-  const limit = 100
+  const { usage } = useUsage()
+  const { used, limit, percentage } = usage
 
-  const percentage = (used / limit) * 100
   const isLowCredits = percentage > 80
 
   return (

@@ -32,6 +32,7 @@ import {
   Crown,
 } from "lucide-react"
 import { FeedbackModal } from "@/components/feedback-modal"
+import { useUsage } from "@/hooks/use-usage"
 
 const mainNavItems = [
   { href: "/dashboard/generate", label: "Generate Posts", icon: Sparkles },
@@ -58,12 +59,11 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [internalCollapsed, setInternalCollapsed] = useState(false)
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false)
+  const { usage } = useUsage()
 
   const isCollapsed = externalCollapsed !== undefined ? externalCollapsed : internalCollapsed
 
-  const used = 45
-  const limit = 100
-  const percentage = (used / limit) * 100
+  const { used, limit, percentage } = usage
 
   useEffect(() => {
     if (externalCollapsed === undefined) {

@@ -67,6 +67,7 @@ export function ThreadGenerator() {
       if (data.thread) {
         setTimeout(() => {
           setGeneratedThread(data.thread)
+          refresh() // Update credits after generation
         }, 200)
       }
     } catch (error) {

@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
+import { useUsage } from "@/hooks/use-usage"
 
 const platforms = [
   { value: "twitter", label: "Twitter/X", shortLabel: "X" },
@@ -42,9 +43,9 @@ export function PostGenerator() {
   const [generatedPosts, setGeneratedPosts] = useState<string[]>([])
   const [showConfetti, setShowConfetti] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
+  const { usage, refresh } = useUsage()
 
-  const used = 45
-  const limit = 100
+  const { used, limit } = usage
 
   const maxChars = 500
   const charCount = topic.length
@@ -98,6 +99,7 @@ export function PostGenerator() {
       if (data.posts) {
         setTimeout(() => {
           setGeneratedPosts(data.posts)
+          refresh()
           setShowConfetti(true)
           setTimeout(() => setShowConfetti(false), 100)
           toast({
