@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
+import { AppNavigation } from "@/components/app-navigation"
 import Link from "next/link"
-import { ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
@@ -13,7 +13,7 @@ const faqs = [
   {
     question: "What is PostContent?",
     answer:
-      "PostContent is an AI-powered content generation tool designed specifically for X/Twitter. It helps you create engaging posts, replies, and threads in seconds while maintaining your unique voice and style.",
+      "PostContent is an AI-powered content generation tool for social media. It helps you create engaging posts, replies, and threads in seconds while maintaining your unique voice and style.",
   },
   {
     question: "How does the AI training work?",
@@ -23,7 +23,7 @@ const faqs = [
   {
     question: "What are credits and how do they work?",
     answer:
-      "Credits are used each time you generate content. Each generation costs 1 credit. Free accounts get 10 credits per month, Pro accounts get 100 credits, and Enterprise accounts get unlimited credits. Credits reset at the start of each billing cycle.",
+      "Credits are used each time you generate content. Each generation costs 1 credit. Free accounts get 10 credits per month, Pro accounts get 200 credits, and Enterprise accounts get unlimited credits. Credits reset at the start of each billing cycle.",
   },
   {
     question: "Can I cancel my subscription anytime?",
@@ -38,7 +38,7 @@ const faqs = [
   {
     question: "What platforms do you support?",
     answer:
-      "Currently, PostContent is optimized for X/Twitter content. We're working on adding support for other platforms like LinkedIn, Instagram, and Facebook in the near future.",
+      "PostContent supports multiple social media platforms including X/Twitter, LinkedIn, Instagram, Facebook, and Threads. Generate platform-optimized content for each network with just a few clicks.",
   },
   {
     question: "Is there a free trial?",
@@ -65,16 +65,9 @@ const faqs = [
 export default function FAQPage() {
   return (
     <div className="min-h-screen bg-background animate-fade-in">
-      <div className="mx-auto max-w-4xl mobile-safe-padding py-12">
-        <div className="mb-8">
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ChevronLeft className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
-        </div>
+      <AppNavigation isAuthenticated={false} />
 
+      <div className="mx-auto max-w-4xl mobile-safe-padding py-8 sm:py-12">
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">Frequently Asked Questions</h1>
           <p className="mt-4 text-lg text-muted-foreground">Find answers to common questions about PostContent</p>

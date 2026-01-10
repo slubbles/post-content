@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
-import Link from "next/link"
-import { ChevronLeft, Calendar, User, ArrowRight } from "lucide-react"
+import { AppNavigation } from "@/components/app-navigation"
+import { Calendar, User, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -69,51 +69,51 @@ const blogPosts = [
 
 export default function BlogPage() {
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
-      <div className="mx-auto max-w-7xl mobile-safe-padding py-12">
-        <div className="mb-8">
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ChevronLeft className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
-        </div>
+    <div className="min-h-screen bg-background animate-fade-in mobile-overflow-safe">
+      <AppNavigation isAuthenticated={false} />
 
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">Blog</h1>
-          <p className="mt-4 text-lg text-muted-foreground">
+      <div className="mx-auto max-w-7xl mobile-safe-padding py-8 sm:py-12">
+        <div className="mb-8 sm:mb-12 text-center px-4">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">Blog</h1>
+          <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             Insights, tips, and stories about content creation and social media
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
           {blogPosts.map((post, index) => (
             <Card
               key={post.id}
               className="group transition-all duration-300 hover:shadow-lg animate-fade-in"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <CardHeader>
-                <div className="mb-2 flex items-center justify-between">
-                  <Badge variant="secondary">{post.category}</Badge>
-                  <span className="text-xs text-muted-foreground">{post.readTime}</span>
+              <CardHeader className="p-4 sm:p-6">
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {post.category}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground flex-shrink-0">{post.readTime}</span>
                 </div>
-                <CardTitle className="line-clamp-2 group-hover:text-primary transition-colors">{post.title}</CardTitle>
-                <CardDescription className="line-clamp-3">{post.excerpt}</CardDescription>
+                <CardTitle className="line-clamp-2 text-lg sm:text-xl group-hover:text-primary transition-colors">
+                  {post.title}
+                </CardTitle>
+                <CardDescription className="line-clamp-3 text-sm">{post.excerpt}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
+              <CardContent className="p-4 sm:p-6 pt-0">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    <span>{post.author}</span>
+                    <User className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm truncate">{post.author}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    <span>{new Date(post.date).toLocaleDateString()}</span>
+                    <Calendar className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                    <span className="text-xs sm:text-sm">{new Date(post.date).toLocaleDateString()}</span>
                   </div>
                 </div>
-                <Button className="mt-4 w-full group-hover:gap-3 transition-all bg-transparent" variant="outline">
+                <Button
+                  className="mt-4 w-full group-hover:gap-3 transition-all bg-transparent touch-target"
+                  variant="outline"
+                >
                   Read More
                   <ArrowRight className="h-4 w-4" />
                 </Button>
@@ -122,7 +122,7 @@ export default function BlogPage() {
           ))}
         </div>
 
-        <div className="mt-12 text-center">
+        <div className="mt-8 sm:mt-12 text-center px-4">
           <p className="text-sm text-muted-foreground">
             More articles coming soon. Subscribe to our newsletter to stay updated.
           </p>

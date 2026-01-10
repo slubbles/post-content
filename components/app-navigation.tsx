@@ -44,6 +44,12 @@ const bottomNavItems = [
   { href: "/settings", label: "Settings", icon: Settings },
 ]
 
+const publicNavLinks = [
+  { href: "/#how-it-works", label: "How It Works" },
+  { href: "/docs", label: "Docs" },
+  { href: "/pricing", label: "Pricing" },
+]
+
 interface AppNavigationProps {
   isAuthenticated?: boolean
   user?: {
@@ -94,23 +100,22 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
 
   return (
     <>
-      {/* Desktop Navigation */}
       <nav className="border-b border-border bg-card">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between mobile-safe-padding">
-          <div className="flex items-center gap-8">
-            <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105">
+        <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between mobile-safe-padding">
+          <div className="flex items-center gap-4 sm:gap-8 min-w-0 flex-1">
+            <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105 flex-shrink-0">
               <Image
                 src="/images/postcontent-20logo-20-20with-20text.png"
                 alt="Post Content"
                 width={321}
                 height={180}
-                className="h-[45px] w-auto md:h-[60px] lg:h-[90px]"
+                className="h-[35px] w-auto sm:h-[45px] md:h-[55px] lg:h-[70px]"
                 priority
               />
             </Link>
 
             {isAuthenticated && (
-              <div className="hidden items-center gap-1 md:flex">
+              <div className="hidden items-center gap-1 md:flex overflow-x-auto">
                 {navItems.map((item) => {
                   const Icon = item.icon
                   const isActive = pathname === item.href
@@ -133,22 +138,37 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
                 })}
               </div>
             )}
+
+            {!isAuthenticated && (
+              <div className="hidden items-center gap-1 md:flex">
+                {publicNavLinks.map((link) => (
+                  <Link key={link.href} href={link.href}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.label}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {isAuthenticated ? (
               <>
-                {/* Reorganized profile dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                      <Avatar className="h-10 w-10 transition-transform hover:scale-105">
+                    <Button variant="ghost" className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full touch-target">
+                      <Avatar className="h-9 w-9 sm:h-10 sm:w-10 transition-transform hover:scale-105">
                         <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
                         <AvatarFallback className="bg-primary/10 text-primary">{getUserInitials()}</AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-72" align="end">
+                  <DropdownMenuContent className="w-64 sm:w-72" align="end">
                     <DropdownMenuLabel>
                       <div className="flex flex-col space-y-2">
                         <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
@@ -201,12 +221,12 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
             ) : (
               <>
                 <Link href="/login">
-                  <Button variant="ghost" size="sm">
+                  <Button variant="ghost" size="sm" className="text-xs sm:text-sm touch-target">
                     Login
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button size="sm" className="rounded-full">
+                  <Button size="sm" className="rounded-full text-xs sm:text-sm touch-target">
                     Sign Up
                   </Button>
                 </Link>
@@ -217,8 +237,8 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
       </nav>
 
       {isAuthenticated && (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-sm md:hidden">
-          <div className="flex items-center justify-around px-2 py-2">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-sm md:hidden safe-area-bottom">
+          <div className="flex items-center justify-around px-1 py-1.5">
             {bottomNavItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -228,12 +248,12 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
                     variant="ghost"
                     size="sm"
                     className={cn(
-                      "h-16 w-full flex-col gap-1 rounded-2xl transition-all duration-200",
+                      "h-14 w-full flex-col gap-0.5 rounded-xl transition-all duration-200 touch-target",
                       isActive && "bg-primary/10 text-primary",
                     )}
                   >
                     <Icon className={cn("h-5 w-5 transition-transform", isActive && "scale-110")} />
-                    <span className="text-xs font-medium">{item.label}</span>
+                    <span className="text-[10px] font-medium leading-tight">{item.label}</span>
                   </Button>
                 </Link>
               )
@@ -246,8 +266,11 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
         <style jsx global>{`
           @media (max-width: 768px) {
             body {
-              padding-bottom: 88px;
+              padding-bottom: max(72px, env(safe-area-inset-bottom));
             }
+          }
+          .safe-area-bottom {
+            padding-bottom: env(safe-area-inset-bottom);
           }
         `}</style>
       )}
