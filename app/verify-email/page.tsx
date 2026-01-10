@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Mail, ArrowLeft } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
+import { ResendEmailButton } from "@/components/resend-email-button"
 
 export const metadata = {
   title: "Verify Your Email | Post Content",
@@ -58,15 +59,5 @@ export default function VerifyEmailPage() {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-function ResendEmailButton() {
-  return (
-    <form action="/api/auth/resend-verification" method="POST">
-      <Button type="submit" variant="outline" className="w-full bg-transparent">
-        Resend verification email
-      </Button>
-    </form>
   )
 }
