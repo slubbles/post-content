@@ -6,13 +6,21 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Mail, ArrowLeft } from "lucide-react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { ResendEmailButton } from "@/components/resend-email-button"
+import { auth } from "@/lib/auth"
 
 export const metadata = {
   title: "Verify Your Email | Post Content",
   description: "Check your email to verify your account",
 }
 
-export default function VerifyEmailPage() {
+export default async function VerifyEmailPage({
+  searchParams,
+}: {
+  searchParams: { email?: string }
+}) {
+  const session = await auth()
+  const email = searchParams.email || session?.user?.email
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center mobile-safe-padding bg-background py-12">
       <div className="mb-8 animate-fade-in">
@@ -35,7 +43,11 @@ export default function VerifyEmailPage() {
           </div>
           <CardTitle className="text-2xl">Check your email</CardTitle>
           <CardDescription className="text-base">
-            We've sent a verification link to your email address. Click the link to activate your account.
+            {email ? (
+              <>We've sent a verification link to <strong>{email}</strong>. Click the link to activate your account.</>
+            ) : (
+              <>We've sent a verification link to your email address. Click the link to activate your account.</>
+            )}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

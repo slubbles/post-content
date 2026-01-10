@@ -52,11 +52,8 @@ export function SignupForm() {
       const data = await response.json()
 
       if (response.ok) {
-        toast({
-          title: "Account created!",
-          description: "Welcome to Post Content. Let's get started.",
-        })
-        router.push("/verify-email")
+        // No toast notification - just redirect to verify email page
+        router.push(`/verify-email?email=${encodeURIComponent(email)}`)
         router.refresh()
       } else {
         toast({

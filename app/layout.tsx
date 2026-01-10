@@ -5,6 +5,7 @@ import { Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
 import { SessionProvider } from "next-auth/react"
+import { InactivityLogout } from "@/components/inactivity-logout"
 import "./globals.css"
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-sans" })
@@ -79,6 +80,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${manrope.variable} ${geistMono.variable} font-sans antialiased overflow-x-hidden`}>
         <SessionProvider>
+          <InactivityLogout />
           {children}
         </SessionProvider>
         <Analytics />

@@ -32,10 +32,20 @@ export async function proxy(request: NextRequest) {
 
   if (protectedPaths.some(path => pathname.startsWith(path))) {
     const session = await auth()
+    
+    // Not authenticated - redirect to login
     if (!session) {
       const url = request.nextUrl.clone()
       url.pathname = "/login"
       url.searchParams.set("callbackUrl", pathname)
+      return NextResponse.redirect(url)
+    }
+    
+    // Authenticated but email not verified - redirect to verify-email page
+    // OAuth users (Google/Twitter) are automatically verified
+    if (!session.user?.emailVerified) {
+      const url = request.nextUrl.clone()
+      url.pathname = "/verify-email"
       return NextResponse.redirect(url)
     }
   }

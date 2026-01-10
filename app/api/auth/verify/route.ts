@@ -10,31 +10,48 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL("/login?error=invalid_token", request.url))
     }
 
-    // Find verification token
-    const verificationToken = await prisma.verificationToken.findUnique({
+    // Find pending user with this token
+    const pendingUser = await prisma.pendingUser.findUnique({
       where: { token },
     })
 
-    if (!verificationToken) {
+    if (!pendingUser) {
       return NextResponse.redirect(new URL("/login?error=invalid_token", request.url))
     }
 
     // Check if token expired
-    if (verificationToken.expires < new Date()) {
-      await prisma.verificationToken.delete({
+    if (pendingUser.expires < new Date()) {
+      await prisma.pendingUser.delete({
         where: { token },
       })
       return NextResponse.redirect(new URL("/login?error=token_expired", request.url))
     }
 
-    // Update user's emailVerified
-    await prisma.user.update({
-      where: { email: verificationToken.identifier },
-      data: { emailVerified: new Date() },
+    // Check if user with this email already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email: pendingUser.email },
     })
 
-    // Delete used token
-    await prisma.verificationToken.delete({
+    if (existingUser) {
+      // Clean up pending user
+      await prisma.pendingUser.delete({
+        where: { token },
+      })
+      return NextResponse.redirect(new URL("/login?error=user_exists", request.url))
+    }
+
+    // Create the actual user account
+    await prisma.user.create({
+      data: {
+        name: pendingUser.name,
+        email: pendingUser.email,
+        password: pendingUser.password,
+        emailVerified: new Date(), // Mark as verified
+      },
+    })
+
+    // Delete pending user
+    await prisma.pendingUser.delete({
       where: { token },
     })
 
