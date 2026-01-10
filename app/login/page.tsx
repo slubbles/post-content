@@ -2,6 +2,7 @@ import { LoginForm } from "@/components/login-form"
 import Image from "next/image"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { Suspense } from "react"
 
 export default function LoginPage() {
   return (
@@ -30,7 +31,9 @@ export default function LoginPage() {
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">Ready to create some awesome content?</p>
         </div>
 
-        <LoginForm />
+        <Suspense fallback={<div className="text-center">Loading...</div>}>
+          <LoginForm />
+        </Suspense>
 
         <p className="text-center text-xs text-muted-foreground sm:text-sm">
           New here?{" "}

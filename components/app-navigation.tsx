@@ -28,6 +28,7 @@ import {
 } from "lucide-react"
 import Image from "next/image"
 import { useUsage } from "@/hooks/use-usage"
+import { useSession } from "next-auth/react"
 
 const navItems = [
   { href: "/generate", label: "Generate", icon: Sparkles },
@@ -55,10 +56,15 @@ interface AppNavigationProps {
   }
 }
 
-export function AppNavigation({ isAuthenticated = true, user }: AppNavigationProps) {
+export function AppNavigation({ isAuthenticated: propIsAuthenticated, user: propUser }: AppNavigationProps = {}) {
   const pathname = usePathname()
   const router = useRouter()
   const { usage } = useUsage()
+  const { data: session, status } = useSession()
+
+  // Use session data if available, fallback to props (for backward compatibility)
+  const isAuthenticated = status === "authenticated" || propIsAuthenticated || false
+  const user = session?.user || propUser
 
   const { used, limit, percentage } = usage
 
@@ -157,7 +163,7 @@ export function AppNavigation({ isAuthenticated = true, user }: AppNavigationPro
                         </div>
                         <p className="text-sm font-medium leading-none">{user?.name || "User"}</p>
                         <p className="text-xs leading-none text-muted-foreground">
-                          {user?.email || "user@example.com"}
+                          {user?.email}
                         </p>
                       </div>
                     </DropdownMenuLabel>

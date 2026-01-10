@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { signIn } from "next-auth/react"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
@@ -14,6 +14,8 @@ import { useToast } from "@/hooks/use-toast"
 
 export function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard/generate"
   const { toast } = useToast()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -52,7 +54,7 @@ export function LoginForm() {
           title: "Welcome back!",
           description: "You've successfully logged in.",
         })
-        router.push("/")
+        router.push(callbackUrl)
         router.refresh()
       } else {
         toast({
@@ -77,7 +79,7 @@ export function LoginForm() {
     try {
       // Use NextAuth v5 signIn function with Google provider
       await signIn("google", { 
-        callbackUrl: "/dashboard/generate",
+        callbackUrl,
         redirect: true
       })
     } catch (err) {
