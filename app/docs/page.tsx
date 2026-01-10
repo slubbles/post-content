@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
+import { AppNavigation } from "@/components/app-navigation"
 import Link from "next/link"
-import { ChevronLeft, BookOpen, Video, Code, FileText } from "lucide-react"
+import { BookOpen, Video, Code, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -59,42 +60,35 @@ const docCategories = [
 export default function DocsPage() {
   return (
     <div className="min-h-screen bg-background animate-fade-in">
-      <div className="mx-auto max-w-7xl mobile-safe-padding py-12">
-        <div className="mb-8">
-          <Link href="/">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ChevronLeft className="h-4 w-4" />
-              Back to Home
-            </Button>
-          </Link>
-        </div>
+      <AppNavigation isAuthenticated={false} />
 
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">Documentation</h1>
-          <p className="mt-4 text-lg text-muted-foreground">
+      <div className="mx-auto max-w-4xl mobile-safe-padding py-8 sm:py-12">
+        <div className="mb-8 sm:mb-12 text-center px-4">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">Documentation</h1>
+          <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             Everything you need to know about using PostContent effectively
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 md:gap-8">
           {docCategories.map((category, index) => {
             const Icon = category.icon
             return (
               <Card key={category.title} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                <CardHeader>
-                  <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                    <Icon className="h-6 w-6 text-primary" />
+                <CardHeader className="p-4 sm:p-6">
+                  <div className="mb-3 sm:mb-4 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10">
+                    <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </div>
-                  <CardTitle>{category.title}</CardTitle>
-                  <CardDescription>{category.description}</CardDescription>
+                  <CardTitle className="text-lg sm:text-xl">{category.title}</CardTitle>
+                  <CardDescription className="text-sm">{category.description}</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ul className="space-y-2">
+                <CardContent className="p-4 sm:p-6 pt-0">
+                  <ul className="space-y-2.5 sm:space-y-3">
                     {category.links.map((link) => (
                       <li key={link.label}>
                         <a
                           href={link.href}
-                          className="text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline"
+                          className="block py-1 text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline touch-target"
                         >
                           {link.label}
                         </a>
@@ -107,17 +101,19 @@ export default function DocsPage() {
           })}
         </div>
 
-        <div className="mt-12 rounded-lg border border-border bg-card p-8 text-center">
-          <h2 className="text-2xl font-bold">Need More Help?</h2>
-          <p className="mt-2 text-muted-foreground">
+        <div className="mt-8 sm:mt-12 rounded-lg border border-border bg-card p-6 sm:p-8 text-center">
+          <h2 className="text-xl sm:text-2xl font-bold">Need More Help?</h2>
+          <p className="mt-2 text-sm sm:text-base text-muted-foreground px-4">
             Can't find what you're looking for? Our support team is here to help.
           </p>
-          <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:justify-center">
-            <Link href="/contact">
-              <Button>Contact Support</Button>
+          <div className="mt-4 sm:mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
+            <Link href="/contact" className="w-full sm:w-auto">
+              <Button className="w-full sm:w-auto touch-target">Contact Support</Button>
             </Link>
-            <Link href="/faq">
-              <Button variant="outline">Browse FAQ</Button>
+            <Link href="/faq" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto touch-target bg-transparent">
+                Browse FAQ
+              </Button>
             </Link>
           </div>
         </div>

@@ -79,9 +79,9 @@ export function SignupForm() {
   const handleGoogleSignup = async () => {
     setIsLoading(true)
     try {
-      await signIn("google", { 
+      await signIn("google", {
         callbackUrl: "/dashboard/generate",
-        redirect: true
+        redirect: true,
       })
     } catch (err) {
       toast({

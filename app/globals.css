@@ -299,4 +299,83 @@
   .mobile-safe-margin {
     @apply mx-4 sm:mx-6 lg:mx-8;
   }
+
+  /* Enhanced mobile-specific utilities for better mobile experience */
+  /* Mobile touch targets - ensure 44px minimum for accessibility */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Prevent text from being too small on mobile */
+  .text-mobile-safe {
+    font-size: clamp(14px, 4vw, 16px);
+  }
+
+  /* Better mobile heading sizes */
+  .heading-mobile-1 {
+    font-size: clamp(1.75rem, 8vw, 3.5rem);
+  }
+
+  .heading-mobile-2 {
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
+  }
+
+  .heading-mobile-3 {
+    font-size: clamp(1.25rem, 5vw, 2rem);
+  }
+
+  /* Prevent horizontal overflow on mobile */
+  .mobile-overflow-safe {
+    @apply overflow-x-hidden max-w-full;
+  }
+
+  /* Better mobile spacing */
+  .mobile-spacing-y {
+    @apply space-y-4 sm:space-y-6 lg:space-y-8;
+  }
+
+  .mobile-spacing-x {
+    @apply space-x-3 sm:space-x-4 lg:space-x-6;
+  }
+
+  /* Mobile-friendly card padding */
+  .mobile-card-padding {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+  /* Removed .mobile-button utility class as it's unused and may be causing build cache issues */
+}
+
+/* Mobile-specific media queries for better optimization */
+@media (max-width: 640px) {
+  /* Prevent text from being too small */
+  html {
+    font-size: 16px;
+  }
+
+  /* Better button spacing on mobile */
+  button:not(.no-mobile-adjust) {
+    min-height: 44px;
+  }
+
+  /* Improve form input sizing */
+  input,
+  textarea,
+  select {
+    font-size: 16px; /* Prevents iOS zoom */
+  }
+
+  /* Better modal/dialog on mobile */
+  [role="dialog"] {
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+/* Improve landscape mobile experience */
+@media (max-width: 896px) and (orientation: landscape) {
+  .mobile-landscape-adjust {
+    min-height: auto;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
 }

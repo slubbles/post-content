@@ -126,7 +126,7 @@ export function PostGenerator() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <ConfettiCelebration trigger={showConfetti} />
 
       {apiError && (
@@ -148,32 +148,36 @@ export function PostGenerator() {
       )}
 
       <Card className="transition-shadow hover:shadow-md">
-        <CardHeader>
-          <div className="flex items-start justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                Generate Posts
+        <CardHeader className="space-y-1 sm:space-y-2 pb-4 sm:pb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+            <div className="flex-1 min-w-0">
+              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                <span className="truncate">Generate Posts</span>
               </CardTitle>
-              <CardDescription>Tell us what you want to post about. We'll make it sound good.</CardDescription>
+              <CardDescription className="text-xs sm:text-sm mt-1">
+                Tell us what you want to post about. We'll make it sound good.
+              </CardDescription>
             </div>
             <Link href="/pricing">
-              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted cursor-pointer">
-                <Zap className="h-3 w-3" />
-                <span className="font-medium tabular-nums">
+              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2 sm:px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted cursor-pointer flex-shrink-0 touch-target">
+                <Zap className="h-3 w-3 flex-shrink-0" />
+                <span className="font-medium tabular-nums whitespace-nowrap">
                   {used}/{limit}
                 </span>
               </div>
             </Link>
           </div>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="topic">Topic or Message</Label>
+              <Label htmlFor="topic" className="text-sm sm:text-base">
+                Topic or Message
+              </Label>
               <span
                 className={cn(
-                  "text-xs font-medium transition-colors",
+                  "text-xs font-medium transition-colors tabular-nums",
                   isOverLimit && "text-destructive",
                   isNearLimit && !isOverLimit && "text-amber-600",
                   !isNearLimit && "text-muted-foreground",
@@ -189,7 +193,7 @@ export function PostGenerator() {
               onChange={(e) => setTopic(e.target.value)}
               rows={4}
               className={cn(
-                "resize-none transition-all duration-200 focus:ring-2",
+                "resize-none transition-all duration-200 focus:ring-2 text-sm sm:text-base",
                 isOverLimit && "border-destructive focus:ring-destructive",
               )}
             />
@@ -199,7 +203,7 @@ export function PostGenerator() {
           </div>
 
           <div className="space-y-2">
-            <Label>Platform</Label>
+            <Label className="text-sm sm:text-base">Platform</Label>
             <div className="flex flex-wrap gap-2">
               {platforms.map((p) => (
                 <Button
@@ -207,7 +211,8 @@ export function PostGenerator() {
                   type="button"
                   variant={platform === p.value ? "default" : "outline"}
                   onClick={() => setPlatform(p.value)}
-                  className="transition-all hover:scale-105"
+                  className="transition-all hover:scale-105 text-xs sm:text-sm touch-target flex-shrink-0"
+                  size="sm"
                 >
                   <span className="hidden sm:inline">{p.label}</span>
                   <span className="sm:hidden">{p.shortLabel}</span>
@@ -217,7 +222,7 @@ export function PostGenerator() {
           </div>
 
           <div className="space-y-2">
-            <Label>Tone</Label>
+            <Label className="text-sm sm:text-base">Tone</Label>
             <div className="flex flex-wrap gap-2">
               {tones.map((t) => (
                 <Button
@@ -225,7 +230,8 @@ export function PostGenerator() {
                   type="button"
                   variant={tone === t.value ? "default" : "outline"}
                   onClick={() => setTone(t.value)}
-                  className="transition-all hover:scale-105"
+                  className="transition-all hover:scale-105 text-xs sm:text-sm touch-target flex-shrink-0"
+                  size="sm"
                 >
                   {t.label}
                 </Button>
@@ -256,7 +262,7 @@ export function PostGenerator() {
             <Button
               onClick={handleGenerate}
               disabled={!topic.trim() || isGenerating || isOverLimit}
-              className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] touch-target text-sm sm:text-base"
               size="lg"
             >
               {!isGenerating && (

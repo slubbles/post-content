@@ -7,7 +7,7 @@ import Link from "next/link"
 export default function SuccessPage() {
   return (
     <div className="min-h-screen bg-background">
-      <AppNavigation />
+      <AppNavigation isAuthenticated={false} />
       <main className="mx-auto flex max-w-2xl items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
         <Card className="w-full shadow-lg">
           <CardHeader className="text-center">
