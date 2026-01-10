@@ -3,6 +3,7 @@ import Link from "next/link"
 import { ChevronLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { auth } from "@/lib/auth"
 
 export const metadata: Metadata = {
   title: "FAQ - PostContent",

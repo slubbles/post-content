@@ -3,11 +3,15 @@ import { PricingCards } from "@/components/pricing-cards"
 import { Suspense } from "react"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { auth } from "@/lib/auth"
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const session = await auth()
+  const isAuthenticated = !!session?.user
+
   return (
     <div className="min-h-screen bg-background">
-      <AppNavigation />
+      <AppNavigation isAuthenticated={isAuthenticated} user={session?.user} />
       <main className="mx-auto max-w-7xl mobile-safe-padding py-12 sm:py-16 lg:py-20">
         <div className="mb-16 text-center space-y-6 animate-fade-in">
           <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">Plans and Pricing</h1>
