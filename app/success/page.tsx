@@ -3,11 +3,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { CheckCircle2, Sparkles } from "lucide-react"
 import Link from "next/link"
+import { auth } from "@/lib/auth"
 
-export default function SuccessPage() {
+export default async function SuccessPage() {
+  const session = await auth()
+  const isAuthenticated = !!session?.user
+
   return (
     <div className="min-h-screen bg-background">
-      <AppNavigation isAuthenticated={false} />
+      <AppNavigation isAuthenticated={isAuthenticated} user={session?.user} />
       <main className="mx-auto flex max-w-2xl items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
         <Card className="w-full shadow-lg">
           <CardHeader className="text-center">

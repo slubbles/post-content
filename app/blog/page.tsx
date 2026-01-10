@@ -4,6 +4,7 @@ import { Calendar, User, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { auth } from "@/lib/auth"
 
 export const metadata: Metadata = {
   title: "Blog - PostContent",
@@ -67,10 +68,13 @@ const blogPosts = [
   },
 ]
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const session = await auth()
+  const isAuthenticated = !!session?.user
+
   return (
     <div className="min-h-screen bg-background animate-fade-in mobile-overflow-safe">
-      <AppNavigation isAuthenticated={false} />
+      <AppNavigation isAuthenticated={isAuthenticated} user={session?.user} />
 
       <div className="mx-auto max-w-7xl mobile-safe-padding py-8 sm:py-12">
         <div className="mb-8 sm:mb-12 text-center px-4">

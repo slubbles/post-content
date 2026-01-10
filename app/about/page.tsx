@@ -1,16 +1,20 @@
 import { AppNavigation } from "@/components/app-navigation"
 import Link from "next/link"
 import { Target, Users, Zap, Heart, TrendingUp } from "lucide-react"
+import { auth } from "@/lib/auth"
 
 export const metadata = {
   title: "About Us - PostContent",
   description: "Learn about PostContent's mission to help creators overcome writer's block",
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const session = await auth()
+  const isAuthenticated = !!session?.user
+
   return (
     <div className="min-h-screen bg-background animate-fade-in mobile-overflow-safe">
-      <AppNavigation isAuthenticated={false} />
+      <AppNavigation isAuthenticated={isAuthenticated} user={session?.user} />
 
       <div className="mx-auto max-w-4xl mobile-safe-padding py-8 sm:py-12">
         <div className="mb-8 sm:mb-12">

@@ -1,14 +1,18 @@
 import { AppNavigation } from "@/components/app-navigation"
+import { auth } from "@/lib/auth"
 
 export const metadata = {
   title: "Privacy Policy - PostContent",
   description: "How PostContent collects, uses, and protects your data",
 }
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const session = await auth()
+  const isAuthenticated = !!session?.user
+
   return (
     <div className="min-h-screen bg-background animate-fade-in">
-      <AppNavigation isAuthenticated={false} />
+      <AppNavigation isAuthenticated={isAuthenticated} user={session?.user} />
 
       <div className="mx-auto max-w-4xl mobile-safe-padding py-12">
         <h1 className="text-4xl font-bold mb-2">Privacy Policy</h1>

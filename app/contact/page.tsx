@@ -36,7 +36,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-background animate-fade-in">
-      <AppNavigation isAuthenticated={false} />
+      <AppNavigation />
 
       <div className="mx-auto max-w-4xl mobile-safe-padding py-12">
         <h1 className="text-4xl font-bold mb-4">Contact Us</h1>

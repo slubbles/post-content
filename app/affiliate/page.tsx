@@ -3,16 +3,20 @@ import { AppNavigation } from "@/components/app-navigation"
 import { DollarSign, Users, TrendingUp, Gift } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { auth } from "@/lib/auth"
 
 export const metadata: Metadata = {
   title: "Affiliate Program - PostContent",
   description: "Join our affiliate program and earn 30% recurring commission by promoting PostContent.",
 }
 
-export default function AffiliatePage() {
+export default async function AffiliatePage() {
+  const session = await auth()
+  const isAuthenticated = !!session?.user
+
   return (
     <div className="min-h-screen bg-background animate-fade-in mobile-overflow-safe">
-      <AppNavigation isAuthenticated={false} />
+      <AppNavigation isAuthenticated={isAuthenticated} user={session?.user} />
 
       <div className="mx-auto max-w-7xl mobile-safe-padding py-8 sm:py-12">
         <div className="mb-6 sm:mb-8"></div>

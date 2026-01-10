@@ -1,14 +1,18 @@
 import { AppNavigation } from "@/components/app-navigation"
+import { auth } from "@/lib/auth"
 
 export const metadata = {
   title: "Terms of Service - PostContent",
   description: "Terms and conditions for using PostContent AI content generator",
 }
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const session = await auth()
+  const isAuthenticated = !!session?.user
+
   return (
     <div className="min-h-screen bg-background animate-fade-in">
-      <AppNavigation isAuthenticated={false} />
+      <AppNavigation isAuthenticated={isAuthenticated} user={session?.user} />
 
       <div className="mx-auto max-w-4xl mobile-safe-padding py-12">
         <h1 className="text-4xl font-bold mb-2">Terms of Service</h1>

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { BookOpen, Video, Code, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { auth } from "@/lib/auth"
 
 export const metadata: Metadata = {
   title: "Documentation - PostContent",
@@ -57,10 +58,13 @@ const docCategories = [
   },
 ]
 
-export default function DocsPage() {
+export default async function DocsPage() {
+  const session = await auth()
+  const isAuthenticated = !!session?.user
+
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
-      <AppNavigation isAuthenticated={false} />
+    <div className="min-h-screen bg-background animate-fade-in mobile-overflow-safe">
+      <AppNavigation isAuthenticated={isAuthenticated} user={session?.user} />
 
       <div className="mx-auto max-w-4xl mobile-safe-padding py-8 sm:py-12">
         <div className="mb-8 sm:mb-12 text-center px-4">
