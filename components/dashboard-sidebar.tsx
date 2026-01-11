@@ -133,14 +133,7 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
         </Button>
 
         <Link href="/" className="flex items-center">
-          <Image
-            src="/images/postcontent-20logo-20-20with-20text.png"
-            alt="Post Content"
-            width={321}
-            height={180}
-            className="h-[30px] w-auto"
-            priority
-          />
+          <Image src="/images/logo.svg" alt="PostContent" width={140} height={32} className="h-7 w-auto" priority />
         </Link>
 
         <DropdownMenu>
@@ -237,14 +230,7 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
               <span className="hidden lg:block font-semibold text-lg text-sidebar-foreground">PostContent</span>
             )}
             <div className="lg:hidden">
-              <Image
-                src="/images/postcontent-20logo-20-20with-20text.png"
-                alt="Post Content"
-                width={321}
-                height={180}
-                className="h-[30px] w-auto"
-                priority
-              />
+              <Image src="/images/logo.svg" alt="PostContent" width={140} height={32} className="h-7 w-auto" priority />
             </div>
           </Link>
         </div>

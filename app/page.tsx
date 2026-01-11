@@ -20,17 +20,16 @@ export default function LandingPage() {
             </span>
           </div>
           <h1 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-7xl leading-tight">
-            Create 10 posts in the time
+            A week of posts ready before
             <br className="hidden sm:block" />
             <span className="block sm:inline"> </span>
             <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              it takes to write one
+              you finish scrolling 'for inspiration.'
             </span>
           </h1>
           <p className="mx-auto mt-3 sm:mt-4 lg:mt-6 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg px-4 sm:px-0">
-            You're stuck between wanting to grow your personal brand and not having time to post consistently. Staring
-            at blank screens, rewriting posts 5 times, wondering if it sounds authentic enough. Generate posts that
-            sound like you—not ChatGPT—in seconds.
+            Your audience doesn't care if it's perfect. They care if you show up. Generate authentic posts that sound
+            like you—not AI—in seconds.
           </p>
           <div className="mt-6 sm:mt-8 lg:mt-10 flex flex-col items-center justify-center gap-3 sm:gap-4">
             <Link href="/signup" className="w-full sm:w-auto">

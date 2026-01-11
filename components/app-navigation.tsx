@@ -106,20 +106,13 @@ export function AppNavigation({ isAuthenticated: propIsAuthenticated, user: prop
 
   return (
     <>
-      <nav className="border-b border-border bg-card">
-        <div className="mx-auto flex h-14 sm:h-16 max-w-7xl items-center justify-between mobile-safe-padding">
-          <div className="flex items-center gap-4 sm:gap-8 min-w-0 flex-1">
-            <Link href="/" className="flex items-center gap-2 transition-transform hover:scale-105 flex-shrink-0">
-              <Image
-                src="/images/postcontent-20logo-20-20with-20text.png"
-                alt="Post Content"
-                width={321}
-                height={180}
-                className="h-[35px] w-auto sm:h-[45px] md:h-[55px] lg:h-[70px]"
-                priority
-              />
-            </Link>
+      <header className="mobile-safe-padding sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between">
+          <Link href="/" className="flex items-center space-x-2">
+            <Image src="/images/logo.svg" alt="PostContent" width={140} height={32} className="h-8 w-auto" priority />
+          </Link>
 
+          <div className="flex items-center gap-4 sm:gap-8 min-w-0 flex-1">
             {isAuthenticated && (
               <div className="hidden items-center gap-1 md:flex overflow-x-auto">
                 {navItems.map((item) => {
@@ -240,7 +233,7 @@ export function AppNavigation({ isAuthenticated: propIsAuthenticated, user: prop
             )}
           </div>
         </div>
-      </nav>
+      </header>
 
       {isAuthenticated && (
         <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card/95 backdrop-blur-sm md:hidden safe-area-bottom">
