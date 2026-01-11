@@ -18,11 +18,11 @@ export default function LoginPage() {
         <div className="text-center">
           <Link href="/" className="inline-block transition-opacity hover:opacity-80">
             <Image
-              src="/images/postcontent-20logo-20-20with-20text.png"
-              alt="Post Content"
-              width={321}
-              height={180}
-              className="mx-auto h-[45px] w-auto sm:h-[60px] lg:h-[90px]"
+              src="/images/logo.svg"
+              alt="PostContent"
+              width={140}
+              height={32}
+              className="mx-auto h-8 w-auto sm:h-10 lg:h-12"
               priority
             />
           </Link>

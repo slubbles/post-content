@@ -19,11 +19,11 @@ export function Footer() {
           <div className="flex flex-col items-center text-center sm:items-start sm:text-left lg:col-span-1">
             <Link href="/" className="inline-block transition-opacity hover:opacity-80">
               <Image
-                src="/images/postcontent-20logo-20-20with-20text.png"
-                alt="Post Content"
-                width={321}
-                height={180}
-                className="h-[40px] w-auto sm:h-[45px] md:h-[55px]"
+                src="/images/logo.svg"
+                alt="PostContent"
+                width={140}
+                height={32}
+                className="h-8 w-auto sm:h-9 md:h-10"
                 priority
               />
             </Link>
