@@ -5,7 +5,7 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Linkedin, Github } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useSession } from "next-auth/react"
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -23,19 +23,8 @@ const featureLinks = [
 export function Footer() {
   const currentYear = new Date().getFullYear()
   const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("/api/auth/me")
-        setIsAuthenticated(response.ok)
-      } catch {
-        setIsAuthenticated(false)
-      }
-    }
-    checkAuth()
-  }, [])
+  const { data: session } = useSession()
+  const isAuthenticated = !!session?.user
 
   const handleFeatureClick = (loggedInPath: string, loggedOutPath: string) => {
     if (isAuthenticated) {
