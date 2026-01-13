@@ -2,9 +2,21 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import bcrypt from "bcryptjs"
 import { signIn } from "@/lib/auth"
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function POST(request: Request) {
   try {
+    // Check rate limit (prevent brute force attacks)
+    const rateLimitKey = getRateLimitKey(request, 'anonymous', 'auth-login')
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.auth)
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many login attempts. Please try again later.', retryAfter: rateLimit.retryAfter },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
+      )
+    }
+
     const { email, password } = await request.json()
 
     if (!email || !password) {

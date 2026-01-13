@@ -29,7 +29,6 @@ export function InactivityLogout() {
         // Check if really inactive (in case of race conditions)
         const timeSinceLastActivity = Date.now() - lastActivityRef.current
         if (timeSinceLastActivity >= INACTIVITY_TIMEOUT) {
-          console.log("Auto-logout due to inactivity")
           await signOut({ redirect: true, callbackUrl: "/login?timeout=true" })
         }
       }, INACTIVITY_TIMEOUT)

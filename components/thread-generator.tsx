@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
 import { useUsage } from "@/hooks/use-usage"
+import { useToast } from "@/hooks/use-toast"
 
 export function ThreadGenerator() {
   const [topic, setTopic] = useState("")
@@ -24,6 +25,7 @@ export function ThreadGenerator() {
   const { usage, refresh } = useUsage()
   const used = usage.used
   const limit = usage.limit
+  const { toast } = useToast()
 
   const maxTopicChars = 500
   const maxKeyPointsChars = 800
@@ -65,6 +67,15 @@ export function ThreadGenerator() {
       const data = await response.json()
       clearInterval(progressInterval)
       setGeneratingProgress(100)
+
+      if (!response.ok) {
+        toast({
+          title: "Generation failed",
+          description: data.error || "Failed to generate thread. Please try again.",
+          variant: "destructive",
+        })
+        return
+      }
 
       if (data.thread) {
         setTimeout(() => {

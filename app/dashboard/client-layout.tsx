@@ -16,10 +16,21 @@ export default function ClientLayout({
   const [isMounted, setIsMounted] = useState(false)
 
   // Get user from session or fallback
+  // Map subscribed status to plan type
+  const getUserPlan = (): "free" | "pro" | "enterprise" => {
+    if (!session?.user) return "free"
+    const user = session.user as { subscribed?: boolean; subscriptionStatus?: string }
+    if (user.subscribed && user.subscriptionStatus === "active") {
+      // Could be extended to differentiate pro vs enterprise from subscriptionId
+      return "pro"
+    }
+    return "free"
+  }
+
   const user = session?.user ? {
     name: session.user.name || "User",
     email: session.user.email || "",
-    plan: (session.user as { plan?: string }).plan as "free" | "pro" | "enterprise" || "free",
+    plan: getUserPlan(),
   } : {
     name: "User",
     email: "",

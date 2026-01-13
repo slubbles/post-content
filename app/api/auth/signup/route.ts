@@ -4,11 +4,23 @@ import bcrypt from "bcryptjs"
 import { Resend } from "resend"
 import crypto from "crypto"
 import { renderVerificationEmail } from "@/lib/email-templates"
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export async function POST(request: Request) {
   try {
+    // Check rate limit (prevent spam signups)
+    const rateLimitKey = getRateLimitKey(request, 'anonymous', 'auth-signup')
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.auth)
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many signup attempts. Please try again later.', retryAfter: rateLimit.retryAfter },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
+      )
+    }
+
     const { name, email, password } = await request.json()
 
     if (!name || !email || !password) {

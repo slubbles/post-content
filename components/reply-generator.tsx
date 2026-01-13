@@ -12,6 +12,7 @@ import { GeneratedPosts } from "@/components/generated-posts"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import { useUsage } from "@/hooks/use-usage"
+import { useToast } from "@/hooks/use-toast"
 
 const replyTones = [
   { value: "agree", label: "Agreeing" },
@@ -32,6 +33,7 @@ export function ReplyGenerator() {
   const { usage, refresh } = useUsage()
   const used = usage.used
   const limit = usage.limit
+  const { toast } = useToast()
 
   const maxPostChars = 500
   const maxContextChars = 300
@@ -73,6 +75,15 @@ export function ReplyGenerator() {
       const data = await response.json()
       clearInterval(progressInterval)
       setGeneratingProgress(100)
+
+      if (!response.ok) {
+        toast({
+          title: "Generation failed",
+          description: data.error || "Failed to generate replies. Please try again.",
+          variant: "destructive",
+        })
+        return
+      }
 
       if (data.replies) {
         setTimeout(() => {

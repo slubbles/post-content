@@ -102,7 +102,15 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
   }
 }
 
-export async function analyzeVoice(posts: string[]): Promise<any> {
+export interface VoiceAnalysisResult {
+  sarcasmLevel: number;
+  tiredLevel: number;
+  favoriteWords: string[];
+  avgLength: number;
+  tone: string;
+}
+
+export async function analyzeVoice(posts: string[]): Promise<VoiceAnalysisResult> {
   if (!grok) {
     throw new Error('XAI_API_KEY is not configured. Add it to .env.local');
   }
@@ -128,7 +136,7 @@ export async function analyzeVoice(posts: string[]): Promise<any> {
   }
 }
 
-export async function generateReplies(postToReply: string, context?: string): Promise<any[]> {
+export async function generateReplies(postToReply: string, context?: string): Promise<string[]> {
   if (!grok) {
     throw new Error('XAI_API_KEY is not configured. Add it to .env.local');
   }

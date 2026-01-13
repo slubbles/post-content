@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get("limit") || "20")
 
     // Build where clause with optional type filter
-    const whereClause: any = { userId: session.user.id }
+    const whereClause: { userId: string; type?: string } = { userId: session.user.id }
     if (typeFilter) {
       whereClause.type = typeFilter
     }
