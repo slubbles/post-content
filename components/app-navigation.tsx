@@ -47,7 +47,7 @@ const bottomNavItems = [
 ]
 
 const publicNavLinks = [
-  { href: "/#how-it-works", label: "How It Works" },
+  { href: "/how-it-works", label: "How It Works" },
   { href: "/docs", label: "Docs" },
   { href: "/pricing", label: "Pricing" },
 ]
