@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeVoice } from '@/lib/grok';
 import { auth } from '@/lib/auth';
+import { prisma } from '@/lib/db';
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +12,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Unauthorized. Please sign in.' },
         { status: 401 }
+      );
+    }
+
+    // Check rate limit
+    const rateLimitKey = getRateLimitKey(request, session.user.id, 'train');
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.generate);
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many requests. Please slow down.', retryAfter: rateLimit.retryAfter },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
       );
     }
 
@@ -24,10 +37,28 @@ export async function POST(request: NextRequest) {
 
     const analysis = await analyzeVoice(posts);
 
-    // TODO: Save voice profile to database
-    // For now, return analysis to be stored in localStorage
+    // Save voice profile to database
+    await prisma.voiceProfile.upsert({
+      where: { userId: session.user.id },
+      update: {
+        sarcasmLevel: analysis.sarcasmLevel || 50,
+        tiredLevel: analysis.tiredLevel || 30,
+        favoriteWords: analysis.favoriteWords || [],
+        avgLength: analysis.avgLength || 15,
+        examples: posts.slice(0, 10), // Store first 10 posts as examples
+        updatedAt: new Date(),
+      },
+      create: {
+        userId: session.user.id,
+        sarcasmLevel: analysis.sarcasmLevel || 50,
+        tiredLevel: analysis.tiredLevel || 30,
+        favoriteWords: analysis.favoriteWords || [],
+        avgLength: analysis.avgLength || 15,
+        examples: posts.slice(0, 10),
+      },
+    });
 
-    return NextResponse.json({ analysis });
+    return NextResponse.json({ analysis, saved: true });
   } catch (error) {
     console.error('Voice analysis error:', error);
     return NextResponse.json(

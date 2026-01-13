@@ -100,7 +100,8 @@ export function AppNavigation({ isAuthenticated: propIsAuthenticated, user: prop
   }
 
   const getPlanBadge = () => {
-    const plan = user?.plan || "free"
+    // plan comes from extended session user type
+    const plan = (user as { plan?: string } | undefined)?.plan || "free"
     return plan.charAt(0).toUpperCase() + plan.slice(1) + " Plan"
   }
 

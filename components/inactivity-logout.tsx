@@ -7,7 +7,7 @@ const INACTIVITY_TIMEOUT = 60 * 60 * 1000 // 1 hour in milliseconds
 
 export function InactivityLogout() {
   const { data: session } = useSession()
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const lastActivityRef = useRef<number>(Date.now())
 
   useEffect(() => {

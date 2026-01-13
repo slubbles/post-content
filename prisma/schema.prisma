@@ -8,14 +8,14 @@ datasource db {
 }
 
 model User {
-  id                 String     @id @default(cuid())
+  id                 String        @id @default(cuid())
   name               String?
-  email              String?    @unique
+  email              String?       @unique
   emailVerified      DateTime?
   image              String?
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
-  subscribed         Boolean    @default(false)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+  subscribed         Boolean       @default(false)
   subscriptionEndsAt DateTime?
   subscriptionId     String?
   subscriptionStatus String?
@@ -25,6 +25,7 @@ model User {
   posts              Post[]
   sessions           Session[]
   feedback           Feedback[]
+  voiceProfile       VoiceProfile?
 }
 
 model Account {
@@ -101,4 +102,17 @@ model PendingUser {
   token     String   @unique
   expires   DateTime
   createdAt DateTime @default(now())
+}
+
+model VoiceProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  sarcasmLevel   Int      @default(50)
+  tiredLevel     Int      @default(30)
+  favoriteWords  String[] @default([])
+  avgLength      Int      @default(15)
+  examples       String[] @default([])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

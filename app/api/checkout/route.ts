@@ -27,8 +27,6 @@ export async function POST(request: Request) {
     }
 
     const checkoutUrl = polarCheckoutUrls[normalizedPlan]
-    
-    console.log("Checkout request:", { plan, normalizedPlan, billingCycle, isAnnual, checkoutUrl })
 
     if (!checkoutUrl) {
       return NextResponse.json(

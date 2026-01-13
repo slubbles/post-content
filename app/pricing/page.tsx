@@ -8,10 +8,17 @@ import { auth } from "@/lib/auth"
 export default async function PricingPage() {
   const session = await auth()
   const isAuthenticated = !!session?.user
+  
+  // Transform user to expected type (handle null values)
+  const user = session?.user ? {
+    name: session.user.name ?? undefined,
+    email: session.user.email ?? undefined,
+    image: session.user.image ?? undefined,
+  } : undefined
 
   return (
     <div className="min-h-screen bg-background">
-      <AppNavigation isAuthenticated={isAuthenticated} user={session?.user} />
+      <AppNavigation isAuthenticated={isAuthenticated} user={user} />
       <main className="mx-auto max-w-7xl mobile-safe-padding py-12 sm:py-16 lg:py-20">
         <div className="mb-16 text-center space-y-6 animate-fade-in">
           <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">Plans and Pricing</h1>
