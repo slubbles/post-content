@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -31,6 +31,14 @@ const tones = [
   { value: "educational", label: "Educational" },
 ]
 
+const examplePrompts = [
+  "Launching my new product next week",
+  "Just hit a major milestone",
+  "Hot take on AI in marketing",
+  "Lessons from my biggest failure",
+  "Why most advice is wrong",
+]
+
 export function PostGenerator() {
   const { toast } = useToast()
   const [topic, setTopic] = useState("")
@@ -50,6 +58,17 @@ export function PostGenerator() {
   const charCount = topic.length
   const isNearLimit = charCount > maxChars * 0.8
   const isOverLimit = charCount > maxChars
+
+  useEffect(() => {
+    const handlePopulateForm = (event: CustomEvent) => {
+      if (event.detail?.metadata?.topic) {
+        setTopic(event.detail.metadata.topic)
+      }
+    }
+
+    window.addEventListener("populateForm", handlePopulateForm as EventListener)
+    return () => window.removeEventListener("populateForm", handlePopulateForm as EventListener)
+  }, [])
 
   const handleGenerate = async () => {
     if (!topic.trim() || isOverLimit) return
@@ -196,7 +215,22 @@ export function PostGenerator() {
               )}
             />
             {!topic && (
-              <p className="text-xs text-muted-foreground">The more specific you are, the better your posts will be.</p>
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">Need inspiration? Try one of these:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {examplePrompts.map((prompt, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-7 bg-transparent hover:bg-primary/5 hover:border-primary/30"
+                      onClick={() => setTopic(prompt)}
+                    >
+                      {prompt}
+                    </Button>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
 

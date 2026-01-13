@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Copy, RefreshCw, Clock, Twitter } from "lucide-react"
+import { Copy, RefreshCw, Clock, Twitter, Sparkles, MessageSquare, List } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { formatDistanceToNow } from "date-fns"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { EmptyState } from "@/components/empty-state"
 
 interface HistoryItem {
   id: string
@@ -24,6 +25,30 @@ interface HistorySectionProps {
   type: "generate" | "reply" | "thread"
   title?: string
   limit?: number
+}
+
+const emptyStateConfig = {
+  generate: {
+    icon: Sparkles,
+    title: "No posts generated yet",
+    description:
+      "Create your first post and it will appear here. Your generation history helps you track and reuse your best content.",
+    suggestions: ["Product launch announcement", "Industry hot take", "Personal milestone"],
+  },
+  reply: {
+    icon: MessageSquare,
+    title: "No replies created yet",
+    description:
+      "Generate your first smart reply and it will show up here. Great replies build engagement and relationships.",
+    suggestions: ["Supportive response", "Thoughtful question", "Add your insight"],
+  },
+  thread: {
+    icon: List,
+    title: "No threads built yet",
+    description:
+      "Create your first thread and it will be saved here. Threads are powerful for storytelling and deep dives.",
+    suggestions: ["How-to guide", "Lessons learned", "Industry breakdown"],
+  },
 }
 
 export function HistorySection({ type, title, limit = 10 }: HistorySectionProps) {
@@ -83,6 +108,24 @@ export function HistorySection({ type, title, limit = 10 }: HistorySectionProps)
     })
   }
 
+  const handleSuggestionClick = (suggestion: string) => {
+    const event = new CustomEvent("populateForm", {
+      detail: {
+        content: "",
+        metadata: { topic: suggestion },
+      },
+    })
+    window.dispatchEvent(event)
+
+    toast({
+      title: "Topic selected",
+      description: `Try generating a post about "${suggestion}"`,
+    })
+
+    // Scroll to top of page to show the form
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
   const getPlatformIcon = (platform?: string) => {
     if (platform === "twitter" || platform === "x") {
       return <Twitter className="h-3 w-3" />
@@ -106,16 +149,21 @@ export function HistorySection({ type, title, limit = 10 }: HistorySectionProps)
     )
   }
 
+  const config = emptyStateConfig[type]
+
   if (history.length === 0) {
     return (
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">{title || `Recent ${type}s`}</h2>
-        <Card className="p-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            No history yet. {type === "generate" && "Generate your first post to see it here."}
-            {type === "reply" && "Create your first reply to see it here."}
-            {type === "thread" && "Build your first thread to see it here."}
-          </p>
+        <Card className="border-dashed">
+          <EmptyState
+            icon={config.icon}
+            title={config.title}
+            description={config.description}
+            suggestions={config.suggestions}
+            onSuggestionClick={handleSuggestionClick}
+            className="py-8"
+          />
         </Card>
       </div>
     )

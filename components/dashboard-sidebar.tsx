@@ -30,6 +30,7 @@ import {
   ChevronRight,
   MessageCircle,
   Crown,
+  History,
 } from "lucide-react"
 import { FeedbackModal } from "@/components/feedback-modal"
 
@@ -38,6 +39,7 @@ const mainNavItems = [
   { href: "/dashboard/reply", label: "Reply to Posts", icon: MessageSquare },
   { href: "/dashboard/thread", label: "Create Threads", icon: List },
   { href: "/dashboard/train", label: "Train AI", icon: GraduationCap },
+  { href: "/dashboard/history", label: "History", icon: History },
   { href: "#feedback", label: "Give Feedback", icon: MessageCircle, action: "feedback" },
 ]
 
@@ -218,10 +220,6 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
         <div className="flex h-14 items-center justify-center border-b border-sidebar-border px-4">
           <Link href="/dashboard/generate" className="flex items-center gap-3">
             <div className="hidden lg:block">
-              {/* TODO: Replace with actual logo image path when provided */}
-              {/* <Image src="/images/logo-icon-32x32.png" alt="Logo" width={32} height={32} /> */}
-              {/* TODO: Replace with your logo icon image when provided (32x32px recommended) */}
-              {/* Example: <Image src="/images/logo-icon.png" alt="PostContent Logo" width={32} height={32} /> */}
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
                 P
               </div>

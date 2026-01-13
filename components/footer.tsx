@@ -1,7 +1,11 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Linkedin, Github } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -9,8 +13,37 @@ const XIcon = ({ className }: { className?: string }) => (
   </svg>
 )
 
+const featureLinks = [
+  { label: "Generate", loggedInPath: "/dashboard/generate", loggedOutPath: "/login" },
+  { label: "Reply", loggedInPath: "/dashboard/reply", loggedOutPath: "/login" },
+  { label: "Thread", loggedInPath: "/dashboard/thread", loggedOutPath: "/login" },
+  { label: "Train", loggedInPath: "/dashboard/train", loggedOutPath: "/login" },
+]
+
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const router = useRouter()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me")
+        setIsAuthenticated(response.ok)
+      } catch {
+        setIsAuthenticated(false)
+      }
+    }
+    checkAuth()
+  }, [])
+
+  const handleFeatureClick = (loggedInPath: string, loggedOutPath: string) => {
+    if (isAuthenticated) {
+      router.push(loggedInPath)
+    } else {
+      router.push(loggedOutPath)
+    }
+  }
 
   return (
     <footer className="border-t border-border bg-card/50">
@@ -73,38 +106,16 @@ export function Footer() {
           <div className="text-center sm:text-left">
             <h3 className="font-semibold text-sm sm:text-base mb-3 sm:mb-4">Features</h3>
             <ul className="space-y-2">
-              <li>
-                <Link
-                  href="/dashboard/generate"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Generate
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard/reply"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Reply
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard/thread"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Thread
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/dashboard/train"
-                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-                >
-                  Train
-                </Link>
-              </li>
+              {featureLinks.map((link) => (
+                <li key={link.label}>
+                  <button
+                    onClick={() => handleFeatureClick(link.loggedInPath, link.loggedOutPath)}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground text-left"
+                  >
+                    {link.label}
+                  </button>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -119,6 +130,14 @@ export function Footer() {
               <li>
                 <Link href="/docs" className="text-sm text-muted-foreground transition-colors hover:text-foreground">
                   Docs
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/how-it-works"
+                  className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  How It Works
                 </Link>
               </li>
             </ul>
