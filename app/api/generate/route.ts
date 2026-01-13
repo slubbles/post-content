@@ -5,8 +5,27 @@ import { canUserGeneratePost, trackPostGeneration } from '@/lib/usage';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
 import { prisma } from '@/lib/db';
 import { validateGenerateInput, validateTone, validatePlatform } from '@/lib/validation';
+import { handleCorsPrelight, getCorsHeaders } from '@/lib/cors';
+import { verifyCsrfToken } from '@/lib/csrf';
+
+export async function OPTIONS(request: NextRequest) {
+  const response = handleCorsPrelight(request);
+  return response || new Response(null, { status: 405 });
+}
 
 export async function POST(request: NextRequest) {
+  // Handle CORS preflight
+  const origin = request.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+  
+  // Verify CSRF token
+  if (!verifyCsrfToken(request)) {
+    return NextResponse.json(
+      { error: 'Invalid request origin' },
+      { status: 403, headers: corsHeaders }
+    );
+  }
+  
   try {
     // Check authentication
     const session = await auth();
@@ -82,12 +101,12 @@ export async function POST(request: NextRequest) {
     // Track post generation for usage limits
     await trackPostGeneration(session.user.id, posts[0], 'generate');
 
-    return NextResponse.json({ posts });
+    return NextResponse.json({ posts }, { headers: corsHeaders });
   } catch (error) {
     console.error('Generate posts error:', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to generate posts' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 }

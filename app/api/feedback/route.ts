@@ -84,7 +84,7 @@ export async function POST(request: Request) {
         // Don't fail the request if email fails - feedback is still saved to database
       }
     } else {
-      console.log("Resend not configured - feedback saved to database only")
+      // No email service configured - feedback saved to database only
     }
 
     return NextResponse.json({

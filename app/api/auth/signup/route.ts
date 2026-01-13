@@ -91,9 +91,8 @@ export async function POST(request: Request) {
         }, { status: 500 })
       }
     } else {
-      console.warn("Resend not configured - verification email not sent")
+      // No email service configured - silent fallback
       const verificationUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/auth/verify?token=${token}`
-      console.log(`Verification URL: ${verificationUrl}`)
     }
 
     return NextResponse.json({ 

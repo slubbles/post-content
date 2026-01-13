@@ -58,7 +58,7 @@ export async function POST(request: Request) {
         // Continue anyway - don't reveal email sending failures
       }
     } else {
-      console.log("Resend not configured. Reset URL:", resetUrl)
+      // No email service configured - silent fallback
     }
 
     return NextResponse.json({

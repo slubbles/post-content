@@ -4,8 +4,27 @@ import { auth } from '@/lib/auth';
 import { canUserGeneratePost, trackPostGeneration } from '@/lib/usage';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
 import { sanitizeInput } from '@/lib/validation';
+import { handleCorsPrelight, getCorsHeaders } from '@/lib/cors';
+import { verifyCsrfToken } from '@/lib/csrf';
+
+export async function OPTIONS(request: NextRequest) {
+  const response = handleCorsPrelight(request);
+  return response || new Response(null, { status: 405 });
+}
 
 export async function POST(request: NextRequest) {
+  // Handle CORS preflight
+  const origin = request.headers.get('origin');
+  const corsHeaders = getCorsHeaders(origin);
+  
+  // Verify CSRF token
+  if (!verifyCsrfToken(request)) {
+    return NextResponse.json(
+      { error: 'Invalid request origin' },
+      { status: 403, headers: corsHeaders }
+    );
+  }
+  
   try {
     // Check authentication
     const session = await auth();

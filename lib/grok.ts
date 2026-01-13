@@ -21,6 +21,12 @@ export interface GeneratePostOptions {
   };
 }
 
+export interface Reply {
+  text: string;
+  tag: string;
+  color: string;
+}
+
 export async function generatePosts(options: GeneratePostOptions): Promise<string[]> {
   const { input, tone, platform, userVoice } = options;
 
@@ -82,7 +88,7 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
     posts.forEach(post => {
       const validation = validateContent(post, platform);
       if (!validation.valid) {
-        console.warn('Post validation warnings:', validation.warnings);
+
       }
     });
 
@@ -97,7 +103,9 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
 
     return posts;
   } catch (error) {
-    console.error('Grok API error:', error);
+    if ((error as any)?.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
     throw new Error('Failed to generate posts. Please try again.');
   }
 }
@@ -118,25 +126,32 @@ export async function analyzeVoice(posts: string[]): Promise<VoiceAnalysisResult
   const userPrompt = `Analyze these posts:\n\n${posts.join('\n\n')}`;
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
+    
     const completion = await grok.chat.completions.create({
       model: 'grok-3-mini',
       messages: [
         { role: 'system', content: VOICE_ANALYSIS_PROMPT },
-        { role: 'user', content: userPrompt },
+        { role: 'user', content: examples.join('\n\n') },
       ],
-      temperature: 0.3,
+      temperature: 0.5,
       max_tokens: 300,
-    });
+    }, { signal: controller.signal as any });
+    
+    clearTimeout(timeout);
 
     const response = completion.choices[0]?.message?.content || '{}';
     return JSON.parse(response);
   } catch (error) {
-    console.error('Voice analysis error:', error);
+    if ((error as any)?.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
     throw new Error('Failed to analyze voice. Please try again.');
   }
 }
 
-export async function generateReplies(postToReply: string, context?: string): Promise<string[]> {
+export async function generateReplies(postToReply: string, context?: string): Promise<Reply[]> {
   if (!grok) {
     throw new Error('XAI_API_KEY is not configured. Add it to .env.local');
   }
@@ -158,15 +173,20 @@ Each reply should:
     : `Post to reply to: "${postToReply}"`;
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
+    
     const completion = await grok.chat.completions.create({
       model: 'grok-3-mini',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ],
-      temperature: 0.7,
-      max_tokens: 400,
-    });
+      temperature,
+      max_tokens: 800,
+    }, { signal: controller.signal as any });
+    
+    clearTimeout(timeout);
 
     const response = completion.choices[0]?.message?.content || '';
     
@@ -183,7 +203,9 @@ Each reply should:
       { text: replies[2] || 'Bold take!', tag: 'Spicy', color: 'purple' },
     ];
   } catch (error) {
-    console.error('Reply generation error:', error);
+    if ((error as any)?.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
     throw new Error('Failed to generate replies. Please try again.');
   }
 }
@@ -214,6 +236,9 @@ export async function generateThread(
   }
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 30000); // 30s timeout
+    
     const completion = await grok.chat.completions.create({
       model: 'grok-3-mini',
       messages: [
@@ -222,7 +247,9 @@ export async function generateThread(
       ],
       temperature: 0.8,
       max_tokens: 800,
-    });
+    }, { signal: controller.signal as any });
+    
+    clearTimeout(timeout);
 
     const response = completion.choices[0]?.message?.content || '';
     
@@ -243,7 +270,9 @@ export async function generateThread(
 
     return tweets;
   } catch (error) {
-    console.error('Thread generation error:', error);
+    if ((error as any)?.name === 'AbortError') {
+      throw new Error('Request timed out. Please try again.');
+    }
     throw new Error('Failed to generate thread. Please try again.');
   }
 }
