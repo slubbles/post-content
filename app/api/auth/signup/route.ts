@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       const verificationUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/auth/verify?token=${token}`
       
       try {
-        await resend.emails.send({
+        const emailResponse = await resend.emails.send({
           from: "PostContent <noreply@postcontent.io>",
           to: email,
           subject: "Verify your email address",
@@ -84,15 +84,36 @@ export async function POST(request: Request) {
             verificationUrl,
           }),
         })
+        
+        // Log email ID for debugging
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Verification email sent: ${emailResponse.data?.id}`)
+        }
       } catch (emailError) {
         console.error("Failed to send verification email:", emailError)
+        // Clean up pending user if email fails
+        await prisma.pendingUser.delete({
+          where: { email }
+        })
         return NextResponse.json({ 
-          error: "Failed to send verification email. Please try again." 
+          error: "Failed to send verification email. Please try again or contact support." 
         }, { status: 500 })
       }
     } else {
-      // No email service configured - silent fallback
-      const verificationUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/auth/verify?token=${token}`
+      // No email service configured - development fallback
+      if (process.env.NODE_ENV === 'development') {
+        const verificationUrl = `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/auth/verify?token=${token}`
+        console.log('⚠️  RESEND_API_KEY not configured')
+        console.log(`📧 Verification URL: ${verificationUrl}`)
+      } else {
+        // In production, RESEND_API_KEY is required
+        await prisma.pendingUser.delete({
+          where: { email }
+        })
+        return NextResponse.json({ 
+          error: "Email service not configured. Please contact support." 
+        }, { status: 500 })
+      }
     }
 
     return NextResponse.json({ 

@@ -88,7 +88,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where: { email: user.email }
         })
         
-        // If user exists, allow sign in (account linking is enabled)
+        // If user exists, ensure emailVerified is set for OAuth users
+        if (existingUser && !existingUser.emailVerified) {
+          await prisma.user.update({
+            where: { email: user.email },
+            data: { emailVerified: new Date() }
+          })
+        }
+        
+        // Allow sign in (account linking is enabled)
         if (existingUser) {
           return true
         }
@@ -113,6 +121,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.email = user.email
         token.name = user.name
         token.picture = user.image
+        
+        // Fetch emailVerified status from database
+        const dbUser = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: { emailVerified: true }
+        })
+        token.emailVerified = dbUser?.emailVerified || null
       }
       return token
     },
@@ -122,6 +137,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.email = token.email as string
         session.user.name = token.name as string
         session.user.image = token.picture as string
+        session.user.emailVerified = token.emailVerified as Date | null
       }
       return session
     },
