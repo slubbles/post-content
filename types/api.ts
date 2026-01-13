@@ -21,11 +21,13 @@ export interface Session {
 
 // ==================== CONTENT GENERATION ====================
 
-export type TonePreset = 'sarcastic' | 'raw' | 'roast';
+export type TonePreset = 'professional' | 'casual' | 'humorous' | 'inspirational' | 'educational';
+export type PlatformType = 'twitter' | 'linkedin' | 'instagram' | 'facebook' | 'threads';
 
 export interface GenerateRequest {
   input: string;
   tone: TonePreset;
+  platform: PlatformType;
 }
 
 export interface GenerateResponse {

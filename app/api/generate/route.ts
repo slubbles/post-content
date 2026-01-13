@@ -14,11 +14,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { input, tone } = await request.json();
+    const { input, tone, platform } = await request.json();
 
-    if (!input || !tone) {
+    if (!input || !tone || !platform) {
       return NextResponse.json(
-        { error: 'Missing required fields: input and tone' },
+        { error: 'Missing required fields: input, tone, and platform' },
+        { status: 400 }
+      );
+    }
+
+    // Validate platform
+    const validPlatforms = ['twitter', 'linkedin', 'instagram', 'facebook', 'threads'];
+    if (!validPlatforms.includes(platform)) {
+      return NextResponse.json(
+        { error: `Invalid platform. Must be one of: ${validPlatforms.join(', ')}` },
+        { status: 400 }
+      );
+    }
+
+    // Validate tone
+    const validTones = ['professional', 'casual', 'humorous', 'inspirational', 'educational'];
+    if (!validTones.includes(tone)) {
+      return NextResponse.json(
+        { error: `Invalid tone. Must be one of: ${validTones.join(', ')}` },
         { status: 400 }
       );
     }
@@ -38,7 +56,7 @@ export async function POST(request: NextRequest) {
     // TODO: Get user voice profile from database if exists
     const userVoice = undefined;
 
-    const posts = await generatePosts({ input, tone, userVoice });
+    const posts = await generatePosts({ input, tone, platform, userVoice });
 
     // Track post generation for usage limits
     await trackPostGeneration(session.user.id, posts[0], 'generate');

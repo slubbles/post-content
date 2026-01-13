@@ -12,6 +12,7 @@ const grok = process.env.XAI_API_KEY
 export interface GeneratePostOptions {
   input: string;
   tone: string;
+  platform: string;
   userVoice?: {
     sarcasmLevel: number;
     tiredLevel: number;
@@ -21,7 +22,7 @@ export interface GeneratePostOptions {
 }
 
 export async function generatePosts(options: GeneratePostOptions): Promise<string[]> {
-  const { input, tone, userVoice } = options;
+  const { input, tone, platform, userVoice } = options;
 
   // Check if API is configured
   if (!grok) {
@@ -29,10 +30,11 @@ export async function generatePosts(options: GeneratePostOptions): Promise<strin
   }
 
   // Get system prompt from prompts library
-  const systemPrompt = getGenerationPrompt(tone, userVoice);
+  const systemPrompt = getGenerationPrompt(tone, platform, userVoice);
   const temperature = getTemperature(tone);
 
-  const userPrompt = `Generate 3 different X/Twitter posts about: "${input}"
+  const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
+  const userPrompt = `Generate 3 different ${platformName} posts about: "${input}"
 
 Make each post unique and authentic. Vary the approach across the 3 posts.`;
 
@@ -44,13 +46,18 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
         { role: 'user', content: userPrompt },
       ],
       temperature,
-      max_tokens: 500,
+      max_tokens: platform === 'linkedin' ? 1500 : 500,
     });
 
     const response = completion.choices[0]?.message?.content || '';
     
     // Parse the response into individual posts
     const lines = response.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+    
+    // Import PLATFORM_CONFIGS to get char limits
+    const { PLATFORM_CONFIGS } = await import('./prompts');
+    const platformConfig = PLATFORM_CONFIGS[platform] || PLATFORM_CONFIGS.twitter;
+    const maxChars = platformConfig.maxChars;
     
     const posts = lines
       // Remove metadata/description lines (like "Here's three unique posts...")
@@ -67,13 +74,13 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
         return match ? match[1] : line;
       })
       .map(line => line.trim())
-      // Filter valid posts
-      .filter(post => post.length > 10 && post.length <= 280)
+      // Filter valid posts based on platform limits
+      .filter(post => post.length > 10 && post.length <= maxChars)
       .slice(0, 3);
 
     // Validate posts
     posts.forEach(post => {
-      const validation = validateContent(post);
+      const validation = validateContent(post, platform);
       if (!validation.valid) {
         console.warn('Post validation warnings:', validation.warnings);
       }
