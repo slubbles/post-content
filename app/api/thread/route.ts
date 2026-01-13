@@ -3,6 +3,7 @@ import { generateThread } from '@/lib/grok';
 import { auth } from '@/lib/auth';
 import { canUserGeneratePost, trackPostGeneration } from '@/lib/usage';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
+import { sanitizeInput } from '@/lib/validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,12 +29,35 @@ export async function POST(request: NextRequest) {
 
     const { topic, keyPoints, threadLength } = await request.json();
 
+    // Validate and sanitize topic
     if (!topic || typeof topic !== 'string') {
       return NextResponse.json(
         { error: 'Topic is required' },
         { status: 400 }
       );
     }
+
+    const sanitizedTopic = sanitizeInput(topic);
+    if (sanitizedTopic.length === 0 || sanitizedTopic.length > 500) {
+      return NextResponse.json(
+        { error: 'Topic must be between 1 and 500 characters' },
+        { status: 400 }
+      );
+    }
+
+    // Validate and sanitize key points
+    const sanitizedKeyPoints = keyPoints ? sanitizeInput(keyPoints) : undefined;
+    if (sanitizedKeyPoints && sanitizedKeyPoints.length > 800) {
+      return NextResponse.json(
+        { error: 'Key points cannot exceed 800 characters' },
+        { status: 400 }
+      );
+    }
+
+    // Validate thread length
+    const validThreadLength = typeof threadLength === 'number' && threadLength >= 3 && threadLength <= 15 
+      ? threadLength 
+      : 5;
 
     // Check usage limits
     const canGenerate = await canUserGeneratePost(session.user.id);
@@ -47,11 +71,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate thread using Grok API with optional parameters
-    const tweets = await generateThread(topic, keyPoints, threadLength);
+    // Generate thread using Grok API with sanitized parameters
+    const tweets = await generateThread(sanitizedTopic, sanitizedKeyPoints, validThreadLength);
 
     // Track thread generation for usage limits (count as 1 post, not per tweet)
-    await trackPostGeneration(session.user.id, topic, 'thread');
+    await trackPostGeneration(session.user.id, sanitizedTopic, 'thread');
 
     return NextResponse.json({ thread: tweets, tweets });
   } catch (error) {

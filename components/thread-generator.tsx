@@ -11,6 +11,7 @@ import { GeneratedThread } from "@/components/generated-thread"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
+import { useUsage } from "@/hooks/use-usage"
 
 export function ThreadGenerator() {
   const [topic, setTopic] = useState("")
@@ -20,8 +21,9 @@ export function ThreadGenerator() {
   const [generatingProgress, setGeneratingProgress] = useState(0)
   const [generatedThread, setGeneratedThread] = useState<string[]>([])
 
-  const used = 45
-  const limit = 100
+  const { usage, refresh } = useUsage()
+  const used = usage.used
+  const limit = usage.limit
 
   const maxTopicChars = 500
   const maxKeyPointsChars = 800
@@ -189,7 +191,7 @@ export function ThreadGenerator() {
             <Button
               onClick={handleGenerate}
               disabled={!topic.trim() || isGenerating || isTopicOverLimit}
-              className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full transition-all hover:scale-[1.02] active:scale-[0.98] touch-target text-sm sm:text-base"
               size="lg"
             >
               {!isGenerating && (

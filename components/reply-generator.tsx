@@ -11,6 +11,7 @@ import { MessageSquare, Zap } from "lucide-react"
 import { GeneratedPosts } from "@/components/generated-posts"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
+import { useUsage } from "@/hooks/use-usage"
 
 const replyTones = [
   { value: "agree", label: "Agreeing" },
@@ -28,8 +29,9 @@ export function ReplyGenerator() {
   const [generatingProgress, setGeneratingProgress] = useState(0)
   const [generatedReplies, setGeneratedReplies] = useState<string[]>([])
 
-  const used = 45
-  const limit = 100
+  const { usage, refresh } = useUsage()
+  const used = usage.used
+  const limit = usage.limit
 
   const maxPostChars = 500
   const maxContextChars = 300
@@ -171,7 +173,7 @@ export function ReplyGenerator() {
             />
           </div>
           <div className="space-y-2">
-            <Label>Reply Vibe</Label>
+            <Label className="text-sm sm:text-base">Reply Vibe</Label>
             <div className="flex flex-wrap gap-2">
               {replyTones.map((t) => (
                 <Button
@@ -179,7 +181,8 @@ export function ReplyGenerator() {
                   type="button"
                   variant={replyTone === t.value ? "default" : "outline"}
                   onClick={() => setReplyTone(t.value)}
-                  className="transition-all hover:scale-105"
+                  className="transition-all hover:scale-105 text-xs sm:text-sm touch-target flex-shrink-0"
+                  size="sm"
                 >
                   {t.label}
                 </Button>
@@ -190,7 +193,7 @@ export function ReplyGenerator() {
             <Button
               onClick={handleGenerate}
               disabled={!originalPost.trim() || isGenerating || isPostOverLimit}
-              className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full transition-all hover:scale-[1.02] active:scale-[0.98] touch-target text-sm sm:text-base"
               size="lg"
             >
               {!isGenerating && (

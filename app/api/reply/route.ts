@@ -3,6 +3,7 @@ import { generateReplies } from '@/lib/grok';
 import { auth } from '@/lib/auth';
 import { canUserGeneratePost, trackPostGeneration } from '@/lib/usage';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
+import { sanitizeInput } from '@/lib/validation';
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,9 +29,26 @@ export async function POST(request: NextRequest) {
 
     const { postToReply, context } = await request.json();
 
-    if (!postToReply) {
+    // Validate and sanitize input
+    if (!postToReply || typeof postToReply !== 'string') {
       return NextResponse.json(
         { error: 'Missing required field: postToReply' },
+        { status: 400 }
+      );
+    }
+
+    const sanitizedPost = sanitizeInput(postToReply);
+    if (sanitizedPost.length === 0 || sanitizedPost.length > 2000) {
+      return NextResponse.json(
+        { error: 'Post must be between 1 and 2000 characters' },
+        { status: 400 }
+      );
+    }
+
+    const sanitizedContext = context ? sanitizeInput(context) : undefined;
+    if (sanitizedContext && sanitizedContext.length > 500) {
+      return NextResponse.json(
+        { error: 'Context cannot exceed 500 characters' },
         { status: 400 }
       );
     }
@@ -47,7 +65,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const replies = await generateReplies(postToReply, context);
+    const replies = await generateReplies(sanitizedPost, sanitizedContext);
 
     // Track reply generation for usage limits
     await trackPostGeneration(session.user.id, replies[0], 'reply');
