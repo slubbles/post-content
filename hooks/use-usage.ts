@@ -23,6 +23,12 @@ export function useUsage() {
     try {
       const response = await fetch("/api/usage")
       
+      // If user is not authenticated, silently fail without logging errors
+      if (response.status === 401) {
+        setLoading(false)
+        return
+      }
+      
       if (!response.ok) {
         throw new Error("Failed to fetch usage data")
       }

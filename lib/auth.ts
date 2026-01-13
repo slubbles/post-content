@@ -77,6 +77,36 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      // For OAuth providers, check if user already exists
+      if (account?.provider === "google" || account?.provider === "twitter") {
+        if (!user.email) {
+          return false
+        }
+        
+        const existingUser = await prisma.user.findUnique({
+          where: { email: user.email }
+        })
+        
+        // If user exists, allow sign in (account linking is enabled)
+        if (existingUser) {
+          return true
+        }
+        
+        // Check if there's a pending user registration
+        const pendingUser = await prisma.pendingUser.findUnique({
+          where: { email: user.email }
+        })
+        
+        // If there's a pending registration, don't allow OAuth sign in
+        // User should complete email verification first
+        if (pendingUser) {
+          return "/verify-email?error=Please+verify+your+email+first"
+        }
+      }
+      
+      return true
+    },
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
