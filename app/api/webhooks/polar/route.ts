@@ -122,10 +122,11 @@ async function trackAffiliateConversion(userId: string, amount: number) {
   // Create affiliate referral record
   await prisma.affiliateReferral.create({
     data: {
-      affiliateLinkId: affiliateLink.id,
-      userId: userId,
+      affiliateCode: user.referredBy,
+      referredUserId: userId,
       status: 'completed',
       commission: commission,
+      convertedAt: new Date(),
     },
   })
   
@@ -134,7 +135,7 @@ async function trackAffiliateConversion(userId: string, amount: number) {
     where: { id: affiliateLink.id },
     data: {
       conversions: { increment: 1 },
-      totalEarnings: { increment: commission },
+      earnings: { increment: commission },
     },
   })
 }
