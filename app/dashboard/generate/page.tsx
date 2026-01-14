@@ -1,12 +1,9 @@
 import { PostGenerator } from "@/components/post-generator"
 import { HistorySection } from "@/components/history-section"
-import { OnboardingModal } from "@/components/onboarding-modal"
 
 export default function DashboardGeneratePage() {
   return (
     <div className="space-y-8 animate-fade-in">
-      <OnboardingModal />
-
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Generate Posts</h1>
         <p className="mt-2 text-muted-foreground">

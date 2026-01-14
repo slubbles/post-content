@@ -232,7 +232,7 @@ export function SettingsForm() {
           <div className="flex items-center gap-6">
             <div className="relative">
               <Avatar className="h-20 w-20">
-                <AvatarImage src={avatarUrl || "/placeholder.svg"} alt={name || "Profile"} />
+                <AvatarImage src={avatarUrl || undefined} alt={name || "Profile"} />
                 <AvatarFallback className="bg-primary/10 text-primary text-xl">{getUserInitials()}</AvatarFallback>
               </Avatar>
               <Button

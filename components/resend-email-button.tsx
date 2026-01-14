@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
@@ -10,6 +10,14 @@ export function ResendEmailButton() {
   const { data: session } = useSession()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
+  const [countdown, setCountdown] = useState(0)
+
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [countdown])
 
   const handleResend = async () => {
     if (!session?.user?.email) {
@@ -36,6 +44,7 @@ export function ResendEmailButton() {
           title: "Email sent!",
           description: data.message || "Check your inbox for the verification link.",
         })
+        setCountdown(60) // Start 1-minute countdown
       } else {
         toast({
           title: "Failed to send",
@@ -54,22 +63,28 @@ export function ResendEmailButton() {
     }
   }
 
+  const isDisabled = isLoading || countdown > 0
+
   return (
     <Button
       type="button"
       variant="outline"
       className="w-full bg-transparent"
       onClick={handleResend}
-      disabled={isLoading}
+      disabled={isDisabled}
     >
       {isLoading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           Sending...
         </>
+      ) : countdown > 0 ? (
+        `Resend in ${countdown}s`
       ) : (
         "Resend verification email"
       )}
+    </Button>
+  )
     </Button>
   )
 }

@@ -61,17 +61,21 @@ export function PricingCards() {
   const isAuthenticated = status === "authenticated" && !!session
 
   const handleSubscribe = async (planName: string) => {
-    if (!isAuthenticated && planName !== "Free") {
-      toast({
-        title: "Login required",
-        description: "Please sign in to upgrade your plan",
-      })
-      router.push("/login?callbackUrl=/pricing")
+    // Free plan - just redirect to signup
+    if (planName === "Free") {
+      window.location.href = "/signup"
       return
     }
 
-    if (planName === "Free") {
-      window.location.href = "/signup"
+    // Paid plans require authentication
+    if (!isAuthenticated) {
+      // Store plan selection for after login
+      sessionStorage.setItem('selectedPlan', planName.toLowerCase())
+      toast({
+        title: "Login required",
+        description: "Please sign in to select a plan",
+      })
+      router.push("/login?redirect=checkout")
       return
     }
 
@@ -93,10 +97,11 @@ export function PricingCards() {
       const data = await response.json()
       if (data.checkoutUrl) {
         toast({
-          title: "Redirecting to checkout",
-          description: "Please wait while we redirect you to secure payment...",
+          title: "Opening checkout",
+          description: "Checkout will open in a new tab",
         })
-        window.location.href = data.checkoutUrl
+        window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer')
+        setLoadingPlan(null)
       } else {
         throw new Error("No checkout URL received")
       }

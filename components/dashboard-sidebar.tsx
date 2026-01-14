@@ -142,7 +142,7 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-9 w-9 rounded-full p-0">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
+                <AvatarImage src={user?.image || undefined} alt={user?.name || "User"} />
                 <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
               </Avatar>
             </Button>
@@ -361,7 +361,7 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-10 w-full justify-center p-0">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
+                        <AvatarImage src={user?.image || undefined} alt={user?.name || "User"} />
                         <AvatarFallback className="bg-primary/10 text-primary text-xs">
                           {getUserInitials()}
                         </AvatarFallback>
@@ -375,7 +375,7 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-auto w-full justify-start gap-3 px-3 py-2">
                   <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
+                    <AvatarImage src={user?.image || undefined} alt={user?.name || "User"} />
                     <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start overflow-hidden">
