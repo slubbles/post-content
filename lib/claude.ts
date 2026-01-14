@@ -39,7 +39,15 @@ export async function generatePosts(options: GeneratePostOptions): Promise<strin
   const temperature = getTemperature(tone);
 
   const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
-  const userPrompt = `Generate 3 different ${platformName} posts about: "${input}"
+  const userPrompt = `Generate exactly 3 different ${platformName} posts about: "${input}"
+
+CRITICAL FORMATTING RULES:
+- Output ONLY the raw post text, no labels, no numbering, no markdown
+- No "Post 1:", "**Post**", or any prefixes
+- Each post on its own line, separated by a blank line
+- No quotes around the posts
+- No explanations or commentary
+- Just the pure post text ready to copy-paste
 
 Make each post unique and authentic. Vary the approach across the 3 posts.`;
 
