@@ -11,6 +11,8 @@ import { MessageSquare, Zap } from "lucide-react"
 import { GeneratedPosts } from "@/components/generated-posts"
 import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
+import { useUsage } from "@/hooks/use-usage"
+import { useToast } from "@/hooks/use-toast"
 
 const replyTones = [
   { value: "agree", label: "Agreeing" },
@@ -28,8 +30,10 @@ export function ReplyGenerator() {
   const [generatingProgress, setGeneratingProgress] = useState(0)
   const [generatedReplies, setGeneratedReplies] = useState<string[]>([])
 
-  const used = 45
-  const limit = 100
+  const { usage, refresh } = useUsage()
+  const { toast } = useToast()
+  const used = usage.used
+  const limit = usage.limit
 
   const maxPostChars = 500
   const maxContextChars = 300
@@ -72,9 +76,19 @@ export function ReplyGenerator() {
       clearInterval(progressInterval)
       setGeneratingProgress(100)
 
+      if (!response.ok) {
+        toast({
+          title: "Generation failed",
+          description: data.error || "Failed to generate replies",
+          variant: "destructive",
+        })
+        return
+      }
+
       if (data.replies) {
         setTimeout(() => {
           setGeneratedReplies(data.replies)
+          refresh() // Refresh usage count
         }, 200)
       }
     } catch (error) {

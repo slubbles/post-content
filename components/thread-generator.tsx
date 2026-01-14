@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useUsage } from "@/hooks/use-usage"
+import { useToast } from "@/hooks/use-toast"
 
 export function ThreadGenerator() {
   const [topic, setTopic] = useState("")
@@ -26,8 +28,10 @@ export function ThreadGenerator() {
   const [offer, setOffer] = useState("")
   const [contentType, setContentType] = useState<"thread" | "video-script">("thread")
 
-  const used = 45
-  const limit = 100
+  const { usage, refresh } = useUsage()
+  const { toast } = useToast()
+  const used = usage.used
+  const limit = usage.limit
 
   const maxTopicChars = 500
   const maxKeyPointsChars = 800
@@ -93,9 +97,19 @@ export function ThreadGenerator() {
       clearInterval(progressInterval)
       setGeneratingProgress(100)
 
+      if (!response.ok) {
+        toast({
+          title: "Generation failed",
+          description: data.error || "Failed to generate thread",
+          variant: "destructive",
+        })
+        return
+      }
+
       if (data.thread) {
         setTimeout(() => {
           setGeneratedThread(data.thread)
+          refresh() // Refresh usage count
         }, 200)
       }
     } catch (error) {
