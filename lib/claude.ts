@@ -102,7 +102,7 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
     posts.forEach(post => {
       const validation = validateContent(post, platform);
       if (!validation.valid) {
-        console.warn('Post validation warning:', validation.error);
+        console.warn('Post validation warning:', validation.warnings.join(', '));
       }
     });
 

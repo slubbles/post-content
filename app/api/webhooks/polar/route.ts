@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const body = await request.json()
     
     // Verify webhook signature (add Polar webhook secret validation here)
-    const headersList = headers()
+    const headersList = await headers()
     const signature = headersList.get("polar-signature")
     
     // TODO: Verify signature with POLAR_WEBHOOK_SECRET
@@ -82,6 +82,18 @@ async function handleSubscriptionActive(data: any) {
   
   // Track affiliate conversion
   await trackAffiliateConversion(user.id, data.amount || 0)
+}
+
+async function handleSubscriptionCanceled(data: any) {
+  const { customer_email, subscription_id } = data
+  
+  await prisma.user.update({
+    where: { email: customer_email },
+    data: {
+      subscriptionStatus: "cancelled",
+      // Keep subscribed=true until period ends
+    },
+  })
 }
 
 async function trackAffiliateConversion(userId: string, amount: number) {
