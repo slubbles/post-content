@@ -17,10 +17,10 @@ const docCategories = [
     description: "Learn the basics of PostContent and get up and running quickly.",
     icon: BookOpen,
     links: [
-      { label: "Quick Start Guide", href: "#" },
-      { label: "Creating Your First Post", href: "#" },
-      { label: "Understanding Credits", href: "#" },
-      { label: "Account Setup", href: "#" },
+      { label: "Quick Start Guide", href: "/docs/quick-start" },
+      { label: "Understanding Pricing", href: "/docs/pricing-plans" },
+      { label: "Account Setup", href: "/docs/quick-start#step-1-create-your-account" },
+      { label: "Credits System", href: "/docs/pricing-plans#whats-a-generation" },
     ],
   },
   {
@@ -28,10 +28,10 @@ const docCategories = [
     description: "Deep dive into all the powerful features PostContent offers.",
     icon: Video,
     links: [
-      { label: "Post Generator", href: "#" },
-      { label: "Reply Generator", href: "#" },
-      { label: "Thread Builder", href: "#" },
-      { label: "AI Training", href: "#" },
+      { label: "Post Generator", href: "/docs/post-generator" },
+      { label: "Reply Generator", href: "/dashboard/reply" },
+      { label: "Thread Builder", href: "/dashboard/thread" },
+      { label: "AI Voice Training", href: "/docs/voice-training" },
     ],
   },
   {

@@ -145,7 +145,7 @@ export function PostGenerator() {
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-6">
       <ConfettiCelebration trigger={showConfetti} />
 
       {apiError && (
@@ -167,73 +167,76 @@ export function PostGenerator() {
       )}
 
       <Card className="transition-shadow hover:shadow-md">
-        <CardHeader className="space-y-1 sm:space-y-2 pb-4 sm:pb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-            <div className="flex-1 min-w-0">
-              <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
-                <span className="truncate">Generate Posts</span>
+        <CardHeader className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+            <div className="flex-1">
+              <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
+                <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                Generate Posts
               </CardTitle>
-              <CardDescription className="text-xs sm:text-sm mt-1">
+              <CardDescription className="mt-1.5 text-sm sm:text-base">
                 Tell us what you want to post about. We'll make it sound good.
               </CardDescription>
             </div>
-            <Link href="/pricing">
-              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2 sm:px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted cursor-pointer flex-shrink-0 touch-target">
-                <Zap className="h-3 w-3 flex-shrink-0" />
-                <span className="font-medium tabular-nums whitespace-nowrap">
+            <Link href="/pricing" className="shrink-0">
+              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-muted cursor-pointer touch-target">
+                <Zap className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="font-medium tabular-nums">
                   {used}/{limit}
                 </span>
               </div>
             </Link>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="topic" className="text-sm sm:text-base">
-                Topic or Message
-              </Label>
-              <span
-                className={cn(
-                  "text-xs font-medium transition-colors tabular-nums",
-                  isOverLimit && "text-destructive",
-                  isNearLimit && !isOverLimit && "text-amber-600",
-                  !isNearLimit && "text-muted-foreground",
-                )}
-              >
-                {charCount}/{maxChars}
-              </span>
+
+          <div className="block sm:hidden">
+            <p className="text-xs text-muted-foreground mb-2">Try these:</p>
+            <div className="flex flex-wrap gap-2">
+              {examplePrompts.slice(0, 3).map((prompt, i) => (
+                <button
+                  key={i}
+                  onClick={() => setTopic(prompt)}
+                  className="text-xs px-2 py-1 rounded-md bg-muted/50 text-muted-foreground hover:bg-muted transition-colors"
+                >
+                  {prompt}
+                </button>
+              ))}
             </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="topic" className="text-sm sm:text-base">
+              Topic or Message
+            </Label>
             <Textarea
               id="topic"
               placeholder="e.g. 'Launching my new product next week' or 'Just learned something cool about AI'"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              rows={4}
               className={cn(
-                "resize-none transition-all duration-200 focus:ring-2 text-sm sm:text-base",
-                isOverLimit && "border-destructive focus:ring-destructive",
+                "min-h-[100px] sm:min-h-[120px] resize-none text-sm sm:text-base",
+                isOverLimit && "border-destructive focus-visible:ring-destructive",
               )}
+              disabled={isGenerating}
             />
-            {!topic && (
-              <div className="space-y-2">
-                <p className="text-xs text-muted-foreground">Need inspiration? Try one of these:</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {examplePrompts.map((prompt, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className="text-xs h-7 bg-transparent hover:bg-primary/5 hover:border-primary/30"
-                      onClick={() => setTopic(prompt)}
-                    >
-                      {prompt}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )}
+            <div className="flex items-center justify-between text-xs">
+              <p className="text-muted-foreground hidden sm:block">
+                The more specific you are, the better your posts will be.
+              </p>
+              <span
+                className={cn(
+                  "tabular-nums transition-colors",
+                  isOverLimit
+                    ? "text-destructive font-medium"
+                    : isNearLimit
+                      ? "text-orange-500"
+                      : "text-muted-foreground",
+                )}
+              >
+                {charCount}/{maxChars}
+              </span>
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -244,12 +247,13 @@ export function PostGenerator() {
                   key={p.value}
                   type="button"
                   variant={platform === p.value ? "default" : "outline"}
-                  onClick={() => setPlatform(p.value)}
-                  className="transition-all hover:scale-105 text-xs sm:text-sm touch-target flex-shrink-0"
                   size="sm"
+                  onClick={() => setPlatform(p.value)}
+                  disabled={isGenerating}
+                  className={cn("touch-target text-xs sm:text-sm", platform === p.value && "shadow-sm")}
                 >
-                  <span className="hidden sm:inline">{p.label}</span>
                   <span className="sm:hidden">{p.shortLabel}</span>
+                  <span className="hidden sm:inline">{p.label}</span>
                 </Button>
               ))}
             </div>
@@ -263,9 +267,10 @@ export function PostGenerator() {
                   key={t.value}
                   type="button"
                   variant={tone === t.value ? "default" : "outline"}
-                  onClick={() => setTone(t.value)}
-                  className="transition-all hover:scale-105 text-xs sm:text-sm touch-target flex-shrink-0"
                   size="sm"
+                  onClick={() => setTone(t.value)}
+                  disabled={isGenerating}
+                  className={cn("touch-target text-xs sm:text-sm", tone === t.value && "shadow-sm")}
                 >
                   {t.label}
                 </Button>

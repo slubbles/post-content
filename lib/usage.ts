@@ -19,13 +19,31 @@ export async function getUserPostCount(userId: string) {
 }
 
 export async function trackPostGeneration(userId: string, content: string, type: string = 'generate') {
-  return await prisma.post.create({
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { subscribed: true, subscriptionStatus: true, credits: true },
+  });
+
+  // Create post record
+  const post = await prisma.post.create({
     data: {
       userId,
       content,
       type,
     },
   });
+
+  // Deduct credit if user has credits and is not subscribed
+  if (user && user.credits > 0 && !(user.subscribed && user.subscriptionStatus === 'active')) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        credits: { decrement: 1 },
+      },
+    });
+  }
+
+  return post;
 }
 
 export async function getUserUsage(userId: string) {
@@ -46,6 +64,11 @@ export async function canUserGeneratePost(userId: string) {
   
   // Pro users have unlimited access
   if (user?.subscribed && user?.subscriptionStatus === 'active') {
+    return true;
+  }
+  
+  // Check if user has credits
+  if (user && user.credits > 0) {
     return true;
   }
   

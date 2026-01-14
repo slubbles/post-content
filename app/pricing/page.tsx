@@ -40,8 +40,9 @@ export default async function PricingPage() {
               <AccordionItem value="item-1">
                 <AccordionTrigger className="text-left">What counts as a generation?</AccordionTrigger>
                 <AccordionContent>
-                  One click = one credit. Simple. Want 5 different variants? Still one credit. We're not here to nickel
-                  and dime you. We want you to experiment, find what resonates, and grow your audience faster.
+                  One click = one generation = one credit used. Each generation automatically gives you multiple
+                  variants to choose from (3 on Free, 5 on Pro, unlimited on Enterprise). Think of it as: you pay once,
+                  we give you multiple options. Pick the best one, or regenerate if you want different takes.
                 </AccordionContent>
               </AccordionItem>
 

@@ -58,7 +58,11 @@ export async function POST(request: Request) {
         // Continue anyway - don't reveal email sending failures
       }
     } else {
-      // No email service configured - silent fallback
+      // No email service configured - log in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('⚠️  RESEND_API_KEY not configured')
+        console.log(`🔑 Password reset URL: ${resetUrl}`)
+      }
     }
 
     return NextResponse.json({

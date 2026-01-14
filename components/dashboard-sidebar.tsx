@@ -382,7 +382,7 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
                     <span className="text-sm font-medium text-sidebar-foreground truncate w-full">
                       {user?.name || "User"}
                     </span>
-                    <span className="text-xs text-muted-foreground">{user?.plan || "Free"} Plan</span>
+                    <span className="text-xs text-muted-foreground">{getPlanBadge()}</span>
                   </div>
                 </Button>
               </DropdownMenuTrigger>

@@ -4,10 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Loader2 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
 
 const plans = [
   {
@@ -54,28 +53,39 @@ const plans = [
 
 export function PricingCards() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-  const { data: session, status } = useSession()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
 
-  const isAuthenticated = status === "authenticated" && !!session
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me")
+        setIsAuthenticated(response.ok)
+      } catch {
+        setIsAuthenticated(false)
+      }
+    }
+    checkAuth()
+  }, [])
 
   const handleSubscribe = async (planName: string) => {
-    // Free plan - just redirect to signup
+    if (!isAuthenticated && planName !== "Free") {
+      toast({
+        title: "Login required",
+        description: "Please sign in to upgrade your plan",
+      })
+      router.push("/login")
+      return
+    }
+
     if (planName === "Free") {
       window.location.href = "/signup"
       return
     }
 
-    // Paid plans require authentication
-    if (!isAuthenticated) {
-      // Store plan selection for after login
-      sessionStorage.setItem('selectedPlan', planName.toLowerCase())
-      toast({
-        title: "Login required",
-        description: "Please sign in to select a plan",
-      })
-      router.push("/login?redirect=checkout")
+    if (planName === "Enterprise") {
+      window.location.href = "mailto:sales@postcontent.io"
       return
     }
 
@@ -97,11 +107,10 @@ export function PricingCards() {
       const data = await response.json()
       if (data.checkoutUrl) {
         toast({
-          title: "Opening checkout",
-          description: "Checkout will open in a new tab",
+          title: "Redirecting to checkout",
+          description: "Please wait while we redirect you to secure payment...",
         })
-        window.open(data.checkoutUrl, '_blank', 'noopener,noreferrer')
-        setLoadingPlan(null)
+        window.location.href = data.checkoutUrl
       } else {
         throw new Error("No checkout URL received")
       }

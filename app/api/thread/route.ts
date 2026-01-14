@@ -90,11 +90,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate thread using Grok API with sanitized parameters
+    // Generate thread using Claude API with sanitized parameters
     const tweets = await generateThread(sanitizedTopic, sanitizedKeyPoints, validThreadLength);
 
-    // Track thread generation for usage limits (count as 1 post, not per tweet)
-    await trackPostGeneration(session.user.id, sanitizedTopic, 'thread');
+    // Track thread generation for usage limits (save full thread as JSON string)
+    await trackPostGeneration(session.user.id, JSON.stringify(tweets), 'thread');
 
     return NextResponse.json({ thread: tweets, tweets });
   } catch (error) {

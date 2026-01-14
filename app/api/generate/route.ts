@@ -98,8 +98,8 @@ export async function POST(request: NextRequest) {
       userVoice 
     });
 
-    // Track post generation for usage limits
-    await trackPostGeneration(session.user.id, posts[0], 'generate');
+    // Track post generation for usage limits (save all posts as JSON string)
+    await trackPostGeneration(session.user.id, JSON.stringify(posts), 'generate');
 
     return NextResponse.json({ posts }, { headers: corsHeaders });
   } catch (error) {

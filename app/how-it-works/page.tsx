@@ -88,22 +88,16 @@ export default function HowItWorksPage() {
       <AppNavigation isAuthenticated={false} />
 
       {/* Hero Section */}
-      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-16 lg:py-24">
+      <section className="mobile-safe-padding mx-auto max-w-4xl py-12 sm:py-16 lg:py-24">
         <div className="text-center">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5">
-            <Zap className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Simple. Fast. Authentic.</span>
-          </div>
-          <h1 className="text-balance text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-            From idea to published post
+          <h1 className="text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl mb-6">
+            Stop spending 3 hours writing.
             <br />
-            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              in under 60 seconds
-            </span>
+            <span className="text-primary">Start spending 30 seconds.</span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-            No complicated setup. No learning curve. Just type your idea, pick your platform, and get content that
-            sounds like you wrote it.
+          <p className="mx-auto max-w-2xl text-lg sm:text-xl text-muted-foreground leading-relaxed">
+            You're not bad at content. You're drowning in it. Every platform wants daily posts. You have a business to
+            run. PostContent gives you your time back.
           </p>
         </div>
       </section>
@@ -111,8 +105,14 @@ export default function HowItWorksPage() {
       {/* 4-Step Process */}
       <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-16">
         <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">How It Works</h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">Four simple steps. No complexity. Just results.</p>
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5">
+            <Zap className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium text-primary">4 steps. 60 seconds. Done.</span>
+          </div>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">How it works</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            No complicated setup. No learning curve. Just results.
+          </p>
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
@@ -141,9 +141,9 @@ export default function HowItWorksPage() {
       {/* Features Deep Dive */}
       <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-16 lg:py-20">
         <div className="text-center mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4">Four Powerful Tools</h2>
-          <p className="text-muted-foreground max-w-xl mx-auto">
-            Each tool is built for a specific content need. Use them together to dominate every platform.
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Four tools. One goal: keep you visible.</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            Each tool solves a specific problem. Use them together to dominate every platform.
           </p>
         </div>
 
@@ -171,7 +171,7 @@ export default function HowItWorksPage() {
                     </ul>
                     <Link href="/login">
                       <Button variant="outline" size="sm" className="group/btn bg-transparent">
-                        Try {feature.title.split(" ")[0]}
+                        Try it now
                         <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                       </Button>
                     </Link>
@@ -184,18 +184,19 @@ export default function HowItWorksPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="mobile-safe-padding mx-auto max-w-7xl py-12 sm:py-16 lg:py-20">
-        <Card className="relative overflow-hidden border-primary/20 bg-gradient-to-br from-primary/5 via-background to-primary/10">
+      <section className="mobile-safe-padding mx-auto max-w-4xl py-12 sm:py-16 lg:py-20">
+        <Card className="relative overflow-hidden border-2 border-primary/30 bg-gradient-to-br from-primary/10 via-background to-primary/5">
           <CardContent className="p-8 sm:p-12 lg:p-16 text-center">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-4">
-              Ready to create a week of content
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Your competitors posted 3 times
               <br />
-              <span className="text-primary">in 30 minutes?</span>
+              <span className="text-primary">while you were reading this.</span>
             </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto mb-8">
-              Join 10,000+ creators who stopped stressing about content and started showing up consistently.
+            <p className="text-muted-foreground max-w-xl mx-auto mb-8 text-lg">
+              Every day you wait is another day they engage your audience. Join 10,000+ creators who stopped
+              overthinking and started showing up.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4">
               <Link href="/signup">
                 <Button size="lg" className="rounded-full px-8">
                   <Sparkles className="mr-2 h-5 w-5" />
@@ -203,12 +204,12 @@ export default function HowItWorksPage() {
                 </Button>
               </Link>
               <Link href="/pricing">
-                <Button variant="outline" size="lg" className="rounded-full px-8 bg-transparent">
+                <Button variant="outline" size="lg" className="rounded-full px-8 bg-transparent border-2">
                   View Pricing
                 </Button>
               </Link>
             </div>
-            <p className="mt-4 text-sm text-muted-foreground">No credit card required. 10 free posts to start.</p>
+            <p className="text-sm text-muted-foreground">10 free posts to start • No credit card • Takes 60 seconds</p>
           </CardContent>
         </Card>
       </section>

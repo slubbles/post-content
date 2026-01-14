@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
 
     const replies = await generateReplies(sanitizedPost, sanitizedContext);
 
-    // Track reply generation for usage limits
-    await trackPostGeneration(session.user.id, replies[0], 'reply');
+    // Track reply generation for usage limits (save first reply text)
+    await trackPostGeneration(session.user.id, replies[0].text, 'reply');
 
     return NextResponse.json({ replies });
   } catch (error) {

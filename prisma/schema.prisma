@@ -13,6 +13,9 @@ model User {
   email              String?       @unique
   emailVerified      DateTime?
   image              String?
+  role               String        @default("user") // "user", "admin"
+  credits            Int           @default(0)
+  referredBy         String?       // Affiliate code used during signup
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   subscribed         Boolean       @default(false)
@@ -86,6 +89,18 @@ model Feedback {
   @@index([createdAt])
 }
 
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@index([createdAt])
+}
+
 model PasswordResetToken {
   identifier String
   token      String   @unique
@@ -95,13 +110,14 @@ model PasswordResetToken {
 }
 
 model PendingUser {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-  token     String   @unique
-  expires   DateTime
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  name       String
+  email      String   @unique
+  password   String
+  token      String   @unique
+  expires    DateTime
+  referredBy String?  // Affiliate code
+  createdAt  DateTime @default(now())
 }
 
 model VoiceProfile {
@@ -115,4 +131,45 @@ model VoiceProfile {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AffiliateLink {
+  id            String   @id @default(cuid())
+  userId        String
+  code          String   @unique
+  clicks        Int      @default(0)
+  conversions   Int      @default(0)
+  earnings      Float    @default(0)
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([code])
+}
+
+model AffiliateReferral {
+  id              String   @id @default(cuid())
+  affiliateCode   String
+  referredUserId  String
+  status          String   // "pending", "converted", "paid"
+  subscriptionId  String?
+  commission      Float    @default(0)
+  createdAt       DateTime @default(now())
+  convertedAt     DateTime?
+
+  @@index([affiliateCode])
+  @@index([referredUserId])
+  @@index([status])
+}
+
+model CreditPurchase {
+  id              String   @id @default(cuid())
+  userId          String
+  amount          Float    // Price paid
+  credits         Int      // Credits received
+  transactionId   String?  // Polar/Stripe transaction ID
+  status          String   // "pending", "completed", "failed"
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+  @@index([status])
 }

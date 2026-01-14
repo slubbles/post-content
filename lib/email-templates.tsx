@@ -243,3 +243,76 @@ export function renderPasswordResetEmail(props: PasswordResetEmailProps): string
 </html>
   `.trim()
 }
+
+// Welcome Email Interface
+interface WelcomeEmailProps {
+  name: string
+  dashboardUrl: string
+}
+
+// Welcome Email HTML Renderer
+export function renderWelcomeEmail(props: WelcomeEmailProps): string {
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to PostContent</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #ffffff;">
+  <div style="font-family: system-ui, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px 20px;">
+    <div style="text-align: center; margin-bottom: 40px;">
+      <h1 style="color: #000; font-size: 24px; font-weight: bold; margin: 0;">PostContent</h1>
+    </div>
+    
+    <div style="background-color: #f9fafb; border-radius: 12px; padding: 32px; margin-bottom: 24px;">
+      <h2 style="color: #000; font-size: 20px; font-weight: 600; margin-top: 0; margin-bottom: 16px;">
+        Welcome to PostContent, ${props.name}! 🎉
+      </h2>
+      
+      <p style="color: #6b7280; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0;">
+        We're thrilled to have you on board! Your account is now verified and ready to use.
+      </p>
+      
+      <p style="color: #6b7280; font-size: 16px; line-height: 1.6; margin: 0 0 24px 0;">
+        PostContent helps you generate engaging social media content in seconds using AI. Whether you need posts, replies, or threads, we've got you covered.
+      </p>
+      
+      <div style="background-color: #fff; border-radius: 8px; padding: 20px; margin: 24px 0;">
+        <h3 style="color: #000; font-size: 16px; font-weight: 600; margin: 0 0 12px 0;">
+          Quick Start Guide:
+        </h3>
+        <ul style="color: #6b7280; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
+          <li>Generate posts for any topic or idea</li>
+          <li>Create engaging replies to tweets</li>
+          <li>Build full threads with multiple posts</li>
+          <li>Train your voice profile for personalized content</li>
+        </ul>
+      </div>
+      
+      <div style="text-align: center; margin: 32px 0;">
+        <a
+          href="${props.dashboardUrl}"
+          style="display: inline-block; background-color: #000; color: #fff; padding: 14px 32px; border-radius: 9999px; text-decoration: none; font-size: 16px; font-weight: 600;"
+        >
+          Get Started
+        </a>
+      </div>
+      
+      <p style="color: #9ca3af; font-size: 14px; line-height: 1.5; margin: 24px 0 0 0; text-align: center;">
+        Need help? Check out our <a href="${process.env.NEXTAUTH_URL}/faq" style="color: #6b7280; text-decoration: underline;">FAQ</a> or <a href="${process.env.NEXTAUTH_URL}/contact" style="color: #6b7280; text-decoration: underline;">contact support</a>.
+      </p>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px; padding-top: 24px; border-top: 1px solid #e5e7eb;">
+      <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+        © ${new Date().getFullYear()} PostContent. All rights reserved.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+  `.trim()
+}
+

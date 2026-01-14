@@ -39,7 +39,7 @@ const faqs = [
   {
     question: "What platforms do you support?",
     answer:
-      "PostContent supports multiple social media platforms including X/Twitter, LinkedIn, Instagram, Facebook, and Threads. Generate platform-optimized content for each network with just a few clicks.",
+      "PostContent supports Twitter/X, LinkedIn, Instagram, Facebook, and Threads. Each platform gets content optimized for its specific format, character limits, and best practices. Generate once, post everywhere.",
   },
   {
     question: "Is there a free trial?",
@@ -47,14 +47,9 @@ const faqs = [
       "Yes! Every new account starts with a free plan that includes 10 credits per month. You can upgrade to a paid plan at any time to get more credits and advanced features.",
   },
   {
-    question: "How is PostContent different from ChatGPT?",
+    question: "What is your refund policy?",
     answer:
-      "While ChatGPT is a general-purpose AI, PostContent is specifically trained for social media content. Our AI understands platform best practices, character limits, engagement patterns, and can learn your unique writing style to create posts that sound authentically you.",
-  },
-  {
-    question: "Can I get a refund?",
-    answer:
-      "We offer a 30-day money-back guarantee for all paid plans. If you're not satisfied with PostContent, contact our support team within 30 days of your purchase for a full refund.",
+      "We offer a 30-day money-back guarantee for all paid plans. If you're not satisfied with PostContent for any reason, contact our support team within 30 days of your purchase for a full refund—no questions asked. Refunds are processed within 5-7 business days.",
   },
   {
     question: "Do you offer team or agency plans?",

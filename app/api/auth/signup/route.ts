@@ -59,7 +59,12 @@ export async function POST(request: Request) {
     const token = crypto.randomBytes(32).toString("hex")
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
 
-    // Store pending user registration
+    // Get affiliate code from cookie if present
+    const cookieHeader = request.headers.get('cookie') || ''
+    const affiliateMatch = cookieHeader.match(/affiliate_ref=([^;]+)/)
+    const referredBy = affiliateMatch ? affiliateMatch[1] : null
+
+    // Store pending user registration with referral
     await prisma.pendingUser.create({
       data: {
         name,
@@ -67,6 +72,7 @@ export async function POST(request: Request) {
         password: hashedPassword,
         token,
         expires,
+        referredBy,
       },
     })
 
