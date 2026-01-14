@@ -85,6 +85,4 @@ export function ResendEmailButton() {
       )}
     </Button>
   )
-    </Button>
-  )
 }
