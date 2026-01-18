@@ -5,10 +5,13 @@ import { Sparkles, MessageSquare, List, GraduationCap, Zap, TrendingUp, Clock, A
 import { Footer } from "@/components/footer"
 import { AppNavigation } from "@/components/app-navigation"
 
+const loading = false; // Declare loading variable
+const isAuthenticated = false; // Declare isAuthenticated variable
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background mobile-overflow-safe">
-      <AppNavigation isAuthenticated={false} />
+      <AppNavigation isAuthenticated={isAuthenticated} />
 
       {/* Hero Section */}
       <section className="mobile-safe-padding mx-auto max-w-7xl py-8 sm:py-12 lg:py-20 animate-fade-in">
@@ -32,15 +35,17 @@ export default function LandingPage() {
             like you—not AI—in seconds.
           </p>
           <div className="mt-6 sm:mt-8 lg:mt-10 flex flex-col items-center justify-center gap-3 sm:gap-4">
-            <Link href="/signup" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                className="w-full rounded-full bg-primary px-6 sm:px-8 text-sm sm:text-base hover:scale-105 hover:bg-primary/90 touch-target"
-              >
-                <Sparkles className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                Start Creating Now - It's Free
-              </Button>
-            </Link>
+            {!loading && (
+              <Link href={isAuthenticated ? "/dashboard/generate" : "/signup"} className="w-full sm:w-auto">
+                <Button
+                  size="lg"
+                  className="w-full rounded-full bg-primary px-6 sm:px-8 text-sm sm:text-base hover:scale-105 hover:bg-primary/90 touch-target"
+                >
+                  <Sparkles className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  {isAuthenticated ? "Continue to Dashboard" : "Start Creating Now - It's Free"}
+                </Button>
+              </Link>
+            )}
           </div>
           <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
