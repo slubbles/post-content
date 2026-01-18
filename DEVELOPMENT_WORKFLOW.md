@@ -1,6 +1,6 @@
 # Development Workflow & Current Context
 
-**Last Updated:** January 13, 2026  
+**Last Updated:** January 18, 2026  
 **Project:** PostContent - AI Content Generator for Social Media  
 **Repository:** https://github.com/slubbles/post-content
 
@@ -76,11 +76,41 @@ git push origin main
 - **Language:** TypeScript
 - **Database:** PostgreSQL (Neon) + Prisma ORM
 - **Auth:** NextAuth v5 (Google OAuth, Twitter OAuth)
-- **AI:** Grok-4-Fast-Reasoning via XAI API
+- **AI:** Claude Sonnet 4 via Anthropic API (ANTHROPIC_API_KEY)
 - **Styling:** Tailwind CSS + shadcn/ui
 - **Deployment:** Vercel (planned)
 
 ### Recent Completed Work
+
+#### ✅ AI Provider Migration (Jan 18, 2026)
+- **CRITICAL:** Switched from Grok (XAI_API_KEY) to Claude (ANTHROPIC_API_KEY)
+- Updated all API routes: /generate, /reply, /thread, /train
+- All routes now use `lib/claude.ts` instead of `lib/grok.ts`
+- Model: `claude-sonnet-4-20250514` with prompt caching
+- lib/grok.ts is now DEPRECATED - do not use
+- Environment variable: `ANTHROPIC_API_KEY` (required in production)
+
+#### ✅ Session & Auth Improvements (Jan 18, 2026)
+- Fixed user profile not updating from signup
+- Enhanced JWT callback to fetch full user data from database
+- Session now includes: subscribed, subscriptionStatus, subscriptionId, subscriptionEndsAt
+- Session refreshes on every request to keep data current
+- Added TypeScript types in types/next-auth.d.ts
+- Commit: `2454706`
+
+#### ✅ New Features (Jan 18, 2026)
+- Caption Generator: `/api/caption` for Facebook/LinkedIn captions
+- Video Script Generator: `/api/video-script` for Hook-Story-Offer scripts
+- Both features use Claude Sonnet 4 with prompt caching
+- Frontend components provided by v0
+
+#### ✅ V0 UI Merges (Jan 18, 2026)
+- **Latest merge:** Commit `f612d86`, `d5c9e78`
+- Added caption-generator.tsx component
+- Added video-script-generator.tsx component
+- Updated dashboard-sidebar.tsx (fixed Image import)
+- Added contact/success page
+- Updated logo-icon.svg
 
 #### ✅ Authentication System (100% Complete)
 - Forgot password flow (email reset, 1-hour token expiry)
@@ -90,13 +120,6 @@ git push origin main
 - Email verification enforcement (middleware protection)
 - Database migrations: PasswordResetToken, PendingUser tables
 - Commits: `abfe805`, `e7a6ad9`
-
-#### ✅ V0 UI Merges
-- **Latest merge:** `4f75a5c` (Jan 12, 2026)
-- Hero headline update: "A week of posts ready before you finish scrolling 'for inspiration.'"
-- Updated navigation, sidebar, login/signup pages
-- Added new logo.svg
-- Previous merge: `dcb2316` (time-saving angle messaging)
 
 ### Build Status
 - **Routes:** 47 total
