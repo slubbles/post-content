@@ -163,7 +163,7 @@ export function AppNavigation({ isAuthenticated: propIsAuthenticated, user: prop
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-full touch-target">
                       <Avatar className="h-9 w-9 sm:h-10 sm:w-10 transition-transform hover:scale-105">
-                        <AvatarImage src={user?.image || undefined} alt={user?.name || "User"} />
+                        <AvatarImage src={user?.image || "/placeholder.svg"} alt={user?.name || "User"} />
                         <AvatarFallback className="bg-primary/10 text-primary">{getUserInitials()}</AvatarFallback>
                       </Avatar>
                     </Button>

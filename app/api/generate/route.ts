@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generatePosts } from '@/lib/claude';
+import { generatePosts } from '@/lib/grok';
 import { auth } from '@/lib/auth';
 import { canUserGeneratePost, trackPostGeneration } from '@/lib/usage';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
@@ -98,8 +98,8 @@ export async function POST(request: NextRequest) {
       userVoice 
     });
 
-    // Track post generation for usage limits (save all posts as JSON string)
-    await trackPostGeneration(session.user.id, JSON.stringify(posts), 'generate');
+    // Track post generation for usage limits
+    await trackPostGeneration(session.user.id, posts[0], 'generate');
 
     return NextResponse.json({ posts }, { headers: corsHeaders });
   } catch (error) {

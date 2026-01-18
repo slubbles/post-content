@@ -31,9 +31,9 @@ export function ReplyGenerator() {
   const [generatedReplies, setGeneratedReplies] = useState<string[]>([])
 
   const { usage, refresh } = useUsage()
-  const { toast } = useToast()
   const used = usage.used
   const limit = usage.limit
+  const { toast } = useToast()
 
   const maxPostChars = 500
   const maxContextChars = 300
@@ -66,7 +66,7 @@ export function ReplyGenerator() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          originalPost,
+          postToReply: originalPost,
           context,
           replyTone,
         }),
@@ -79,7 +79,7 @@ export function ReplyGenerator() {
       if (!response.ok) {
         toast({
           title: "Generation failed",
-          description: data.error || "Failed to generate replies",
+          description: data.error || "Failed to generate replies. Please try again.",
           variant: "destructive",
         })
         return
@@ -88,7 +88,7 @@ export function ReplyGenerator() {
       if (data.replies) {
         setTimeout(() => {
           setGeneratedReplies(data.replies)
-          refresh() // Refresh usage count
+          refresh() // Update credits after generation
         }, 200)
       }
     } catch (error) {
@@ -105,20 +105,18 @@ export function ReplyGenerator() {
   return (
     <div className="space-y-6">
       <Card className="transition-shadow hover:shadow-md">
-        <CardHeader className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-            <div className="flex-1">
-              <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
-                <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-primary" />
                 Smart Reply Generator
               </CardTitle>
-              <CardDescription className="mt-1.5 text-sm sm:text-base">
-                Craft thoughtful replies that add value to the conversation
-              </CardDescription>
+              <CardDescription>Drop the post you're replying to, we'll craft the perfect response</CardDescription>
             </div>
-            <Link href="/pricing" className="shrink-0">
-              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-3 py-2 text-xs sm:text-sm text-muted-foreground transition-colors hover:bg-muted cursor-pointer touch-target">
-                <Zap className="h-3 w-3 sm:h-4 sm:w-4" />
+            <Link href="/pricing">
+              <div className="flex items-center gap-1.5 rounded-md border border-border bg-muted/30 px-2 py-1 text-xs text-muted-foreground transition-colors hover:bg-muted cursor-pointer">
+                <Zap className="h-3 w-3" />
                 <span className="font-medium tabular-nums">
                   {used}/{limit}
                 </span>
@@ -126,56 +124,37 @@ export function ReplyGenerator() {
             </Link>
           </div>
         </CardHeader>
-
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="original-post" className="text-sm sm:text-base">
-              Original Post
-            </Label>
-            <Textarea
-              id="original-post"
-              placeholder="Paste the post you want to reply to..."
-              value={originalPost}
-              onChange={(e) => setOriginalPost(e.target.value)}
-              className={cn(
-                "min-h-[100px] sm:min-h-[120px] resize-none text-sm sm:text-base",
-                isPostOverLimit && "border-destructive focus-visible:ring-destructive",
-              )}
-              disabled={isGenerating}
-            />
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="originalPost">Original Post</Label>
               <span
                 className={cn(
-                  "text-xs tabular-nums transition-colors",
-                  isPostOverLimit
-                    ? "text-destructive font-medium"
-                    : isPostNearLimit
-                      ? "text-orange-500"
-                      : "text-muted-foreground",
+                  "text-xs font-medium transition-colors",
+                  isPostOverLimit && "text-destructive",
+                  isPostNearLimit && !isPostOverLimit && "text-amber-600",
+                  !isPostNearLimit && "text-muted-foreground",
                 )}
               >
                 {postLength}/{maxPostChars}
               </span>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-sm sm:text-base">Reply Style</Label>
-            <div className="flex flex-wrap gap-2">
-              {replyTones.map((t) => (
-                <Button
-                  key={t.value}
-                  type="button"
-                  variant={replyTone === t.value ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setReplyTone(t.value)}
-                  disabled={isGenerating}
-                  className={cn("touch-target text-xs sm:text-sm", replyTone === t.value && "shadow-sm")}
-                >
-                  {t.label}
-                </Button>
-              ))}
-            </div>
+            <Textarea
+              id="originalPost"
+              placeholder="Paste the post you're replying to here..."
+              value={originalPost}
+              onChange={(e) => setOriginalPost(e.target.value)}
+              rows={4}
+              className={cn(
+                "resize-none transition-all focus:ring-2 focus:ring-primary/20",
+                isPostOverLimit && "border-destructive focus:ring-destructive",
+              )}
+            />
+            {isPostOverLimit && (
+              <p className="text-xs text-destructive">
+                Post is too long. Please keep it under {maxPostChars} characters.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -205,10 +184,27 @@ export function ReplyGenerator() {
             />
           </div>
           <div className="space-y-2">
+            <Label className="text-sm sm:text-base">Reply Vibe</Label>
+            <div className="flex flex-wrap gap-2">
+              {replyTones.map((t) => (
+                <Button
+                  key={t.value}
+                  type="button"
+                  variant={replyTone === t.value ? "default" : "outline"}
+                  onClick={() => setReplyTone(t.value)}
+                  className="transition-all hover:scale-105 text-xs sm:text-sm touch-target flex-shrink-0"
+                  size="sm"
+                >
+                  {t.label}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
             <Button
               onClick={handleGenerate}
               disabled={!originalPost.trim() || isGenerating || isPostOverLimit}
-              className="w-full transition-all hover:scale-[1.02] active:scale-[0.98]"
+              className="w-full transition-all hover:scale-[1.02] active:scale-[0.98] touch-target text-sm sm:text-base"
               size="lg"
             >
               {!isGenerating && (

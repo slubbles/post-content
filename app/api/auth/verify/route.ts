@@ -1,9 +1,5 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
-import { Resend } from "resend"
-import { renderWelcomeEmail } from "@/lib/email-templates"
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export async function GET(request: Request) {
   try {
@@ -45,13 +41,12 @@ export async function GET(request: Request) {
     }
 
     // Create the actual user account
-    const newUser = await prisma.user.create({
+    await prisma.user.create({
       data: {
         name: pendingUser.name,
         email: pendingUser.email,
         password: pendingUser.password,
         emailVerified: new Date(), // Mark as verified
-        referredBy: pendingUser.referredBy, // Transfer affiliate code
       },
     })
 
@@ -59,30 +54,6 @@ export async function GET(request: Request) {
     await prisma.pendingUser.delete({
       where: { token },
     })
-
-    // Send welcome email
-    if (resend) {
-      try {
-        const dashboardUrl = `${process.env.NEXTAUTH_URL}/dashboard`
-        await resend.emails.send({
-          from: "PostContent <noreply@postcontent.io>",
-          to: newUser.email!,
-          subject: "Welcome to PostContent! 🎉",
-          html: renderWelcomeEmail({
-            name: newUser.name || "there",
-            dashboardUrl,
-          }),
-        })
-      } catch (emailError) {
-        console.error("Failed to send welcome email:", emailError)
-        // Don't fail the verification if email fails
-      }
-    } else {
-      // No email service configured - log in development
-      if (process.env.NODE_ENV === 'development') {
-        console.log('⚠️  RESEND_API_KEY not configured - welcome email not sent')
-      }
-    }
 
     // Redirect to login with success message
     return NextResponse.redirect(new URL("/login?verified=true", request.url))

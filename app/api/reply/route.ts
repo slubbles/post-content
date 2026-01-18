@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateReplies } from '@/lib/claude';
+import { generateReplies } from '@/lib/grok';
 import { auth } from '@/lib/auth';
 import { canUserGeneratePost, trackPostGeneration } from '@/lib/usage';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
 
     const replies = await generateReplies(sanitizedPost, sanitizedContext);
 
-    // Track reply generation for usage limits (save first reply text)
-    await trackPostGeneration(session.user.id, replies[0].text, 'reply');
+    // Track reply generation for usage limits
+    await trackPostGeneration(session.user.id, replies[0], 'reply');
 
     return NextResponse.json({ replies });
   } catch (error) {

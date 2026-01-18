@@ -34,29 +34,14 @@ export async function GET(request: Request) {
       },
     });
 
-    // Parse content (handle both JSON array and plain string)
-    const parseContent = (content: string): string => {
-      try {
-        const parsed = JSON.parse(content);
-        if (Array.isArray(parsed)) {
-          return parsed[0] || content; // Return first item for preview
-        }
-        return content;
-      } catch {
-        return content;
-      }
-    };
-
     // Transform posts to match frontend format
     const formattedPosts = posts.map((post) => ({
       id: post.id,
       type: post.type,
-      content: parseContent(post.content), // Parse and extract first item
+      platform: "twitter", // Default platform - could be stored in DB
+      topic: extractTopicFromContent(post.content),
       createdAt: post.createdAt.toISOString(),
-      metadata: {
-        platform: "twitter",
-        topic: extractTopicFromContent(parseContent(post.content)),
-      },
+      posts: [post.content], // Single post for now
     }));
 
     return NextResponse.json({ history: formattedPosts });

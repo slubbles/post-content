@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { analyzeVoice } from '@/lib/claude';
+import { analyzeVoice } from '@/lib/grok';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/db';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
