@@ -18,7 +18,6 @@ import { useUsage } from "@/hooks/use-usage"
 
 const platforms = [
   { value: "twitter", label: "Twitter/X", shortLabel: "X" },
-  { value: "linkedin", label: "LinkedIn", shortLabel: "In" },
 ]
 
 const tones = [
