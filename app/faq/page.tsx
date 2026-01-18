@@ -39,17 +39,17 @@ const faqs = [
   {
     question: "What platforms do you support?",
     answer:
-      "PostContent supports Twitter/X, LinkedIn, Instagram, Facebook, and Threads. Each platform gets content optimized for its specific format, character limits, and best practices. Generate once, post everywhere.",
+      "PostContent supports Twitter/X and LinkedIn. Each platform gets content optimized for its specific format, character limits, and best practices.",
   },
   {
-    question: "Is there a free trial?",
+    question: "Do you offer a free plan?",
     answer:
       "Yes! Every new account starts with a free plan that includes 10 credits per month. You can upgrade to a paid plan at any time to get more credits and advanced features.",
   },
   {
     question: "What is your refund policy?",
     answer:
-      "We offer a 30-day money-back guarantee for all paid plans. If you're not satisfied with PostContent for any reason, contact our support team within 30 days of your purchase for a full refund—no questions asked. Refunds are processed within 5-7 business days.",
+      "Generally, because each model call incurs a cost, we aren't offering refunds at this time. If you have a specific case where something unusual happened, please reach out to our team and we'll be happy to help.",
   },
   {
     question: "Do you offer team or agency plans?",

@@ -9,7 +9,7 @@ import { SuccessContent } from "@/components/success-content"
 export default function SuccessPage() {
   return (
     <div className="min-h-screen bg-background">
-      <AppNavigation isAuthenticated={true} />
+      <AppNavigation isAuthenticated={false} />
       <main className="mx-auto flex max-w-2xl items-center justify-center px-4 py-16 sm:px-6 lg:px-8">
         <Suspense
           fallback={

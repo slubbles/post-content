@@ -1,14 +1,17 @@
 "use client"
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { SettingsForm } from "@/components/settings-form"
 
 export default function AccountPage() {
-  const router = useRouter()
-
-  useEffect(() => {
-    router.replace("/dashboard/account/general")
-  }, [router])
-
-  return null
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
+        <p className="text-muted-foreground mt-2">
+          Manage your account preferences and settings
+        </p>
+      </div>
+      <SettingsForm />
+    </div>
+  )
 }

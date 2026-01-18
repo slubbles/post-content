@@ -21,17 +21,35 @@ export default function ContactPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    const formData = new FormData(e.currentTarget)
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      subject: formData.get('subject'),
+      message: formData.get('message'),
+    }
 
-    toast({
-      title: "Message sent!",
-      description: "We'll get back to you within 24 hours.",
-    })
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
 
-    setIsSubmitting(false)
-    // Reset form
-    ;(e.target as HTMLFormElement).reset()
+      if (!response.ok) {
+        throw new Error('Failed to send message')
+      }
+
+      // Redirect to success page
+      window.location.href = '/contact/success'
+    } catch (error) {
+      toast({
+        title: "Failed to send message",
+        description: "Please try again or email us directly at support@postcontent.io",
+        variant: "destructive",
+      })
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -50,9 +68,34 @@ export default function ContactPage() {
               <CardDescription>Get help via email</CardDescription>
             </CardHeader>
             <CardContent>
-              <a href="mailto:support@postcontent.io" className="text-sm text-primary hover:underline">
-                support@postcontent.io
-              </a>
+              <div className="flex items-center gap-2">
+                <a href="mailto:support@postcontent.io" className="text-sm text-primary hover:underline">
+                  support@postcontent.io
+                </a>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText("support@postcontent.io")
+                    toast({ title: "Copied!", description: "Email copied to clipboard" })
+                  }}
+                  className="p-1 hover:bg-muted rounded transition-colors"
+                  aria-label="Copy email"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                  </svg>
+                </button>
+              </div>
               <p className="text-xs text-muted-foreground mt-2">Response within 24 hours</p>
             </CardContent>
           </Card>

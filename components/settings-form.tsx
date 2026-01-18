@@ -220,6 +220,26 @@ export function SettingsForm() {
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end">
+        <Button
+          onClick={handleSave}
+          disabled={isSaving || !hasChanges}
+          className="transition-transform hover:scale-105"
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Saving...
+            </>
+          ) : (
+            <>
+              <Save className="mr-2 h-4 w-4" />
+              {hasChanges ? "Save Changes" : "Saved"}
+            </>
+          )}
+        </Button>
+      </div>
+
       <Card className="transition-all hover:shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -430,66 +450,56 @@ export function SettingsForm() {
 
       <Card className="border-destructive/30">
         <CardHeader>
-          <CardTitle className="text-destructive">Danger Zone</CardTitle>
-          <CardDescription className="text-pretty">Irreversible actions for your account</CardDescription>
+          <CardTitle className="text-destructive">Data & Account</CardTitle>
+          <CardDescription className="text-pretty">Export your data or delete your account</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <p className="font-medium">Delete Account</p>
-            <p className="text-sm text-muted-foreground text-pretty">
-              Permanently delete your account and all associated data.
-            </p>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-lg border border-border p-4">
+            <div className="space-y-1">
+              <p className="font-medium">Export Your Data</p>
+              <p className="text-sm text-muted-foreground text-pretty">
+                Download all your generated content and account data.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={handleExportData}
+              disabled={isExporting}
+              className="bg-transparent transition-transform hover:scale-105"
+            >
+              {isExporting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Exporting...
+                </>
+              ) : (
+                <>
+                  <Download className="mr-2 h-4 w-4" />
+                  Export Data
+                </>
+              )}
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => setShowDeleteModal(true)}
-            disabled={isDeleting}
-            className="bg-transparent text-destructive hover:text-destructive border-destructive/50 hover:bg-destructive/10"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete Account
-          </Button>
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-lg border border-destructive/50 p-4">
+            <div className="space-y-1">
+              <p className="font-medium text-destructive">Delete Account</p>
+              <p className="text-sm text-muted-foreground text-pretty">
+                Permanently delete your account and all associated data.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteModal(true)}
+              disabled={isDeleting}
+              className="bg-transparent text-destructive hover:text-destructive border-destructive/50 hover:bg-destructive/10"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete Account
+            </Button>
+          </div>
         </CardContent>
       </Card>
-
-      <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sticky bottom-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 p-4 -mx-4 border-t">
-        <Button
-          variant="outline"
-          onClick={handleExportData}
-          disabled={isExporting}
-          className="bg-transparent transition-transform hover:scale-105"
-        >
-          {isExporting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Exporting...
-            </>
-          ) : (
-            <>
-              <Download className="mr-2 h-4 w-4" />
-              Export Data
-            </>
-          )}
-        </Button>
-
-        <Button
-          onClick={handleSave}
-          disabled={isSaving || !hasChanges}
-          className="transition-transform hover:scale-105"
-        >
-          {isSaving ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            <>
-              <Save className="mr-2 h-4 w-4" />
-              {hasChanges ? "Save Changes" : "Saved"}
-            </>
-          )}
-        </Button>
-      </div>
 
       <ConfirmationModal
         isOpen={showDeleteModal}

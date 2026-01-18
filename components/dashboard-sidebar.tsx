@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import Image from "next/image"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -31,14 +30,18 @@ import {
   MessageCircle,
   Crown,
   History,
+  ImageIcon,
+  Video,
 } from "lucide-react"
 import { FeedbackModal } from "@/components/feedback-modal"
 import { useUsage } from "@/hooks/use-usage"
 
 const mainNavItems = [
   { href: "/dashboard/generate", label: "Generate Posts", icon: Sparkles },
+  { href: "/dashboard/caption", label: "Create Captions", icon: ImageIcon },
   { href: "/dashboard/reply", label: "Reply to Posts", icon: MessageSquare },
   { href: "/dashboard/thread", label: "Create Threads", icon: List },
+  { href: "/dashboard/video-script", label: "Video Scripts", icon: Video },
   { href: "/dashboard/train", label: "Train AI", icon: GraduationCap },
   { href: "/dashboard/history", label: "History", icon: History },
   { href: "#feedback", label: "Give Feedback", icon: MessageCircle, action: "feedback" },
@@ -134,8 +137,9 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
           {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
 
-        <Link href="/" className="flex items-center">
-          <Image src="/images/logo.svg" alt="PostContent" width={140} height={32} className="h-7 w-auto" priority />
+        <Link href="/" className="flex items-center gap-2">
+          <Image src="/images/logo-icon.svg" alt="PostContent" width={32} height={32} className="h-7 w-7" priority />
+          <span className="text-lg font-bold">PostContent</span>
         </Link>
 
         <DropdownMenu>
@@ -220,15 +224,14 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
         <div className="flex h-14 items-center justify-center border-b border-sidebar-border px-4">
           <Link href="/dashboard/generate" className="flex items-center gap-3">
             <div className="hidden lg:block">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
-                P
-              </div>
+              <Image src="/images/logo-icon.svg" alt="PostContent" width={32} height={32} className="h-8 w-8" priority />
             </div>
             {!isCollapsed && (
               <span className="hidden lg:block font-semibold text-lg text-sidebar-foreground">PostContent</span>
             )}
-            <div className="lg:hidden">
-              <Image src="/images/logo.svg" alt="PostContent" width={140} height={32} className="h-7 w-auto" priority />
+            <div className="lg:hidden flex items-center gap-2">
+              <Image src="/images/logo-icon.svg" alt="PostContent" width={32} height={32} className="h-7 w-7" priority />
+              <span className="text-lg font-bold">PostContent</span>
             </div>
           </Link>
         </div>

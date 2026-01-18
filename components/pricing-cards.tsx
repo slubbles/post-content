@@ -4,10 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check, Loader2 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
-import { useSession } from "next-auth/react"
 
 const plans = [
   {
@@ -54,11 +53,28 @@ const plans = [
 
 export function PricingCards() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-  const { data: session } = useSession()
-  const { toast } = useToast()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [userPlan, setUserPlan] = useState<string | null>(null)
+  const { toast} = useToast()
   const router = useRouter()
-  
-  const isAuthenticated = !!session?.user
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me")
+        if (response.ok) {
+          const data = await response.json()
+          setIsAuthenticated(true)
+          setUserPlan(data.plan?.toLowerCase() || "free")
+        } else {
+          setIsAuthenticated(false)
+        }
+      } catch {
+        setIsAuthenticated(false)
+      }
+    }
+    checkAuth()
+  }, [])
 
   const handleSubscribe = async (planName: string) => {
     if (!isAuthenticated && planName !== "Free") {
@@ -76,7 +92,7 @@ export function PricingCards() {
     }
 
     if (planName === "Enterprise") {
-      window.location.href = "mailto:sales@postcontent.io"
+      window.open("mailto:sales@postcontent.io", "_blank")
       return
     }
 
@@ -101,7 +117,7 @@ export function PricingCards() {
           title: "Redirecting to checkout",
           description: "Please wait while we redirect you to secure payment...",
         })
-        window.location.href = data.checkoutUrl
+        window.open(data.checkoutUrl, "_blank")
       } else {
         throw new Error("No checkout URL received")
       }
@@ -117,11 +133,26 @@ export function PricingCards() {
     }
   }
 
+  const getButtonText = (planName: string) => {
+    if (!isAuthenticated) {
+      return planName === "Free" ? "Start Free" : "Select Plan"
+    }
+    
+    const planLower = planName.toLowerCase()
+    if (userPlan === planLower) {
+      return "Current Plan"
+    }
+    
+    return planName === "Free" ? "Current Plan" : "Upgrade"
+  }
+
   return (
     <div className="space-y-8">
       <div className="grid gap-8 lg:grid-cols-3">
         {plans.map((plan) => {
           const isLoading = loadingPlan === plan.name
+          const isCurrentPlan = isAuthenticated && userPlan === plan.name.toLowerCase()
+          const buttonText = getButtonText(plan.name)
 
           return (
             <Card
@@ -132,6 +163,7 @@ export function PricingCards() {
                 <div className="flex items-center justify-between">
                   <CardTitle>{plan.name}</CardTitle>
                   {plan.popular && <Badge className="bg-primary text-primary-foreground">Most Popular</Badge>}
+                  {isCurrentPlan && <Badge variant="outline">Current</Badge>}
                 </div>
                 <CardDescription className="text-pretty">{plan.description}</CardDescription>
                 <div className="mt-4">
@@ -151,10 +183,10 @@ export function PricingCards() {
               </CardContent>
               <CardFooter>
                 <Button
-                  className="w-full rounded-full transition-transform hover:scale-105"
+                  className="w-full rounded-full transition-transform hover:scale-105 bg-transparent"
                   variant={plan.popular ? "default" : "outline"}
                   onClick={() => handleSubscribe(plan.name)}
-                  disabled={loadingPlan !== null}
+                  disabled={loadingPlan !== null || isCurrentPlan}
                 >
                   {isLoading ? (
                     <>
@@ -162,7 +194,7 @@ export function PricingCards() {
                       Starting checkout...
                     </>
                   ) : (
-                    plan.cta
+                    buttonText
                   )}
                 </Button>
               </CardFooter>
