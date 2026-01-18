@@ -20,16 +20,19 @@ export async function POST(request: Request) {
       )
     }
 
-    const { message, email } = await request.json()
+    const { message, email, feedback: feedbackText } = await request.json()
 
-    if (!message || message.trim().length < 10) {
+    // Support both 'message' and 'feedback' field names for backward compatibility
+    const feedbackMessage = message || feedbackText
+
+    if (!feedbackMessage || feedbackMessage.trim().length < 10) {
       return NextResponse.json(
         { error: "Feedback must be at least 10 characters long." },
         { status: 400 }
       )
     }
 
-    if (message.length > 500) {
+    if (feedbackMessage.length > 500) {
       return NextResponse.json(
         { error: "Feedback must be 500 characters or less." },
         { status: 400 }
@@ -40,7 +43,7 @@ export async function POST(request: Request) {
     const feedback = await prisma.feedback.create({
       data: {
         userId: session.user.id,
-        message: message.trim(),
+        message: feedbackMessage.trim(),
         email: email || session.user.email,
       },
     })
@@ -68,7 +71,7 @@ export async function POST(request: Request) {
             
             <div style="background: #0a0a0a; border-radius: 8px; padding: 20px; border-left: 4px solid #f0ff5f;">
               <h3 style="margin-top: 0; color: #fff;">Message:</h3>
-              <p style="color: #ccc; white-space: pre-wrap; line-height: 1.6;">${message}</p>
+              <p style="color: #ccc; white-space: pre-wrap; line-height: 1.6;">${feedbackMessage}</p>
             </div>
             
             <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #333;">
