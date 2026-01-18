@@ -122,13 +122,55 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.name = user.name
         token.picture = user.image
         
-        // Fetch emailVerified status from database
+        // Fetch full user data from database
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
-          select: { emailVerified: true }
+          select: { 
+            emailVerified: true,
+            subscribed: true,
+            subscriptionStatus: true,
+            subscriptionId: true,
+            subscriptionEndsAt: true,
+          }
         })
-        token.emailVerified = dbUser?.emailVerified || null
+        
+        if (dbUser) {
+          token.emailVerified = dbUser.emailVerified
+          token.subscribed = dbUser.subscribed
+          token.subscriptionStatus = dbUser.subscriptionStatus
+          token.subscriptionId = dbUser.subscriptionId
+          token.subscriptionEndsAt = dbUser.subscriptionEndsAt
+        }
       }
+      
+      // On every request, refresh user data from database to keep it current
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id as string },
+          select: { 
+            name: true,
+            email: true,
+            image: true,
+            emailVerified: true,
+            subscribed: true,
+            subscriptionStatus: true,
+            subscriptionId: true,
+            subscriptionEndsAt: true,
+          }
+        })
+        
+        if (dbUser) {
+          token.name = dbUser.name
+          token.email = dbUser.email
+          token.picture = dbUser.image
+          token.emailVerified = dbUser.emailVerified
+          token.subscribed = dbUser.subscribed
+          token.subscriptionStatus = dbUser.subscriptionStatus
+          token.subscriptionId = dbUser.subscriptionId
+          token.subscriptionEndsAt = dbUser.subscriptionEndsAt
+        }
+      }
+      
       return token
     },
     async session({ session, token }) {
@@ -138,6 +180,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         session.user.name = token.name as string
         session.user.image = token.picture as string
         session.user.emailVerified = token.emailVerified as Date | null
+        session.user.subscribed = token.subscribed as boolean
+        session.user.subscriptionStatus = token.subscriptionStatus as string
+        session.user.subscriptionId = token.subscriptionId as string
+        session.user.subscriptionEndsAt = token.subscriptionEndsAt as Date | null
       }
       return session
     },

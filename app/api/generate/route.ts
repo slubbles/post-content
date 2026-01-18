@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generatePosts } from '@/lib/grok';
+import { generatePosts } from '@/lib/claude';
 import { auth } from '@/lib/auth';
 import { canUserGeneratePost, trackPostGeneration } from '@/lib/usage';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
@@ -91,6 +91,7 @@ export async function POST(request: NextRequest) {
       avgLength: voiceProfile.avgLength,
     } : undefined;
 
+    // Generate posts - only track on success
     const posts = await generatePosts({ 
       input: inputValidation.sanitized!, 
       tone: toneValidation.value!, 
@@ -98,7 +99,7 @@ export async function POST(request: NextRequest) {
       userVoice 
     });
 
-    // Track post generation for usage limits
+    // Only track post generation if generation succeeded
     await trackPostGeneration(session.user.id, posts[0], 'generate');
 
     return NextResponse.json({ posts }, { headers: corsHeaders });
