@@ -27,7 +27,7 @@ const steps = [
     number: "02",
     title: "Input Your Idea",
     description:
-      "Enter your topic, select your platform (LinkedIn, Twitter, Instagram, etc.), and pick your tone. That's all you need.",
+      "Enter your topic, select Twitter/X, and pick your tone (professional, casual, witty). That's all you need.",
     icon: Sparkles,
   },
   {

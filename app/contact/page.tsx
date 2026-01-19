@@ -77,7 +77,7 @@ export default function ContactPage() {
                     navigator.clipboard.writeText("support@postcontent.io")
                     toast({ title: "Copied!", description: "Email copied to clipboard" })
                   }}
-                  className="p-1 hover:bg-muted rounded transition-colors"
+                  className="p-1.5 hover:bg-primary/10 hover:text-primary rounded transition-all hover:scale-110 cursor-pointer active:scale-95"
                   aria-label="Copy email"
                 >
                   <svg
