@@ -171,12 +171,12 @@ export default function LandingPage() {
           <div className="relative group">
             <div className="flex flex-col items-center text-center">
               <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 transition-all group-hover:bg-primary/20 group-hover:scale-110">
-                <GraduationCap className="h-8 w-8 text-primary" />
+                <MessageSquare className="h-8 w-8 text-primary" />
               </div>
-              <div className="mb-2 text-sm font-semibold text-primary">Step 2 (Optional)</div>
-              <h3 className="text-xl font-bold mb-2">Train your AI</h3>
+              <div className="mb-2 text-sm font-semibold text-primary">Step 2</div>
+              <h3 className="text-xl font-bold mb-2">Enter your topic</h3>
               <p className="text-sm text-muted-foreground">
-                Feed it your best posts. AI learns your voice, style, and tone. Skip this if you want generic output.
+                Type what you want to talk about. Pick your tone. AI creates posts that sound authentically you.
               </p>
             </div>
             <div className="hidden lg:block absolute top-8 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
@@ -188,9 +188,9 @@ export default function LandingPage() {
                 <Sparkles className="h-8 w-8 text-primary" />
               </div>
               <div className="mb-2 text-sm font-semibold text-primary">Step 3</div>
-              <h3 className="text-xl font-bold mb-2">Generate content</h3>
+              <h3 className="text-xl font-bold mb-2">Get multiple variants</h3>
               <p className="text-sm text-muted-foreground">
-                Pick platform, tone, topic. Click generate. Get 5 variants instantly. Choose your favorite.
+                AI generates 3-5 different versions instantly. Pick the one that resonates or mix and match.
               </p>
             </div>
             <div className="hidden lg:block absolute top-8 -right-4 w-8 h-0.5 bg-gradient-to-r from-primary/50 to-transparent"></div>
@@ -202,9 +202,9 @@ export default function LandingPage() {
                 <Zap className="h-8 w-8 text-primary" />
               </div>
               <div className="mb-2 text-sm font-semibold text-primary">Step 4</div>
-              <h3 className="text-xl font-bold mb-2">Post & engage</h3>
+              <h3 className="text-xl font-bold mb-2">Copy & post</h3>
               <p className="text-sm text-muted-foreground">
-                Copy with one click. Post to your platform. Spend saved time engaging with your audience instead.
+                One click to copy. Paste to Twitter/X. Done in 60 seconds. Spend saved time engaging your audience.
               </p>
             </div>
           </div>
@@ -258,22 +258,11 @@ export default function LandingPage() {
 
           <div className="group p-4 sm:p-6 rounded-lg border border-border bg-card hover:border-primary/50 transition-all">
             <div className="mb-3 sm:mb-4 inline-flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10">
-              <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-            </div>
-            <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">Voice Training</h3>
-            <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
-              Feed the AI your best posts. It learns your style, tone, and keywords so every output sounds like you
-              wrote it.
-            </p>
-          </div>
-
-          <div className="group p-4 sm:p-6 rounded-lg border border-border bg-card hover:border-primary/50 transition-all">
-            <div className="mb-3 sm:mb-4 inline-flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10">
               <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">Bulk Generation</h3>
+            <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">Multiple Variants</h3>
             <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
-              Schedule an entire month in one session. Generate 50+ posts and queue them up across all platforms.
+              Get 3-5 versions of every post. Pick your favorite or combine the best parts. Never settle for generic output.
             </p>
           </div>
 
@@ -281,9 +270,19 @@ export default function LandingPage() {
             <div className="mb-3 sm:mb-4 inline-flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10">
               <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
             </div>
-            <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">Performance Analytics</h3>
+            <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">History Tracking</h3>
             <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
-              Track what works. See which AI-generated posts get the most engagement and double down on winners.
+              All your generated content saved. Reuse winners, refine losers. Build your content library over time.
+            </p>
+          </div>
+
+          <div className="group p-4 sm:p-6 rounded-lg border border-border bg-card hover:border-primary/50 transition-all">
+            <div className="mb-3 sm:mb-4 inline-flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10">
+              <GraduationCap className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+            </div>
+            <h3 className="text-lg sm:text-xl font-semibold mb-1.5 sm:mb-2">Video Script Creator</h3>
+            <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
+              Hook-Story-Offer format for short videos. Perfect for Reels, TikTok, and YouTube Shorts. Scroll-stopping intros guaranteed.
             </p>
           </div>
         </div>

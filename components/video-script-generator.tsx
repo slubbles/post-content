@@ -10,6 +10,31 @@ import { useToast } from "@/hooks/use-toast"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+const formats = [
+  {
+    value: "hook-story-offer",
+    label: "Hook-Story-Offer",
+    description: "Pattern interrupt → empathy building → transformation CTA",
+  },
+  {
+    value: "provide-value",
+    label: "Provide Value",
+    description: "Educational content that builds authority and trust",
+  },
+  {
+    value: "emotion-logic-urgency",
+    label: "Emotion-Logic-Urgency",
+    description: "Emotional hook → logical reasoning → scarcity/urgency close",
+  },
+]
 
 export function VideoScriptGenerator() {
   const { toast } = useToast()
@@ -19,23 +44,23 @@ export function VideoScriptGenerator() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [progress, setProgress] = useState(0)
   const [generatedScript, setGeneratedScript] = useState("")
+  const [context, setContext] = useState("")
+  const [format, setFormat] = useState("hook-story-offer")
 
   const used = 45
   const limit = 100
 
-  const hookMaxChars = 200
-  const storyMaxChars = 800
-  const offerMaxChars = 400
-
+  const maxChars = 1500
   const hookCount = hook.length
   const storyCount = story.length
   const offerCount = offer.length
+  const contextCount = context.length // Declare contextCount variable
 
   const handleGenerate = async () => {
-    if (!hook.trim() || !story.trim() || !offer.trim()) {
+    if (!context.trim()) {
       toast({
-        title: "Missing fields",
-        description: "Please fill out all three sections (hook, story, offer)",
+        title: "Missing context",
+        description: "Please provide context about your video idea",
         variant: "destructive",
       })
       return
@@ -58,7 +83,7 @@ export function VideoScriptGenerator() {
       const response = await fetch("/api/video-script", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hook, story, offer }),
+        body: JSON.stringify({ context, format }),
       })
 
       clearInterval(progressInterval)
@@ -90,6 +115,8 @@ export function VideoScriptGenerator() {
     }
   }
 
+  const selectedFormat = formats.find((f) => f.value === format)
+
   return (
     <div className="space-y-6">
       <Card>
@@ -98,10 +125,10 @@ export function VideoScriptGenerator() {
             <div className="flex-1">
               <CardTitle className="flex items-center gap-2 text-xl sm:text-2xl">
                 <Video className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                Hook-Story-Offer Framework
+                Video Script Generator
               </CardTitle>
               <CardDescription className="mt-1.5 text-sm sm:text-base">
-                Create video scripts that convert viewers into customers.
+                Choose a format and describe your video idea. AI will write the full script.
               </CardDescription>
             </div>
             <Link href="/pricing" className="shrink-0">
@@ -117,91 +144,67 @@ export function VideoScriptGenerator() {
 
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="hook" className="text-sm sm:text-base font-semibold">
-                Hook (5-8 seconds)
-              </Label>
-              <span
-                className={cn(
-                  "text-xs tabular-nums",
-                  hookCount > hookMaxChars ? "text-destructive font-medium" : "text-muted-foreground",
-                )}
-              >
-                {hookCount}/{hookMaxChars}
-              </span>
-            </div>
-            <Textarea
-              id="hook"
-              placeholder="Start with a question or statement that stops the scroll. Example: 'How much time did you spend scrolling for content inspiration today?'"
-              value={hook}
-              onChange={(e) => setHook(e.target.value)}
-              className="min-h-[80px] resize-none text-sm sm:text-base"
-              disabled={isGenerating}
-            />
-            <p className="text-xs text-muted-foreground">
-              Pattern interrupt + call out behavior. Make them stop scrolling.
-            </p>
+            <Label className="text-sm sm:text-base font-semibold">Script Format</Label>
+            <Select value={format} onValueChange={setFormat} disabled={isGenerating}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Choose a format" />
+              </SelectTrigger>
+              <SelectContent>
+                {formats.map((fmt) => (
+                  <SelectItem key={fmt.value} value={fmt.value}>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{fmt.label}</span>
+                      <span className="text-xs text-muted-foreground">{fmt.description}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedFormat && (
+              <p className="text-xs text-muted-foreground mt-1">{selectedFormat.description}</p>
+            )}
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="story" className="text-sm sm:text-base font-semibold">
-                Story (30-45 seconds)
+              <Label htmlFor="context" className="text-sm sm:text-base font-semibold">
+                Video Context
               </Label>
               <span
                 className={cn(
                   "text-xs tabular-nums",
-                  storyCount > storyMaxChars ? "text-destructive font-medium" : "text-muted-foreground",
+                  contextCount > maxChars ? "text-destructive font-medium" : "text-muted-foreground",
                 )}
               >
-                {storyCount}/{storyMaxChars}
+                {contextCount}/{maxChars}
               </span>
             </div>
             <Textarea
-              id="story"
-              placeholder="Share the struggle, frustration, and epiphany. Paint specific scenes. Example: 'I used to spend 2 hours every morning doing the same thing...'"
-              value={story}
-              onChange={(e) => setStory(e.target.value)}
-              className="min-h-[120px] resize-none text-sm sm:text-base"
+              id="context"
+              placeholder="Describe your video idea: What's the topic? Who's the audience? What action do you want them to take? Include key points you want to hit."
+              value={context}
+              onChange={(e) => setContext(e.target.value)}
+              className={cn(
+                "min-h-[160px] resize-none text-sm sm:text-base",
+                contextCount > maxChars && "border-destructive focus-visible:ring-destructive",
+              )}
               disabled={isGenerating}
             />
             <p className="text-xs text-muted-foreground">
-              Build empathy through shared struggle. Confessional → frustrated → enlightened.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="offer" className="text-sm sm:text-base font-semibold">
-                Offer (15-30 seconds)
-              </Label>
-              <span
-                className={cn(
-                  "text-xs tabular-nums",
-                  offerCount > offerMaxChars ? "text-destructive font-medium" : "text-muted-foreground",
-                )}
-              >
-                {offerCount}/{offerMaxChars}
-              </span>
-            </div>
-            <Textarea
-              id="offer"
-              placeholder="Show transformation and CTA. Example: 'PostContent solved this. One idea, all platforms, 30 seconds. First 10 posts free...'"
-              value={offer}
-              onChange={(e) => setOffer(e.target.value)}
-              className="min-h-[100px] resize-none text-sm sm:text-base"
-              disabled={isGenerating}
-            />
-            <p className="text-xs text-muted-foreground">
-              Show transformation with numbers. Confident, empowering tone. Strong CTA.
+              {format === "hook-story-offer" &&
+                "AI will create a pattern interrupt hook, empathy-building story, and transformation CTA"}
+              {format === "provide-value" &&
+                "AI will structure educational content that establishes your authority"}
+              {format === "emotion-logic-urgency" &&
+                "AI will craft an emotional opening, logical middle, and urgent close"}
             </p>
           </div>
 
           <div className="space-y-2">
             <Button
               onClick={handleGenerate}
-              disabled={!hook.trim() || !story.trim() || !offer.trim() || isGenerating}
-              className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-sm sm:text-base bg-transparent"
+              disabled={!context.trim() || contextCount > maxChars || isGenerating}
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-sm sm:text-base"
               size="lg"
             >
               {!isGenerating && (

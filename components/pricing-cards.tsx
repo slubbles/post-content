@@ -183,7 +183,7 @@ export function PricingCards() {
               </CardContent>
               <CardFooter>
                 <Button
-                  className="w-full rounded-full transition-transform hover:scale-105 bg-transparent"
+                  className={`w-full rounded-full transition-transform hover:scale-105 ${plan.popular ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-transparent"}`}
                   variant={plan.popular ? "default" : "outline"}
                   onClick={() => handleSubscribe(plan.name)}
                   disabled={loadingPlan !== null || isCurrentPlan}

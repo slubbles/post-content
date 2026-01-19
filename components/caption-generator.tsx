@@ -173,7 +173,7 @@ export function CaptionGenerator() {
             <Button
               onClick={handleGenerate}
               disabled={!context.trim() || isGenerating || isOverLimit}
-              className="w-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-sm sm:text-base bg-transparent"
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] text-sm sm:text-base"
               size="lg"
             >
               {!isGenerating && (
@@ -191,9 +191,22 @@ export function CaptionGenerator() {
 
       {generatedCaptions.length > 0 && (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <h2 className="text-xl font-semibold mb-4">Generated Captions</h2>
           <GeneratedPosts posts={generatedCaptions} platform={platform} />
         </div>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Generates</CardTitle>
+          <CardDescription>Your recently generated captions appear here</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground text-center py-8">
+            No recent captions yet. Generate your first caption to see it here.
+          </p>
+        </CardContent>
+      </Card>
     </div>
   )
 }

@@ -1,121 +1,78 @@
 import type { Metadata } from "next"
 import { AppNavigation } from "@/components/app-navigation"
-import Link from "next/link"
-import { BookOpen, Video, Code, FileText } from "lucide-react"
+import { DocsSidebar } from "@/components/docs-sidebar"
+import { DocsContent } from "@/components/docs-content"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Menu } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Documentation - PostContent",
-  description: "Learn how to use PostContent to generate amazing social media content.",
+  description: "Complete guide to using PostContent for AI-powered social media content generation.",
 }
 
-const docCategories = [
+const sections = [
   {
+    id: "getting-started",
     title: "Getting Started",
-    description: "Learn the basics of PostContent and get up and running quickly.",
-    icon: BookOpen,
-    links: [
-      { label: "Quick Start Guide", href: "/docs/quick-start" },
-      { label: "Understanding Pricing", href: "/docs/pricing-plans" },
-      { label: "Account Setup", href: "/docs/quick-start#step-1-create-your-account" },
-      { label: "Credits System", href: "/docs/pricing-plans#whats-a-generation" },
+    subsections: [
+      { id: "create-account", title: "Create Your Account" },
+      { id: "first-post", title: "Generate Your First Post" },
     ],
   },
   {
-    title: "Features",
-    description: "Deep dive into all the powerful features PostContent offers.",
-    icon: Video,
-    links: [
-      { label: "Post Generator", href: "/docs/post-generator" },
-      { label: "Reply Generator", href: "/dashboard/reply" },
-      { label: "Thread Builder", href: "/dashboard/thread" },
-      { label: "AI Voice Training", href: "/docs/voice-training" },
-    ],
+    id: "features",
+    title: "Features Overview",
+    subsections: [{ id: "content-types", title: "Content Types" }],
   },
   {
+    id: "api-reference",
     title: "API Reference",
-    description: "Integrate PostContent into your applications programmatically.",
-    icon: Code,
-    links: [
-      { label: "Authentication", href: "#" },
-      { label: "Generate Endpoints", href: "#" },
-      { label: "Rate Limits", href: "#" },
-      { label: "Webhooks", href: "#" },
+    subsections: [
+      { id: "generate-endpoint", title: "Generate Endpoint" },
+      { id: "reply-endpoint", title: "Reply Endpoint" },
+      { id: "thread-endpoint", title: "Thread Endpoint" },
     ],
   },
   {
-    title: "Best Practices",
-    description: "Tips and guidelines for getting the most out of PostContent.",
-    icon: FileText,
-    links: [
-      { label: "Writing Effective Prompts", href: "#" },
-      { label: "Tone & Voice Guidelines", href: "#" },
-      { label: "Content Calendar Planning", href: "#" },
-      { label: "Analytics & Optimization", href: "#" },
+    id: "account",
+    title: "Account Management",
+    subsections: [{ id: "profile-settings", title: "Profile Settings" }],
+  },
+  {
+    id: "pricing",
+    title: "Pricing & Subscriptions",
+    subsections: [
+      { id: "plan-comparison", title: "Plan Comparison" },
+      { id: "upgrade", title: "How to Upgrade" },
     ],
   },
+  { id: "troubleshooting", title: "Troubleshooting" },
+  { id: "support", title: "Support & Resources" },
 ]
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-background animate-fade-in">
+    <div className="min-h-screen bg-background">
       <AppNavigation isAuthenticated={false} />
 
-      <div className="mx-auto max-w-4xl mobile-safe-padding py-8 sm:py-12">
-        <div className="mb-8 sm:mb-12 text-center px-4">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">Documentation</h1>
-          <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about using PostContent effectively
-          </p>
-        </div>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex gap-8 py-8">
+          {/* Sidebar - Hidden on mobile, shown on lg+ */}
+          <aside className="hidden lg:block w-64 shrink-0">
+            <DocsSidebar sections={sections} />
+          </aside>
 
-        <div className="grid gap-4 sm:gap-6 md:grid-cols-2 md:gap-8">
-          {docCategories.map((category, index) => {
-            const Icon = category.icon
-            return (
-              <Card key={category.title} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                <CardHeader className="p-4 sm:p-6">
-                  <div className="mb-3 sm:mb-4 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-primary/10">
-                    <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
-                  </div>
-                  <CardTitle className="text-lg sm:text-xl">{category.title}</CardTitle>
-                  <CardDescription className="text-sm">{category.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-6 pt-0">
-                  <ul className="space-y-2.5 sm:space-y-3">
-                    {category.links.map((link) => (
-                      <li key={link.label}>
-                        <a
-                          href={link.href}
-                          className="block py-1 text-sm text-muted-foreground transition-colors hover:text-foreground hover:underline touch-target"
-                        >
-                          {link.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            )
-          })}
-        </div>
-
-        <div className="mt-8 sm:mt-12 rounded-lg border border-border bg-card p-6 sm:p-8 text-center">
-          <h2 className="text-xl sm:text-2xl font-bold">Need More Help?</h2>
-          <p className="mt-2 text-sm sm:text-base text-muted-foreground px-4">
-            Can't find what you're looking for? Our support team is here to help.
-          </p>
-          <div className="mt-4 sm:mt-6 flex flex-col gap-3 sm:flex-row sm:justify-center sm:gap-4">
-            <Link href="/contact" className="w-full sm:w-auto">
-              <Button className="w-full sm:w-auto touch-target">Contact Support</Button>
-            </Link>
-            <Link href="/faq" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full sm:w-auto touch-target bg-transparent">
-                Browse FAQ
-              </Button>
-            </Link>
+          {/* Mobile menu button */}
+          <div className="lg:hidden fixed bottom-4 right-4 z-50">
+            <Button size="lg" className="rounded-full shadow-lg">
+              <Menu className="h-5 w-5" />
+            </Button>
           </div>
+
+          {/* Main Content */}
+          <main className="flex-1 min-w-0">
+            <DocsContent />
+          </main>
         </div>
       </div>
     </div>
