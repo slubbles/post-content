@@ -224,9 +224,14 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
         {/* Logo Section */}
         <div className="flex h-14 items-center justify-center border-b border-sidebar-border px-4">
           <Link href="/dashboard/generate" className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
-              P
-            </div>
+            <Image 
+              src="/images/logo-icon.png" 
+              alt="PostContent" 
+              width={32} 
+              height={32} 
+              className="h-8 w-8 rounded-lg"
+              priority 
+            />
             {!isCollapsed && (
               <span className="font-semibold text-lg text-sidebar-foreground">PostContent</span>
             )}
