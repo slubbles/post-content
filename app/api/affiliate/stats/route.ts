@@ -47,11 +47,22 @@ export async function GET(request: Request) {
         .reduce((sum, r) => sum + r.commission, 0),
     }
 
+    const baseUrl = process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://postcontent.io'
+
     return NextResponse.json({
-      affiliateCode: affiliateLink.code,
-      affiliateUrl: `${process.env.NEXTAUTH_URL}?ref=${affiliateLink.code}`,
-      stats,
-      referrals: referrals.slice(0, 10), // Last 10 referrals
+      code: affiliateLink.code,
+      affiliateUrl: `${baseUrl}?ref=${affiliateLink.code}`,
+      totalClicks: stats.totalClicks,
+      totalConversions: stats.totalConversions,
+      totalEarnings: stats.totalEarnings,
+      pendingEarnings: stats.pendingEarnings,
+      paidEarnings: stats.paidEarnings,
+      recentReferrals: referrals.slice(0, 10).map(r => ({
+        id: r.id,
+        status: r.status,
+        commission: r.commission,
+        createdAt: r.createdAt.toISOString(),
+      })),
     })
   } catch (error) {
     console.error("Affiliate stats error:", error)

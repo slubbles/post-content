@@ -127,3 +127,35 @@ model ContactMessage {
   
   @@index([createdAt])
 }
+
+model AffiliateLink {
+  id          String              @id @default(cuid())
+  userId      String              @unique
+  code        String              @unique
+  clicks      Int                 @default(0)
+  conversions Int                 @default(0)
+  earnings    Float               @default(0)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  referrals   AffiliateReferral[]
+  
+  @@index([code])
+  @@index([userId])
+}
+
+model AffiliateReferral {
+  id               String        @id @default(cuid())
+  affiliateCode    String
+  affiliateLink    AffiliateLink @relation(fields: [affiliateCode], references: [code], onDelete: Cascade)
+  userId           String
+  subscriptionId   String?
+  planAmount       Float         @default(0)
+  commission       Float         @default(0)
+  status           String        @default("pending") // pending, converted, paid
+  createdAt        DateTime      @default(now())
+  paidAt           DateTime?
+  
+  @@index([affiliateCode])
+  @@index([userId])
+  @@index([status])
+}

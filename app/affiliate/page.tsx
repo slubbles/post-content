@@ -4,6 +4,8 @@ import { DollarSign, Users, TrendingUp, Gift } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { auth } from "@/lib/auth"
+import { AffiliateDashboard } from "@/components/affiliate-dashboard"
+import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Affiliate Program - PostContent",
@@ -22,13 +24,22 @@ export default async function AffiliatePage() {
         <div className="mb-6 sm:mb-8"></div>
 
         <div className="mb-8 sm:mb-12 text-center px-4">
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">Affiliate Program</h1>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
+            {isAuthenticated ? "Affiliate Dashboard" : "Affiliate Program"}
+          </h1>
           <p className="mt-3 sm:mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
-            Earn 30% recurring commission by promoting PostContent to your audience
+            {isAuthenticated 
+              ? "Track your referrals and earnings"
+              : "Earn 30% recurring commission by promoting PostContent to your audience"
+            }
           </p>
         </div>
 
-        <div className="mb-10 sm:mb-16 grid gap-4 sm:gap-6 md:grid-cols-3 md:gap-8">
+        {isAuthenticated ? (
+          <AffiliateDashboard />
+        ) : (
+          <>
+            <div className="mb-10 sm:mb-16 grid gap-4 sm:gap-6 md:grid-cols-3 md:gap-8">
           <Card>
             <CardHeader className="p-4 sm:p-6">
               <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-primary mb-2" />
@@ -176,10 +187,15 @@ export default async function AffiliatePage() {
           <p className="mt-2 text-sm sm:text-base text-muted-foreground px-4">
             Join hundreds of affiliates already earning recurring commissions with PostContent
           </p>
-          <div className="mt-4 sm:mt-6">
-            <a href="mailto:affiliates@postcontent.io" className="inline-block w-full sm:w-auto">
+          <div className="mt-4 sm:mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <Link href="/signup" className="inline-block w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto touch-target">
-                Apply Now
+                Sign Up & Get Your Link
+              </Button>
+            </Link>
+            <a href="mailto:affiliates@postcontent.io" className="inline-block w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto touch-target">
+                Contact Us
               </Button>
             </a>
           </div>
@@ -190,6 +206,8 @@ export default async function AffiliatePage() {
             </a>
           </p>
         </div>
+          </>
+        )}
       </div>
     </div>
   )
