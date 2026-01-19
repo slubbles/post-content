@@ -12,8 +12,8 @@ export interface UsageData {
 export function useUsage() {
   const [usage, setUsage] = useState<UsageData>({
     used: 0,
-    limit: 100,
-    remaining: 100,
+    limit: 10,
+    remaining: 10,
     percentage: 0,
   })
   const [loading, setLoading] = useState(true)

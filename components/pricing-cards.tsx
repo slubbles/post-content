@@ -77,17 +77,16 @@ export function PricingCards() {
   }, [])
 
   const handleSubscribe = async (planName: string) => {
-    if (!isAuthenticated && planName !== "Free") {
+    if (!isAuthenticated) {
+      if (planName === "Free") {
+        window.location.href = "/signup"
+        return
+      }
       toast({
         title: "Login required",
         description: "Please sign in to upgrade your plan",
       })
       router.push("/login")
-      return
-    }
-
-    if (planName === "Free") {
-      window.location.href = "/signup"
       return
     }
 
@@ -183,8 +182,11 @@ export function PricingCards() {
               </CardContent>
               <CardFooter>
                 <Button
-                  className="w-full rounded-full transition-transform hover:scale-105 bg-transparent"
+                  className={`w-full rounded-full transition-transform hover:scale-105 ${
+                    plan.popular ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg" : "bg-transparent"
+                  }`}
                   variant={plan.popular ? "default" : "outline"}
+                  size="lg"
                   onClick={() => handleSubscribe(plan.name)}
                   disabled={loadingPlan !== null || isCurrentPlan}
                 >
