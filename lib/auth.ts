@@ -78,38 +78,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      // For OAuth providers, check if user already exists
+      // For OAuth providers (Google/Twitter), ALWAYS allow sign in
+      // NextAuth will handle account creation automatically
       if (account?.provider === "google" || account?.provider === "twitter") {
+        // Don't do ANY database operations that could fail
+        // Just allow the sign in immediately
+        return true
+      }
+      
+      // For credentials provider, check email verification
+      if (account?.provider === "credentials") {
         if (!user.email) {
           return false
         }
         
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email }
-        })
-        
-        // If user exists, ensure emailVerified is set for OAuth users
-        if (existingUser && !existingUser.emailVerified) {
-          await prisma.user.update({
+        try {
+          const dbUser = await prisma.user.findUnique({
             where: { email: user.email },
-            data: { emailVerified: new Date() }
+            select: { emailVerified: true }
           })
-        }
-        
-        // Allow sign in (account linking is enabled)
-        if (existingUser) {
-          return true
-        }
-        
-        // Check if there's a pending user registration
-        const pendingUser = await prisma.pendingUser.findUnique({
-          where: { email: user.email }
-        })
-        
-        // If there's a pending registration, don't allow OAuth sign in
-        // User should complete email verification first
-        if (pendingUser) {
-          return "/verify-email?error=Please+verify+your+email+first"
+          
+          // Require email verification for credentials login
+          if (!dbUser?.emailVerified) {
+            return false
+          }
+        } catch (error) {
+          console.error("Error in credentials signIn:", error)
+          return false
         }
       }
       
