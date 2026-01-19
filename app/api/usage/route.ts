@@ -16,15 +16,14 @@ export async function GET(request: NextRequest) {
 
     const usage = await getUserUsage(session.user.id);
     
-    // Get user's credit balance
+    // Get user's subscription status
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { credits: true, subscribed: true, subscriptionStatus: true },
+      select: { subscribed: true, subscriptionStatus: true },
     });
     
     return NextResponse.json({
       ...usage,
-      credits: user?.credits || 0,
       isPro: user?.subscribed && user?.subscriptionStatus === 'active',
     });
   } catch (error) {

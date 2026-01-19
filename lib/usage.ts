@@ -34,11 +34,20 @@ export async function trackPostGeneration(userId: string, content: string, type:
 export async function getUserUsage(userId: string) {
   const count = await getUserPostCount(userId);
   
+  // Check if user is Pro
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { subscribed: true, subscriptionStatus: true },
+  });
+  
+  const isPro = user?.subscribed && user?.subscriptionStatus === 'active';
+  const limit = isPro ? 200 : FREE_TIER_LIMIT; // Pro: 200, Free: 10
+  
   return {
     used: count,
-    limit: FREE_TIER_LIMIT,
-    remaining: Math.max(0, FREE_TIER_LIMIT - count),
-    percentage: Math.min(100, (count / FREE_TIER_LIMIT) * 100),
+    limit: limit,
+    remaining: isPro ? Math.max(0, limit - count) : Math.max(0, limit - count),
+    percentage: Math.min(100, (count / limit) * 100),
   };
 }
 

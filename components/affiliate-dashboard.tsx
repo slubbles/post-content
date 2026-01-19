@@ -39,7 +39,11 @@ export function AffiliateDashboard() {
       const response = await fetch("/api/affiliate/stats")
       if (response.ok) {
         const data = await response.json()
-        setStats(data)
+        // Ensure recentReferrals is an array
+        setStats({
+          ...data,
+          recentReferrals: data.recentReferrals || []
+        })
       } else {
         throw new Error("Failed to fetch stats")
       }

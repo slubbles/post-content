@@ -98,10 +98,25 @@ export default function HistoryPage() {
       const response = await fetch("/api/history?limit=100")
       if (response.ok) {
         const data = await response.json()
-        setHistory(data.history || [])
+        // Ensure data.history exists and is an array
+        if (data && Array.isArray(data.history)) {
+          setHistory(data.history)
+        } else {
+          setHistory([])
+        }
+      } else {
+        // Handle non-ok responses
+        console.error("[v0] History API returned error:", response.status)
+        setHistory([])
+        toast({
+          title: "Failed to load history",
+          description: "Unable to fetch your generation history.",
+          variant: "destructive",
+        })
       }
     } catch (error) {
       console.error("[v0] Failed to fetch history:", error)
+      setHistory([])
       toast({
         title: "Failed to load history",
         description: "Unable to fetch your generation history.",

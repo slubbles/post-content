@@ -32,10 +32,13 @@ export function BillingSection() {
     return <div>Loading...</div>
   }
 
+  if (!user) {
+    return <div>Unable to load billing data</div>
+  }
+
   const plan = user?.plan || "free"
-  const credits = user?.credits || 0
   const creditsUsed = user?.creditsUsed || 0
-  const totalCredits = plan === "free" ? 10 : plan === "pro" ? 200 : 999999
+  const totalCredits = user?.creditLimit || (plan === "free" ? 10 : plan === "pro" ? 200 : 999999)
 
   return (
     <div className="space-y-6">
