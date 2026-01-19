@@ -30,10 +30,12 @@ export default function ClientLayout({
   const user = session?.user ? {
     name: session.user.name || "User",
     email: session.user.email || "",
+    image: session.user.image || undefined,
     plan: getUserPlan(),
   } : {
     name: "User",
     email: "",
+    image: undefined,
     plan: "free" as const,
   }
 
