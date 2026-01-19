@@ -37,11 +37,13 @@ export async function GET(request: Request) {
     // Transform posts to match frontend format
     const formattedPosts = posts.map((post) => ({
       id: post.id,
+      content: post.content, // Frontend expects single content string
       type: post.type,
-      platform: "twitter", // Default platform - could be stored in DB
-      topic: extractTopicFromContent(post.content),
       createdAt: post.createdAt.toISOString(),
-      posts: [post.content], // Single post for now
+      metadata: {
+        platform: "twitter", // Default platform - could be stored in DB later
+        topic: extractTopicFromContent(post.content),
+      },
     }));
 
     return NextResponse.json({ history: formattedPosts });

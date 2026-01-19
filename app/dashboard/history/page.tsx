@@ -132,8 +132,10 @@ export default function HistoryPage() {
     if (!itemToDelete) return
 
     try {
-      const response = await fetch(`/api/history/${itemToDelete}`, {
+      const response = await fetch(`/api/history`, {
         method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: itemToDelete }),
       })
 
       if (response.ok) {
@@ -142,6 +144,8 @@ export default function HistoryPage() {
           title: "Deleted",
           description: "Item removed from history.",
         })
+      } else {
+        throw new Error("Delete failed")
       }
     } catch (error) {
       console.error("[v0] Delete error:", error)
