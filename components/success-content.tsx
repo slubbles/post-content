@@ -153,9 +153,9 @@ export function SuccessContent() {
               {planData.cta}
             </Button>
           </Link>
-          <Link href="/dashboard/account/billing" className="flex-1">
+          <Link href="/dashboard/account" className="flex-1">
             <Button variant="outline" className="w-full bg-transparent transition-all hover:scale-[1.02]" size="lg">
-              View Billing
+              View Account
             </Button>
           </Link>
         </div>
