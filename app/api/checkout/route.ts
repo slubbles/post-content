@@ -5,6 +5,13 @@ export async function POST(request: Request) {
   try {
     const session = await auth()
     
+    console.log("[Checkout] Session check:", { 
+      hasSession: !!session, 
+      hasUser: !!session?.user, 
+      hasEmail: !!session?.user?.email,
+      email: session?.user?.email 
+    })
+    
     if (!session?.user?.email) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },

@@ -158,8 +158,8 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
                 <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                   {getPlanBadge()}
                 </div>
-                <p className="text-sm font-medium">{user?.name ?? "User"}</p>
-                <p className="text-xs text-muted-foreground">{user?.email ?? "user@example.com"}</p>
+                <p className="text-sm font-medium">{user?.name || "User"}</p>
+                <p className="text-xs text-muted-foreground">{user?.email || "user@example.com"}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

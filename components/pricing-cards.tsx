@@ -51,28 +51,14 @@ const plans = [
   },
 ]
 
-interface PricingCardsProps {
-  isAuthenticated?: boolean
-  user?: {
-    name?: string
-    email?: string
-    image?: string
-  }
-}
-
-export function PricingCards({ isAuthenticated: authProp, user: userProp }: PricingCardsProps = {}) {
+export function PricingCards() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(authProp ?? false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userPlan, setUserPlan] = useState<string | null>(null)
   const { toast} = useToast()
   const router = useRouter()
 
   useEffect(() => {
-    // If auth props are provided, use them
-    if (authProp !== undefined) {
-      setIsAuthenticated(authProp)
-    }
-    
     const checkAuth = async () => {
       try {
         const response = await fetch("/api/auth/me")
@@ -87,12 +73,8 @@ export function PricingCards({ isAuthenticated: authProp, user: userProp }: Pric
         setIsAuthenticated(false)
       }
     }
-    
-    // Only check auth if props weren't provided
-    if (authProp === undefined) {
-      checkAuth()
-    }
-  }, [authProp])
+    checkAuth()
+  }, [])
 
   const handleSubscribe = async (planName: string) => {
     if (!isAuthenticated) {
@@ -108,26 +90,8 @@ export function PricingCards({ isAuthenticated: authProp, user: userProp }: Pric
       return
     }
 
-    // Handle Enterprise plan with specific checkout URL
     if (planName === "Enterprise") {
-      setLoadingPlan(planName)
-      try {
-        const enterpriseCheckoutUrl = "https://buy.polar.sh/polar_cl_MfctApNJOuMOvZFwB7rzqXjdb7A3MHZFvXFgN1eP4QT"
-        toast({
-          title: "Redirecting to checkout",
-          description: "Please wait while we redirect you to secure payment...",
-        })
-        window.open(enterpriseCheckoutUrl, "_blank")
-      } catch (error) {
-        console.error("[v0] Enterprise checkout error:", error)
-        toast({
-          title: "Checkout failed",
-          description: "Unable to start checkout. Please try again.",
-          variant: "destructive",
-        })
-      } finally {
-        setLoadingPlan(null)
-      }
+      window.open("mailto:sales@postcontent.io", "_blank")
       return
     }
 
@@ -136,6 +100,7 @@ export function PricingCards({ isAuthenticated: authProp, user: userProp }: Pric
       const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include", // Ensure cookies are sent
         body: JSON.stringify({
           plan: planName.toLowerCase(),
         }),

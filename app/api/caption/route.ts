@@ -129,7 +129,7 @@ Each caption should follow Hook-Story-Offer and be unique in approach.`;
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: platform === 'linkedin' ? 2000 : 1500,
+      max_tokens: 1200,
       temperature: 0.8,
       system: [
         {
@@ -149,11 +149,10 @@ Each caption should follow Hook-Story-Offer and be unique in approach.`;
     const response = message.content[0].type === 'text' ? message.content[0].text : '';
     
     // Parse captions from response
-    const maxLength = platform === 'linkedin' ? 3000 : 2200;
     const captions = response
       .split(/\n\n+/)
-      .map(caption => caption.replace(/^[0-9]+[:./\)\]]\s*/, '').trim())
-      .filter(caption => caption.length > 20 && caption.length <= maxLength)
+      .map(caption => caption.replace(/^[0-9]+[:.\/)\]]\s*/, '').trim())
+      .filter(caption => caption.length > 20)
       .slice(0, 3);
 
     if (captions.length === 0) {

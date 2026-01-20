@@ -46,19 +46,6 @@ export function useUsage() {
 
   useEffect(() => {
     fetchUsage()
-    
-    // Refresh on window focus
-    const handleFocus = () => fetchUsage()
-    window.addEventListener('focus', handleFocus)
-    
-    // Refresh when generation completes
-    const handleCreditsUpdate = () => fetchUsage()
-    window.addEventListener('credits-updated', handleCreditsUpdate)
-    
-    return () => {
-      window.removeEventListener('focus', handleFocus)
-      window.removeEventListener('credits-updated', handleCreditsUpdate)
-    }
   }, [])
 
   const refresh = () => {
