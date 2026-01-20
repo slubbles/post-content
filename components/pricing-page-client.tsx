@@ -1,9 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { PricingCards } from "@/components/pricing-cards"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import { Button } from "@/components/ui/button"
 
 interface User {
   name?: string
@@ -12,6 +14,7 @@ interface User {
 }
 
 export function PricingPageClient() {
+  const router = useRouter()
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const [user, setUser] = useState<User | undefined>(undefined)
 
@@ -38,6 +41,14 @@ export function PricingPageClient() {
     }
     checkAuth()
   }, [])
+
+  const handleCTAClick = () => {
+    if (isAuthenticated) {
+      router.push("/dashboard")
+    } else {
+      router.push("/signup")
+    }
+  }
 
   // Show loading state while checking authentication
   if (isAuthenticated === null) {
@@ -109,11 +120,12 @@ export function PricingPageClient() {
           <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
             Start free and upgrade when you need more power. No contracts, no commitments.
           </p>
-          <a href="/signup">
-            <button className="rounded-full bg-primary px-8 py-3 font-semibold text-primary-foreground hover:scale-105 transition-transform">
-              Start Creating Now - It's Free
-            </button>
-          </a>
+          <Button
+            onClick={handleCTAClick}
+            className="rounded-full bg-primary px-8 py-3 font-semibold text-primary-foreground hover:scale-105 transition-transform"
+          >
+            {isAuthenticated ? "Go to Dashboard" : "Start Creating Now - It's Free"}
+          </Button>
           <p className="text-xs text-muted-foreground mt-3">No credit card required</p>
         </div>
       </div>

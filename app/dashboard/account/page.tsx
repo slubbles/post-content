@@ -1,8 +1,6 @@
 "use client"
 
-import { SettingsForm } from "@/components/settings-form"
-import { BillingSection } from "@/components/billing-section"
-import { Separator } from "@/components/ui/separator"
+import { AccountPageClient } from "@/components/account-page-client"
 
 export default function AccountPage() {
   return (
@@ -10,15 +8,11 @@ export default function AccountPage() {
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Account Settings</h1>
         <p className="text-muted-foreground mt-2">
-          Manage your profile, account preferences, and billing information
+          Manage your profile, billing, and AI preferences
         </p>
       </div>
 
-      <SettingsForm />
-
-      <Separator className="my-8" />
-
-      <BillingSection />
+      <AccountPageClient />
     </div>
   )
 }
