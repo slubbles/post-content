@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   description: "Read the latest news, tips, and insights about AI content generation and social media strategy.",
 }
 
+export const dynamic = 'force-static'
+
 const blogPosts = [
   {
     id: 1,
