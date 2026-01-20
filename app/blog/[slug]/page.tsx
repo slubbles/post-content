@@ -29,15 +29,15 @@ The issue isn't AI itself. It's how people use it.
 
 Modern AI content tools use large language models trained on billions of text examples. But the quality of output depends entirely on three factors:
 
-1. **Platform optimization** - LinkedIn needs 500-1000 words. Twitter needs 280 characters. Most tools don't adapt.
-2. **Voice training** - Generic prompts create generic content. Your writing style needs to be learned.
-3. **Strategic variety** - One topic can be approached from multiple angles. Most tools give you random variations.
+1. Platform optimization: LinkedIn needs 500-1000 words. Twitter needs 280 characters. Most tools don't adapt.
+2. Voice training: Generic prompts create generic content. Your writing style needs to be learned.
+3. Strategic variety: One topic can be approached from multiple angles. Most tools give you random variations.
 
 ## Multi-Platform Content Strategy
 
 Here's what actually works in 2026:
 
-**Start with one core idea.** Don't try to create unique content for each platform. That's the old way. The new way: adapt intelligently.
+Start with one core idea. Don't try to create unique content for each platform. That's the old way. The new way: adapt intelligently.
 
 LinkedIn gets the long-form thought leadership version. Twitter gets the punchy takeaway. Instagram gets the visual-first storytelling angle. Facebook gets the community discussion prompt. Threads gets the authentic, unpolished hot take.
 
@@ -114,19 +114,19 @@ The platform is actively de-prioritizing "content for content's sake" and reward
 
 ## The Post Formats That Work
 
-**Format 1: The Contrarian Take**
+Format 1: The Contrarian Take
 Challenge conventional wisdom in your industry. "Everyone says X, but here's why Y actually works better." These consistently outperform because they spark debate.
 
-**Format 2: The Failure Story**
+Format 2: The Failure Story
 Share what didn't work. The project that flopped. The strategy that backfired. Vulnerability builds trust faster than success stories.
 
-**Format 3: The Tactical Breakdown**
+Format 3: The Tactical Breakdown
 "Here's exactly how I..." posts with specific steps. No fluff. No theory. Just actionable tactics.
 
-**Format 4: The Pattern Recognition**
+Format 4: The Pattern Recognition
 "I've noticed..." posts where you identify trends others missed. Demonstrates thought leadership without being preachy.
 
-**Format 5: The Unpopular Opinion**
+Format 5: The Unpopular Opinion
 Say what everyone thinks but nobody posts. "Hot take: [controversial industry truth]."
 
 ## Posting Frequency That Actually Works
@@ -135,9 +135,9 @@ Forget the "post 5 times a day" advice. That's LinkedIn spam.
 
 The new algorithm rewards quality over quantity. Here's what works:
 
-**3-5 posts per week** - Enough to stay visible without becoming noise
-**Best times** - 7-9 AM and 12-1 PM on Tuesday-Thursday
-**Worst times** - Weekends and Monday mornings
+3 to 5 posts per week: Enough to stay visible without becoming noise
+Best times: 7 to 9 AM and 12 to 1 PM on Tuesday through Thursday
+Worst times: Weekends and Monday mornings
 
 But timing matters less than consistency. Pick a schedule and stick to it.
 
@@ -242,21 +242,21 @@ Chasing likes won't grow you. Building genuine engagement will.
 
 ## Content That Actually Performs
 
-**Thread format is still king** - but only if you nail the hook and deliver value.
+Thread format is still king, but only if you nail the hook and deliver value.
 
-**Single-post format works if:** You make a strong point in under 200 characters. Quotable. Screenshot-worthy. Makes people think.
+Single-post format works if you make a strong point in under 200 characters. Quotable. Screenshot-worthy. Makes people think.
 
-**What's dead:** Engagement bait. "Agree or disagree?" "Like if you..." "Retweet for reach." The algorithm actively suppresses these now.
+What's dead: Engagement bait. "Agree or disagree?" "Like if you..." "Retweet for reach." The algorithm actively suppresses these now.
 
 ## The 3 Content Pillars
 
-**Pillar 1: Expertise**
+Pillar 1: Expertise
 Share what you know. Tactical insights from your field. Teach in public.
 
-**Pillar 2: Personality**
+Pillar 2: Personality
 Hot takes. Opinions. What you actually believe, not what's safe to say.
 
-**Pillar 3: Entertainment**
+Pillar 3: Entertainment
 Make people laugh. Tell stories. Be human, not a content robot.
 
 Most accounts only do one. The ones growing fast do all three.
@@ -264,7 +264,7 @@ Most accounts only do one. The ones growing fast do all three.
 ## Posting Frequency That Works
 
 Minimum: 1 post per day
-Optimal: 3-5 posts per day
+Optimal: 3 to 5 posts per day
 Maximum: Before you sound desperate
 
 Quality still matters more than quantity. But consistency is non-negotiable.
@@ -273,17 +273,17 @@ Quality still matters more than quantity. But consistency is non-negotiable.
 
 This is how you actually grow:
 
-**Find accounts 1-2 levels above you** - Not megastars. People with 10-50k followers in your space.
+Find accounts 1 to 2 levels above you. Not megastars. People with 10 to 50k followers in your space.
 
-**Reply to their posts within the first 30 minutes** - Add value. Not "Great point!" but actual insight.
+Reply to their posts within the first 30 minutes. Add value. Not "Great point!" but actual insight.
 
-**Do this daily** - On 5-10 posts. Their audience sees your replies. Some follow you.
+Do this daily on 5 to 10 posts. Their audience sees your replies. Some follow you.
 
 This is faster than posting alone.
 
 ## What Time to Post
 
-Best: 6-9 AM and 5-7 PM in your target audience's timezone
+Best: 6 to 9 AM and 5 to 7 PM in your target audience's timezone
 
 Worst: Middle of the day when timeline is noisy
 
@@ -293,10 +293,10 @@ But here's the truth: Consistency beats timing. Post when you can post consisten
 
 You need:
 - 1 viral post per month (50k+ impressions)
-- 3-5 solid posts per week (5-10k impressions)
+- 3 to 5 solid posts per week (5 to 10k impressions)
 - Daily engagement (replies to bigger accounts)
 
-Do this for 90 days. Your follower count will 3-5x.
+Do this for 90 days. Your follower count will 3 to 5x.
 
 Don't do it? Your follower count will stay exactly where it is.
 
@@ -443,15 +443,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               return <h3 key={index}>{paragraph.replace(/\*\*/g, "")}</h3>
             }
             if (paragraph.trim().startsWith("-")) {
-              return <li key={index}>{paragraph.replace(/^- /, "")}</li>
+              return <li key={index}>{paragraph.replace(/^- /, "").replace(/\*\*/g, "")}</li>
             }
             if (paragraph.match(/^\d+\./)) {
-              return <li key={index}>{paragraph.replace(/^\d+\. /, "")}</li>
+              return <li key={index}>{paragraph.replace(/^\d+\. /, "").replace(/\*\*/g, "")}</li>
             }
             if (paragraph.trim() === "") {
               return <br key={index} />
             }
-            return <p key={index}>{paragraph}</p>
+            return <p key={index}>{paragraph.replace(/\*\*/g, "")}</p>
           })}
         </div>
 
