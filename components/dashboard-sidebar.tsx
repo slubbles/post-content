@@ -139,7 +139,7 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
         </Button>
 
         <Link href="/" className="flex items-center gap-2">
-          <Image src="/images/logo-icon.svg" alt="PostContent" width={32} height={32} className="h-7 w-7" priority />
+          <Image src="/images/logo-icon.png" alt="PostContent" width={32} height={32} className="h-7 w-7" priority />
           <span className="text-lg font-bold">PostContent</span>
         </Link>
 
