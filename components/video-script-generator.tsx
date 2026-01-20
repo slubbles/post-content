@@ -96,6 +96,7 @@ export function VideoScriptGenerator() {
 
       const data = await response.json()
       setGeneratedScript(data.script)
+      window.dispatchEvent(new Event('credits-updated'))
       toast({
         title: "Script generated!",
         description: "Your video script is ready.",

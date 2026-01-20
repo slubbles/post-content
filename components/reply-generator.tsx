@@ -89,6 +89,7 @@ export function ReplyGenerator() {
         setTimeout(() => {
           setGeneratedReplies(data.replies)
           refresh() // Update credits after generation
+          window.dispatchEvent(new Event('credits-updated'))
         }, 200)
       }
     } catch (error) {

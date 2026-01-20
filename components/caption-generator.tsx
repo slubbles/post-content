@@ -66,6 +66,7 @@ export function CaptionGenerator() {
 
       const data = await response.json()
       setGeneratedCaptions(data.captions)
+      window.dispatchEvent(new Event('credits-updated'))
       toast({
         title: "Captions generated!",
         description: `Created ${data.captions.length} caption${data.captions.length > 1 ? "s" : ""} for you.`,

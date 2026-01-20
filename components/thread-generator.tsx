@@ -81,6 +81,7 @@ export function ThreadGenerator() {
         setTimeout(() => {
           setGeneratedThread(data.thread)
           refresh() // Update credits after generation
+          window.dispatchEvent(new Event('credits-updated'))
         }, 200)
       }
     } catch (error) {

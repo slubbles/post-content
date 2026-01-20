@@ -116,6 +116,8 @@ export function PostGenerator() {
         setTimeout(() => {
           setGeneratedPosts(data.posts)
           refresh()
+          // Dispatch event to refresh credits across all components
+          window.dispatchEvent(new Event('credits-updated'))
           setShowConfetti(true)
           setTimeout(() => setShowConfetti(false), 100)
           toast({

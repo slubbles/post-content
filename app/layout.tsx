@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.postcontent.io'),
   title: {
-    default: "PostContent - AI Content Generator for X/Twitter",
+    default: "PostContent - AI-Powered Social Posts",
     template: "%s | PostContent"
   },
-  description: "Generate X/Twitter posts in seconds. AI trained on your writing style. Create content that sounds like you, not ChatGPT.",
-  keywords: ["AI content generator", "social media posts", "Twitter post generator", "X posts", "content creation", "AI writing", "social media marketing", "content marketing"],
+  description: "Generate engaging social media posts in seconds. AI-powered content creation made simple.",
+  keywords: ["AI content generator", "social media posts", "content creation", "AI writing", "social media marketing", "content marketing", "post generator", "caption generator"],
   authors: [{ name: "PostContent" }],
   creator: "PostContent",
   publisher: "PostContent",
@@ -38,8 +38,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://www.postcontent.io",
     siteName: "PostContent",
-    title: "PostContent - AI Content Generator for X/Twitter",
-    description: "Generate X/Twitter posts in seconds. AI trained on your writing style. Create content that sounds like you, not ChatGPT.",
+    title: "PostContent - AI-Powered Social Posts",
+    description: "Generate engaging social media posts in seconds. AI-powered content creation made simple.",
     images: [
       {
         url: "/og-image.png",
@@ -51,8 +51,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PostContent - AI Content Generator for X/Twitter",
-    description: "Generate X/Twitter posts in seconds. Stop overthinking, start posting.",
+    title: "PostContent - AI-Powered Social Posts",
+    description: "Generate engaging social media posts in seconds. AI-powered content creation made simple.",
     creator: "@postcontent",
     images: ["/og-image.png"],
   },
