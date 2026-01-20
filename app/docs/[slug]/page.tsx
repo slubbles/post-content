@@ -479,45 +479,48 @@ export default function DocPage({ params }: { params: { slug: string } }) {
 
         <div className="prose prose-lg dark:prose-invert max-w-none">
           {doc.content.split("\n").map((line, index) => {
+            // Remove all bold markdown before processing
+            const cleanLine = line.replace(/\*\*/g, "")
+            
             if (line.startsWith("# ")) {
               return (
                 <h1 key={index} className="text-3xl font-bold mt-8 mb-4">
-                  {line.replace("# ", "")}
+                  {cleanLine.replace("# ", "")}
                 </h1>
               )
             }
             if (line.startsWith("## ")) {
               return (
                 <h2 key={index} className="text-2xl font-bold mt-6 mb-3">
-                  {line.replace("## ", "")}
+                  {cleanLine.replace("## ", "")}
                 </h2>
               )
             }
             if (line.startsWith("### ")) {
               return (
                 <h3 key={index} className="text-xl font-semibold mt-5 mb-2">
-                  {line.replace("### ", "")}
+                  {cleanLine.replace("### ", "")}
                 </h3>
               )
             }
-            if (line.startsWith("**") && line.endsWith("**")) {
+            if (line.startsWith("**") && line.includes("**")) {
               return (
                 <h4 key={index} className="text-lg font-medium mt-4 mb-2">
-                  {line.replace(/\*\*/g, "")}
+                  {cleanLine}
                 </h4>
               )
             }
             if (line.trim().startsWith("- ")) {
               return (
                 <li key={index} className="ml-6">
-                  {line.replace(/^- /, "")}
+                  {cleanLine.replace(/^- /, "")}
                 </li>
               )
             }
             if (line.match(/^\d+\./)) {
               return (
                 <li key={index} className="ml-6">
-                  {line.replace(/^\d+\. /, "")}
+                  {cleanLine.replace(/^\d+\. /, "")}
                 </li>
               )
             }
@@ -526,7 +529,7 @@ export default function DocPage({ params }: { params: { slug: string } }) {
             }
             return (
               <p key={index} className="my-4">
-                {line}
+                {cleanLine}
               </p>
             )
           })}
