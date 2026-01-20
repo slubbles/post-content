@@ -438,8 +438,18 @@ Enterprise customers can request custom limits and features. Contact sales.
   },
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const doc = docs[params.slug as keyof typeof docs]
+export async function generateStaticParams() {
+  return Object.keys(docs).map((slug) => ({
+    slug,
+  }))
+}
+
+export const dynamic = 'force-static'
+export const revalidate = false
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const doc = docs[slug as keyof typeof docs]
 
   if (!doc) {
     return {
@@ -453,8 +463,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 }
 
-export default function DocPage({ params }: { params: { slug: string } }) {
-  const doc = docs[params.slug as keyof typeof docs]
+export default async function DocPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const doc = docs[slug as keyof typeof docs]
 
   if (!doc) {
     notFound()
