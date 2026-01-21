@@ -28,16 +28,11 @@ export default function ClientLayout({
   }
 
   const user = session?.user ? {
-    name: session.user.name || "User",
+    name: session.user.name || session.user.email?.split('@')[0] || "User",
     email: session.user.email || "",
     image: session.user.image || undefined,
     plan: getUserPlan(),
-  } : {
-    name: "User",
-    email: "",
-    image: undefined,
-    plan: "free" as const,
-  }
+  } : undefined
 
   useEffect(() => {
     setIsMounted(true)

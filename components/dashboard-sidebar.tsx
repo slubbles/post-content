@@ -116,6 +116,12 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
     return "U"
   }
 
+  const getDisplayName = () => {
+    if (user?.name) return user.name
+    if (user?.email) return user.email.split('@')[0]
+    return "User"
+  }
+
   const getPlanBadge = () => {
     const plan = user?.plan || "free"
     return plan.charAt(0).toUpperCase() + plan.slice(1) + " Plan"
@@ -147,7 +153,7 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-9 w-9 rounded-full p-0">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.image || undefined} alt={user?.name || "User"} />
+                <AvatarImage src={user?.image || undefined} alt={getDisplayName()} />
                 <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
               </Avatar>
             </Button>
@@ -158,8 +164,8 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
                 <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                   {getPlanBadge()}
                 </div>
-                <p className="text-sm font-medium">{user?.name || "User"}</p>
-                <p className="text-xs text-muted-foreground">{user?.email || "user@example.com"}</p>
+                <p className="text-sm font-medium">{getDisplayName()}</p>
+                <p className="text-xs text-muted-foreground">{user?.email || "No email"}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -366,7 +372,7 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-10 w-full justify-center p-0">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user?.image || undefined} alt={user?.name || "User"} />
+                        <AvatarImage src={user?.image || undefined} alt={getDisplayName()} />
                         <AvatarFallback className="bg-primary/10 text-primary text-xs">
                           {getUserInitials()}
                         </AvatarFallback>
@@ -374,18 +380,18 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
                     </Button>
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
-                <TooltipContent side="right">{user?.name || "Account"}</TooltipContent>
+                <TooltipContent side="right">{getDisplayName()}</TooltipContent>
               </Tooltip>
             ) : (
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-auto w-full justify-start gap-3 px-3 py-2">
                   <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarImage src={user?.image || undefined} alt={user?.name || "User"} />
+                    <AvatarImage src={user?.image || undefined} alt={getDisplayName()} />
                     <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col items-start overflow-hidden">
                     <span className="text-sm font-medium text-sidebar-foreground truncate w-full">
-                      {user?.name || "User"}
+                      {getDisplayName()}
                     </span>
                     <span className="text-xs text-muted-foreground">{getPlanBadge()}</span>
                   </div>
@@ -398,8 +404,8 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
                   <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                     {getPlanBadge()}
                   </div>
-                  <p className="text-sm font-medium">{user?.name || "User"}</p>
-                  <p className="text-xs text-muted-foreground">{user?.email || "user@example.com"}</p>
+                  <p className="text-sm font-medium">{getDisplayName()}</p>
+                  <p className="text-xs text-muted-foreground">{user?.email || "No email"}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
