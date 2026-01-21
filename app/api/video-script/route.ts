@@ -60,40 +60,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { hook, story, offer } = await request.json();
+    const { context, format } = await request.json();
 
     // Validate inputs
-    if (!hook || typeof hook !== 'string' || !story || typeof story !== 'string' || !offer || typeof offer !== 'string') {
+    if (!context || typeof context !== 'string') {
       return NextResponse.json(
-        { error: 'Missing required fields: hook, story, and offer' },
+        { error: 'Context is required' },
         { status: 400 }
       );
     }
 
-    const sanitizedHook = sanitizeInput(hook);
-    const sanitizedStory = sanitizeInput(story);
-    const sanitizedOffer = sanitizeInput(offer);
+    const sanitizedContext = sanitizeInput(context);
 
-    if (sanitizedHook.length === 0 || sanitizedHook.length > 200) {
+    if (sanitizedContext.length === 0 || sanitizedContext.length > 1500) {
       return NextResponse.json(
-        { error: 'Hook must be between 1 and 200 characters' },
+        { error: 'Context must be between 1 and 1500 characters' },
         { status: 400 }
       );
     }
 
-    if (sanitizedStory.length === 0 || sanitizedStory.length > 800) {
-      return NextResponse.json(
-        { error: 'Story must be between 1 and 800 characters' },
-        { status: 400 }
-      );
-    }
-
-    if (sanitizedOffer.length === 0 || sanitizedOffer.length > 400) {
-      return NextResponse.json(
-        { error: 'Offer must be between 1 and 400 characters' },
-        { status: 400 }
-      );
-    }
+    // Validate format (optional)
+    const validFormats = ['hook-story-offer', 'provide-value', 'emotion-logic-urgency'];
+    const scriptFormat = format && validFormats.includes(format) ? format : 'hook-story-offer';
 
     // Check usage limits
     const canGenerate = await canUserGeneratePost(session.user.id);
@@ -108,27 +96,31 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate video script using Claude
+    const formatDescriptions = {
+      'hook-story-offer': 'Hook-Story-Offer (Pattern interrupt → empathy building → transformation CTA)',
+      'provide-value': 'Provide Value (Educational content that builds authority and trust)',
+      'emotion-logic-urgency': 'Emotion-Logic-Urgency (Emotional hook → logical reasoning → scarcity/urgency close)'
+    };
+
+    const formatDescription = formatDescriptions[scriptFormat as keyof typeof formatDescriptions];
+
     const systemPrompt = `You are an expert video script writer specializing in short-form content for platforms like TikTok, Instagram Reels, and YouTube Shorts.
 
-Create an engaging video script following the Hook-Story-Offer framework:
-- Start with an attention-grabbing hook
-- Build interest with a compelling story or value
-- Close with a clear call-to-action or offer
+Create an engaging video script using the ${formatDescription} framework.
 
 The script should be:
 - Natural and conversational
 - Optimized for 30-90 second videos
 - Include brief stage directions in [brackets] where helpful
 - Written in a way that's easy to read/perform
-- Engaging and actionable`;
+- Engaging and actionable
+- Follow the ${scriptFormat} structure`;
 
-    const userPrompt = `Create a video script using this framework:
+    const userPrompt = `Create a video script about: ${sanitizedContext}
 
-HOOK: ${sanitizedHook}
-STORY: ${sanitizedStory}
-OFFER: ${sanitizedOffer}
+Use the ${formatDescription} format to structure the content.
 
-Generate a cohesive, engaging video script that flows naturally from hook to story to offer.`;
+Generate a cohesive, engaging video script that is ready to perform.`;
 
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
