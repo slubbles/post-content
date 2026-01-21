@@ -1,17 +1,22 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Sparkles, MessageSquare, List, GraduationCap, Zap, TrendingUp, Clock, AlertCircle, User } from "lucide-react"
 import { Footer } from "@/components/footer"
 import { AppNavigation } from "@/components/app-navigation"
-
-const loading = false; // Declare loading variable
-const isAuthenticated = false; // Declare isAuthenticated variable
+import { useSession } from "next-auth/react"
 
 export default function LandingPage() {
+  const { data: session, status } = useSession()
+  const loading = status === "loading"
+  const isAuthenticated = status === "authenticated"
+
   return (
     <div className="min-h-screen bg-background mobile-overflow-safe">
-      <AppNavigation isAuthenticated={isAuthenticated} />
+      <AppNavigation />
 
       {/* Hero Section */}
       <section className="mobile-safe-padding mx-auto max-w-7xl py-8 sm:py-12 lg:py-20 animate-fade-in">

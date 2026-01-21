@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -55,6 +57,10 @@ const platformIcons: Record<string, typeof Twitter> = {
 }
 
 export default function HistoryPage() {
+  const { data: session, status } = useSession()
+  const router = useRouter()
+  const { toast } = useToast()
+  
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [filteredHistory, setFilteredHistory] = useState<HistoryItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -64,11 +70,19 @@ export default function HistoryPage() {
   const [platformFilter, setPlatformFilter] = useState<string>("all")
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [itemToDelete, setItemToDelete] = useState<string | null>(null)
-  const { toast } = useToast()
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login")
+    }
+  }, [status, router])
 
   useEffect(() => {
-    fetchHistory()
-  }, [])
+    if (status === "authenticated") {
+      fetchHistory()
+    }
+  }, [status])
 
   useEffect(() => {
     let filtered = history
@@ -104,6 +118,10 @@ export default function HistoryPage() {
         } else {
           setHistory([])
         }
+      } else if (response.status === 401) {
+        // Unauthorized - redirect to login
+        console.error("[v0] History API returned 401: Unauthorized")
+        router.push("/login")
       } else {
         // Handle non-ok responses
         console.error("[v0] History API returned error:", response.status)
@@ -188,7 +206,8 @@ export default function HistoryPage() {
     thread: history.filter((h) => h.type === "thread").length,
   }
 
-  if (isLoading) {
+  // Show loading while checking authentication
+  if (status === "loading" || isLoading) {
     return (
       <div className="space-y-6 animate-fade-in">
         <div>
@@ -205,6 +224,11 @@ export default function HistoryPage() {
         </div>
       </div>
     )
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (status === "unauthenticated") {
+    return null
   }
 
   return (
