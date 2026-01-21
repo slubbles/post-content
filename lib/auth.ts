@@ -166,7 +166,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             image: true,
             emailVerified: true,
             subscribed: true,
-            subscriptionStatus: tr || dbUser.email?.split('@')[0]ue,
+            subscriptionStatus: true,
             subscriptionId: true,
             subscriptionEndsAt: true,
           }
