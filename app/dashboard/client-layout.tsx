@@ -11,7 +11,7 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
 
@@ -27,7 +27,8 @@ export default function ClientLayout({
     return "free"
   }
 
-  const user = session?.user ? {
+  // Only set user when session is fully loaded (not during loading state)
+  const user = status === "authenticated" && session?.user ? {
     name: session.user.name || session.user.email?.split('@')[0] || "User",
     email: session.user.email || "",
     image: session.user.image || undefined,

@@ -153,20 +153,34 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-9 w-9 rounded-full p-0">
               <Avatar className="h-8 w-8">
-                <AvatarImage src={user?.image || undefined} alt={getDisplayName()} />
-                <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
+                {user ? (
+                  <>
+                    <AvatarImage src={user.image || undefined} alt={getDisplayName()} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
+                  </>
+                ) : (
+                  <AvatarFallback className="bg-muted animate-pulse" />
+                )}
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-72">
             <DropdownMenuLabel>
-              <div className="flex flex-col space-y-2">
-                <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                  {getPlanBadge()}
+              {user ? (
+                <div className="flex flex-col space-y-2">
+                  <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                    {getPlanBadge()}
+                  </div>
+                  <p className="text-sm font-medium">{getDisplayName()}</p>
+                  <p className="text-xs text-muted-foreground">{user.email || "No email"}</p>
                 </div>
-                <p className="text-sm font-medium">{getDisplayName()}</p>
-                <p className="text-xs text-muted-foreground">{user?.email || "No email"}</p>
-              </div>
+              ) : (
+                <div className="flex flex-col space-y-2">
+                  <div className="h-5 w-20 bg-muted rounded animate-pulse" />
+                  <div className="h-4 w-32 bg-muted rounded animate-pulse" />
+                  <div className="h-3 w-40 bg-muted rounded animate-pulse" />
+                </div>
+              )}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
@@ -372,41 +386,68 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-10 w-full justify-center p-0">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={user?.image || undefined} alt={getDisplayName()} />
-                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                          {getUserInitials()}
-                        </AvatarFallback>
+                        {user ? (
+                          <>
+                            <AvatarImage src={user.image || undefined} alt={getDisplayName()} />
+                            <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                              {getUserInitials()}
+                            </AvatarFallback>
+                          </>
+                        ) : (
+                          <AvatarFallback className="bg-muted animate-pulse" />
+                        )}
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                 </TooltipTrigger>
-                <TooltipContent side="right">{getDisplayName()}</TooltipContent>
+                <TooltipContent side="right">{user ? getDisplayName() : "Loading..."}</TooltipContent>
               </Tooltip>
             ) : (
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-auto w-full justify-start gap-3 px-3 py-2">
                   <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarImage src={user?.image || undefined} alt={getDisplayName()} />
-                    <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
+                    {user ? (
+                      <>
+                        <AvatarImage src={user.image || undefined} alt={getDisplayName()} />
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs">{getUserInitials()}</AvatarFallback>
+                      </>
+                    ) : (
+                      <AvatarFallback className="bg-muted animate-pulse" />
+                    )}
                   </Avatar>
-                  <div className="flex flex-col items-start overflow-hidden">
-                    <span className="text-sm font-medium text-sidebar-foreground truncate w-full">
-                      {getDisplayName()}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{getPlanBadge()}</span>
-                  </div>
+                  {user ? (
+                    <div className="flex flex-col items-start overflow-hidden">
+                      <span className="text-sm font-medium text-sidebar-foreground truncate w-full">
+                        {getDisplayName()}
+                      </span>
+                      <span className="text-xs text-muted-foreground">{getPlanBadge()}</span>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-start overflow-hidden gap-1">
+                      <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                      <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+                    </div>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
             )}
             <DropdownMenuContent align="end" side="right" className="w-56">
               <DropdownMenuLabel>
-                <div className="flex flex-col space-y-2">
-                  <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    {getPlanBadge()}
+                {user ? (
+                  <div className="flex flex-col space-y-2">
+                    <div className="inline-flex w-fit items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                      {getPlanBadge()}
+                    </div>
+                    <p className="text-sm font-medium">{getDisplayName()}</p>
+                    <p className="text-xs text-muted-foreground">{user.email || "No email"}</p>
                   </div>
-                  <p className="text-sm font-medium">{getDisplayName()}</p>
-                  <p className="text-xs text-muted-foreground">{user?.email || "No email"}</p>
-                </div>
+                ) : (
+                  <div className="flex flex-col space-y-2">
+                    <div className="h-5 w-16 bg-muted rounded animate-pulse" />
+                    <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+                    <div className="h-3 w-32 bg-muted rounded animate-pulse" />
+                  </div>
+                )}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
