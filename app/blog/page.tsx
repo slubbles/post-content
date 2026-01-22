@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { AppNavigation } from "@/components/app-navigation"
+import { Footer } from "@/components/footer"
 import { Calendar, User, ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -115,6 +116,7 @@ export default async function BlogPage() {
           </p>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

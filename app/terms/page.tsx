@@ -1,4 +1,5 @@
 import { AppNavigation } from "@/components/app-navigation"
+import { Footer } from "@/components/footer"
 import { auth } from "@/lib/auth"
 
 export const metadata = {
@@ -131,6 +132,7 @@ export default async function TermsPage() {
           </section>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

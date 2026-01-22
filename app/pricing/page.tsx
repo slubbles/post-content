@@ -1,6 +1,7 @@
 import { AppNavigation } from "@/components/app-navigation"
 import { PricingPageClient } from "@/components/pricing-page-client"
 import { auth } from "@/lib/auth"
+import { Footer } from "@/components/footer"
 
 export default async function PricingPage() {
   const session = await auth()
@@ -17,6 +18,7 @@ export default async function PricingPage() {
     <div className="min-h-screen bg-background">
       <AppNavigation isAuthenticated={isAuthenticated} user={user} />
       <PricingPageClient />
+      <Footer />
     </div>
   )
 }

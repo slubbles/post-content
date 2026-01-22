@@ -6,6 +6,7 @@ import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/com
 import { auth } from "@/lib/auth"
 import { AffiliateDashboard } from "@/components/affiliate-dashboard"
 import Link from "next/link"
+import { Footer } from "@/components/footer"
 
 export const metadata: Metadata = {
   title: "Affiliate Program - PostContent",
@@ -209,6 +210,7 @@ export default async function AffiliatePage() {
           </>
         )}
       </div>
+      <Footer />
     </div>
   )
 }

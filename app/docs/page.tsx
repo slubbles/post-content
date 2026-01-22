@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { AppNavigation } from "@/components/app-navigation"
+import { Footer } from "@/components/footer"
 import Link from "next/link"
 import { BookOpen, Video, Code, FileText } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -122,6 +123,7 @@ export default async function DocsPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

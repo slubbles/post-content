@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { AppNavigation } from "@/components/app-navigation"
+import { Footer } from "@/components/footer"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
@@ -97,6 +98,7 @@ export default function FAQPage() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

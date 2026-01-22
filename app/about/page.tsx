@@ -1,4 +1,5 @@
 import { AppNavigation } from "@/components/app-navigation"
+import { Footer } from "@/components/footer"
 import Link from "next/link"
 import { Sparkles, TrendingUp } from "lucide-react"
 
@@ -140,6 +141,7 @@ export default function AboutPage() {
           <p className="text-sm text-muted-foreground">10 free posts per month • No credit card • Cancel anytime</p>
         </section>
       </div>
+      <Footer />
     </div>
   )
 }

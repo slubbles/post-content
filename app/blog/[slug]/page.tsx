@@ -4,6 +4,7 @@ import { AppNavigation } from "@/components/app-navigation"
 import { Calendar, User, ArrowLeft, Clock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { Footer } from "@/components/footer"
 
 const blogPosts = {
   "ai-content-generation-guide-2026": {
@@ -465,6 +466,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           </Link>
         </div>
       </article>
+      <Footer />
     </div>
   )
 }

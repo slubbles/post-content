@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { Footer } from "@/components/footer"
 import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 
@@ -155,6 +156,7 @@ export default function ContactPage() {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </div>
   )
 }
