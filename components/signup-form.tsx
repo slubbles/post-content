@@ -18,15 +18,16 @@ export function SignupForm() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const [validationErrors, setValidationErrors] = useState<{ name?: string; email?: string; password?: string }>({})
+  const [validationErrors, setValidationErrors] = useState<{ name?: string; email?: string; password?: string; confirmPassword?: string }>({})
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setValidationErrors({})
     setIsLoading(true)
 
-    const errors: { name?: string; email?: string; password?: string } = {}
+    const errors: { name?: string; email?: string; password?: string; confirmPassword?: string } = {}
     if (!name || name.trim().length < 2) {
       errors.name = "Name must be at least 2 characters"
     }
@@ -35,6 +36,9 @@ export function SignupForm() {
     }
     if (!password || password.length < 8) {
       errors.password = "Password must be at least 8 characters"
+    }
+    if (password !== confirmPassword) {
+      errors.confirmPassword = "Passwords do not match"
     }
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors)
@@ -184,6 +188,26 @@ export function SignupForm() {
             {validationErrors.password && (
               <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">
                 {validationErrors.password}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              placeholder="Re-enter your password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              minLength={8}
+              disabled={isLoading}
+              className="transition-all focus:ring-2"
+            />
+            {validationErrors.confirmPassword && (
+              <p className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">
+                {validationErrors.confirmPassword}
               </p>
             )}
           </div>
