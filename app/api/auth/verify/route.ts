@@ -55,8 +55,8 @@ export async function GET(request: Request) {
       where: { token },
     })
 
-    // Redirect to login with success message
-    return NextResponse.redirect(new URL("/login?verified=true", request.url))
+    // Redirect to success page instead of directly to login
+    return NextResponse.redirect(new URL("/email-verified", request.url))
   } catch (error) {
     console.error("Email verification error:", error)
     return NextResponse.redirect(new URL("/login?error=verification_failed", request.url))

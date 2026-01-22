@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { signIn } from "next-auth/react"
@@ -17,11 +17,22 @@ export function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard/generate"
+  const verified = searchParams.get("verified")
   const { toast } = useToast()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [validationErrors, setValidationErrors] = useState<{ email?: string; password?: string }>({})
+
+  // Show success message if email was just verified
+  useEffect(() => {
+    if (verified === "true") {
+      toast({
+        title: "Email verified! ✅",
+        description: "Your account is ready. Please log in to continue.",
+      })
+    }
+  }, [verified, toast])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
