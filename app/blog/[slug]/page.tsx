@@ -400,9 +400,41 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     notFound()
   }
 
+  // JSON-LD structured data for SEO
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt,
+    author: {
+      '@type': 'Organization',
+      name: post.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'PostContent',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://www.postcontent.io/logo.png',
+      },
+    },
+    datePublished: post.date,
+    dateModified: post.date,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://www.postcontent.io/blog/${slug}`,
+    },
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <AppNavigation isAuthenticated={false} />
+      
+      {/* JSON-LD Script */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
       <article className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         <Link href="/blog">
