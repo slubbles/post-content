@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       )
     }
 
-    console.log("[Checkout] User email retrieved from DB:", { email: user.email })    console.log("[Checkout] User email retrieved from DB:", { email: user.email })
+    console.log("[Checkout] User email retrieved from DB:", { email: user.email })
 
     const { plan, billingCycle } = await request.json()
     const isAnnual = billingCycle === "annual"
