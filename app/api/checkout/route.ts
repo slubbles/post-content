@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
+import { headers, cookies } from "next/headers"
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +9,9 @@ export async function POST(request: Request) {
     
     // Debug logging
     const headersList = await headers()
+    const cookieStore = await cookies()
     const cookieHeader = headersList.get('cookie')
+    const sessionToken = cookieStore.get('next-auth.session-token') || cookieStore.get('__Secure-next-auth.session-token')
     
     console.log("[Checkout] Session check:", { 
       hasSession: !!session, 
@@ -17,11 +19,13 @@ export async function POST(request: Request) {
       hasEmail: !!session?.user?.email,
       email: session?.user?.email,
       hasCookies: !!cookieHeader,
+      hasSessionToken: !!sessionToken,
+      authSecret: !!process.env.AUTH_SECRET || !!process.env.NEXTAUTH_SECRET,
       cookieHeader: cookieHeader?.substring(0, 100) // Log first 100 chars
     })
     
     if (!session?.user?.email) {
-      console.error("[Checkout] No session or email found")
+      console.error("[Checkout] No session or email found - User may not be logged in")
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
