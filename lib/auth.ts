@@ -119,6 +119,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.name = user.name
         token.picture = user.image
         
+        console.log("[JWT] New login - user data:", { id: user.id, email: user.email, name: user.name })
+        
         // Fetch full user data from database
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
@@ -148,9 +150,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       
       // On every request, refresh user data from database to keep it current
-      if (token.id) {
+      if (token.id || token.sub) {
+        const userId = (token.id as string) || (token.sub as string)
         const dbUser = await prisma.user.findUnique({
-          where: { id: token.id as string },
+          where: { id: userId },
           select: { 
             name: true,
             email: true,
@@ -164,6 +167,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         })
         
         if (dbUser) {
+          token.id = userId
           token.name = dbUser.name
           token.email = dbUser.email
           token.picture = dbUser.image
@@ -172,22 +176,28 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.subscriptionStatus = dbUser.subscriptionStatus
           token.subscriptionId = dbUser.subscriptionId
           token.subscriptionEndsAt = dbUser.subscriptionEndsAt
+          
+          console.log("[JWT] Refreshed token with DB data:", { id: userId, email: dbUser.email, hasEmail: !!dbUser.email })
+        } else {
+          console.error("[JWT] User not found in database:", userId)
         }
       }
       
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id as string
-        session.user.email = token.email as string
-        session.user.name = token.name as string
-        session.user.image = token.picture as string
-        session.user.emailVerified = token.emailVerified as Date | null
-        session.user.subscribed = token.subscribed as boolean
-        session.user.subscriptionStatus = token.subscriptionStatus as string
-        session.user.subscriptionId = token.subscriptionId as string
-        session.user.subscriptionEndsAt = token.subscriptionEndsAt as Date | null
+      if (token && session) {
+        session.user = {
+          id: (token.id as string) || (token.sub as string),
+          email: (token.email as string) || "",
+          name: (token.name as string) || null,
+          image: (token.picture as string) || null,
+          emailVerified: (token.emailVerified as Date | null) || null,
+          subscribed: (token.subscribed as boolean) || false,
+          subscriptionStatus: (token.subscriptionStatus as string) || "free",
+          subscriptionId: (token.subscriptionId as string) || null,
+          subscriptionEndsAt: (token.subscriptionEndsAt as Date | null) || null,
+        }
       }
       return session
     },
