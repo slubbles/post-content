@@ -7,6 +7,7 @@ import { Check, Loader2 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 const plans = [
   {
@@ -53,31 +54,41 @@ const plans = [
 
 export function PricingCards() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [userPlan, setUserPlan] = useState<string | null>(null)
   const { toast} = useToast()
   const router = useRouter()
+  const { data: session, status } = useSession()
+  
+  const isAuthenticated = status === "authenticated"
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch("/api/auth/me")
-        if (response.ok) {
-          const data = await response.json()
-          setIsAuthenticated(true)
-          setUserPlan(data.plan?.toLowerCase() || "free")
-        } else {
-          setIsAuthenticated(false)
+    const fetchUserPlan = async () => {
+      if (isAuthenticated) {
+        try {
+          const response = await fetch("/api/auth/me")
+          if (response.ok) {
+            const data = await response.json()
+            setUserPlan(data.plan?.toLowerCase() || "free")
+          }
+        } catch (error) {
+          console.error("Failed to fetch user plan:", error)
         }
-      } catch {
-        setIsAuthenticated(false)
       }
     }
-    checkAuth()
-  }, [])
+    fetchUserPlan()
+  }, [isAuthenticated])
 
   const handleSubscribe = async (planName: string) => {
-    if (!isAuthenticated) {
+    // Check if still loading
+    if (status === "loading") {
+      toast({
+        title: "Loading",
+        description: "Please wait while we verify your session...",
+      })
+      return
+    }
+    
+    if (!isAuthenticated || !session) {
       if (planName === "Free") {
         window.location.href = "/signup"
         return

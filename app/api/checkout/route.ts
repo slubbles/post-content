@@ -1,18 +1,27 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
+import { headers } from "next/headers"
 
 export async function POST(request: Request) {
   try {
+    // Get session - NextAuth v5 with App Router
     const session = await auth()
+    
+    // Debug logging
+    const headersList = await headers()
+    const cookieHeader = headersList.get('cookie')
     
     console.log("[Checkout] Session check:", { 
       hasSession: !!session, 
       hasUser: !!session?.user, 
       hasEmail: !!session?.user?.email,
-      email: session?.user?.email 
+      email: session?.user?.email,
+      hasCookies: !!cookieHeader,
+      cookieHeader: cookieHeader?.substring(0, 100) // Log first 100 chars
     })
     
     if (!session?.user?.email) {
+      console.error("[Checkout] No session or email found")
       return NextResponse.json(
         { error: "Unauthorized. Please sign in." },
         { status: 401 }
