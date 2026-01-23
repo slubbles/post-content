@@ -112,7 +112,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       
       return true
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user, account, trigger }) {
+      console.log("[JWT] Called with:", { 
+        hasUser: !!user, 
+        hasToken: !!token,
+        tokenId: token?.id,
+        tokenSub: token?.sub,
+        tokenEmail: token?.email,
+        trigger 
+      })
+      
       if (user) {
         token.id = user.id
         token.email = user.email
@@ -186,6 +195,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
     async session({ session, token }) {
+      console.log("[Session] Token data:", { 
+        hasToken: !!token,
+        tokenId: token?.id,
+        tokenSub: token?.sub,
+        tokenEmail: token?.email,
+        tokenKeys: token ? Object.keys(token) : []
+      })
+      
       if (token && session) {
         session.user = {
           id: (token.id as string) || (token.sub as string),
@@ -198,6 +215,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           subscriptionId: (token.subscriptionId as string) || null,
           subscriptionEndsAt: (token.subscriptionEndsAt as Date | null) || null,
         }
+        
+        console.log("[Session] Built session.user:", {
+          id: session.user.id,
+          email: session.user.email,
+          hasEmail: !!session.user.email
+        })
       }
       return session
     },
