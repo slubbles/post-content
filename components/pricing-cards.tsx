@@ -90,11 +90,6 @@ export function PricingCards() {
       return
     }
 
-    if (planName === "Enterprise") {
-      window.open("mailto:sales@postcontent.io", "_blank")
-      return
-    }
-
     setLoadingPlan(planName)
     try {
       const response = await fetch("/api/checkout", {
