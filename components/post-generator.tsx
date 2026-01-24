@@ -15,6 +15,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
 import { useUsage } from "@/hooks/use-usage"
+import { HumannessSlider, type HumannessLevel } from "@/components/humanness-slider"
+import { MultiHumannessToggle } from "@/components/multi-humanness-toggle"
 
 const platforms = [
   { value: "twitter", label: "Twitter/X", shortLabel: "X" },
@@ -43,9 +45,11 @@ export function PostGenerator() {
   const [platform, setPlatform] = useState("twitter")
   const [tone, setTone] = useState("professional")
   const [variants, setVariants] = useState([3])
+  const [humanness, setHumanness] = useState<HumannessLevel | undefined>(undefined)
+  const [multiHumanness, setMultiHumanness] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatingProgress, setGeneratingProgress] = useState(0)
-  const [generatedPosts, setGeneratedPosts] = useState<string[]>([])
+  const [generatedPosts, setGeneratedPosts] = useState<string[] | any[]>([])
   const [showConfetti, setShowConfetti] = useState(false)
   const [apiError, setApiError] = useState<string | null>(null)
   const { usage, refresh } = useUsage()
@@ -94,6 +98,8 @@ export function PostGenerator() {
           platform,
           tone,
           variants: variants[0],
+          ...(humanness && { humanness }),
+          ...(multiHumanness && { multiHumanness: true }),
         }),
       })
 
@@ -112,9 +118,12 @@ export function PostGenerator() {
         return
       }
 
-      if (data.posts) {
+      // Handle both response formats (variations vs posts)
+      const postsArray = data.variations || data.posts
+      
+      if (postsArray) {
         setTimeout(() => {
-          setGeneratedPosts(data.posts)
+          setGeneratedPosts(postsArray)
           refresh()
           // Dispatch event to refresh credits across all components
           window.dispatchEvent(new Event('credits-updated'))
@@ -122,7 +131,7 @@ export function PostGenerator() {
           setTimeout(() => setShowConfetti(false), 100)
           toast({
             title: "Posts generated!",
-            description: `Created ${data.posts.length} post${data.posts.length > 1 ? "s" : ""} for you.`,
+            description: `Created ${postsArray.length} post${postsArray.length > 1 ? "s" : ""} for you.`,
           })
         }, 200)
       }
@@ -277,6 +286,44 @@ export function PostGenerator() {
             </div>
           </div>
 
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm sm:text-base">Humanness Level</Label>
+              {humanness && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setHumanness(undefined)
+                    setMultiHumanness(false)
+                  }}
+                  className="h-auto py-1 px-2 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
+            <HumannessSlider 
+              value={humanness}
+              onChange={(level) => {
+                setHumanness(level)
+                setMultiHumanness(false) // Reset multi-mode when manually selecting
+              }}
+              disabled={isGenerating || multiHumanness}
+            />
+            <MultiHumannessToggle
+              enabled={multiHumanness}
+              onChange={(enabled) => {
+                setMultiHumanness(enabled)
+                if (enabled) {
+                  setHumanness(undefined) // Clear single humanness when enabling multi-mode
+                }
+              }}
+              disabled={isGenerating}
+            />
+          </div>
+
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="variants">Number of Variants</Label>
@@ -292,8 +339,13 @@ export function PostGenerator() {
               value={variants}
               onValueChange={setVariants}
               className="cursor-pointer"
+              disabled={isGenerating || multiHumanness}
             />
-            <p className="text-xs text-muted-foreground">More variants = more options to choose from</p>
+            <p className="text-xs text-muted-foreground">
+              {multiHumanness 
+                ? "Multi-humanness mode always generates 3 variants" 
+                : "More variants = more options to choose from"}
+            </p>
           </div>
 
           <div className="space-y-2">

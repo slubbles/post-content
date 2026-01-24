@@ -9,6 +9,120 @@ export interface ToneConfig {
 }
 
 /**
+ * Humanness level configurations
+ * Controls how formal vs casual the content sounds (separate from tone)
+ */
+export interface HumannessConfig {
+  level: number;
+  temperature: number;
+  description: string;
+  detectionRisk: 'MINIMAL' | 'LOW' | 'MEDIUM' | 'HIGH';
+  characteristics: string[];
+  instructions: string;
+}
+
+export type HumannessLevel = 
+  | 'corporate_polished' 
+  | 'professional_authentic' 
+  | 'casual_authentic' 
+  | 'texting_friend';
+
+export const HUMANNESS_LEVELS: Record<HumannessLevel, HumannessConfig> = {
+  corporate_polished: {
+    level: 1,
+    temperature: 0.3,
+    description: '🤖 Corporate & Polished',
+    detectionRisk: 'HIGH',
+    characteristics: [
+      'Sophisticated vocabulary',
+      'Perfect grammar',
+      'No contractions',
+      'Formal punctuation'
+    ],
+    instructions: `
+Write in a professional, polished tone.
+Use sophisticated vocabulary appropriately.
+Complete sentences, proper grammar.
+Sound like a business publication.
+NO contractions, NO casual language.
+Use formal transitions and structure.
+    `
+  },
+  
+  professional_authentic: {
+    level: 2,
+    temperature: 0.7,
+    description: '💼 Professional but Real',
+    detectionRisk: 'MEDIUM',
+    characteristics: [
+      'Mixed vocabulary',
+      'Some contractions',
+      'Varied sentence length',
+      'Personal touches'
+    ],
+    instructions: `
+Write conversationally but professionally.
+Mix simple and sophisticated words naturally.
+USE contractions (I'm, you're, it's).
+Vary sentence length (short and long).
+Start sentences with "And" or "But" if natural.
+Sound like a smart person, not a press release.
+Include personal markers: "I've found", "in my experience"
+NO em-dashes or semicolons.
+    `
+  },
+  
+  casual_authentic: {
+    level: 3,
+    temperature: 0.8,
+    description: '💬 Casual & Authentic',
+    detectionRisk: 'LOW',
+    characteristics: [
+      'Everyday words',
+      'Frequent contractions',
+      'Sentence fragments OK',
+      'Occasional casual markers'
+    ],
+    instructions: `
+Write casually but not unprofessionally.
+Simple everyday words only.
+Contractions are natural and frequent.
+Fragments okay if natural.
+Use sparingly: honestly, actually, literally
+Can use "lol" or "idk" if context fits.
+Sound like explaining to a friend over coffee.
+NO sophisticated vocabulary.
+NO perfect parallel structure.
+    `
+  },
+  
+  texting_friend: {
+    level: 4,
+    temperature: 0.9,
+    description: '🗣️ Like Texting',
+    detectionRisk: 'MINIMAL',
+    characteristics: [
+      'Very simple words',
+      'Lowercase "i" sometimes',
+      'Internet shorthand OK',
+      'Intentional imperfections'
+    ],
+    instructions: `
+Write like typing quickly to a friend.
+Very simple words only - 6th grade level.
+Use naturally: gonna, wanna, idk, lol, tbh (but don't spam).
+Lowercase 'i' occasionally (not every time).
+Short sentences. Fragments totally fine.
+Can trail off with ... when appropriate.
+Admit uncertainty: "idk if this makes sense but..."
+Sound imperfect on purpose - like it wasn't edited.
+Simple punctuation only - no semicolons, colons, or em-dashes.
+Can use "honestly" or "ngl" if it feels natural.
+    `
+  }
+};
+
+/**
  * Platform-specific configurations
  */
 export interface PlatformConfig {

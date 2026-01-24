@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generatePosts } from '@/lib/claude';
+import { generatePosts, generatePostsWithDetection } from '@/lib/claude';
 import { auth } from '@/lib/auth';
 import { canUserGeneratePost, trackPostGeneration } from '@/lib/usage';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
@@ -7,6 +7,7 @@ import { prisma } from '@/lib/db';
 import { validateGenerateInput, validateTone, validatePlatform } from '@/lib/validation';
 import { handleCorsPrelight, getCorsHeaders } from '@/lib/cors';
 import { verifyCsrfToken } from '@/lib/csrf';
+import type { HumannessLevel } from '@/types/api';
 
 export async function OPTIONS(request: NextRequest) {
   const response = handleCorsPrelight(request);
@@ -47,7 +48,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { input, tone, platform } = await request.json();
+    const { input, tone, platform, humanness, multiHumanness } = await request.json();
 
     // Validate and sanitize input
     const inputValidation = validateGenerateInput(input);
@@ -65,6 +66,16 @@ export async function POST(request: NextRequest) {
     const toneValidation = validateTone(tone);
     if (!toneValidation.valid) {
       return NextResponse.json({ error: toneValidation.error }, { status: 400 });
+    }
+
+    // Validate humanness if provided
+    if (humanness) {
+      const validHumanness = ['corporate_polished', 'professional_authentic', 'casual_authentic', 'texting_friend'];
+      if (!validHumanness.includes(humanness)) {
+        return NextResponse.json({ 
+          error: `Invalid humanness level. Must be one of: ${validHumanness.join(', ')}` 
+        }, { status: 400 });
+      }
     }
 
     // Check usage limits
@@ -91,7 +102,35 @@ export async function POST(request: NextRequest) {
       avgLength: voiceProfile.avgLength,
     } : undefined;
 
-    // Generate posts - only track on success
+    // Generate posts - check if detection mode is requested
+    const withDetection = humanness || multiHumanness;
+    
+    if (withDetection) {
+      const results = await generatePostsWithDetection({ 
+        input: inputValidation.sanitized!, 
+        tone: toneValidation.value!, 
+        platform: platformValidation.value!,
+        humanness: humanness as HumannessLevel,
+        multiHumanness,
+        userVoice 
+      });
+      
+      // Track usage
+      await trackPostGeneration(session.user.id, 'generate');
+      
+      return NextResponse.json({
+        variations: results,
+        metadata: {
+          timestamp: new Date().toISOString(),
+          platform: platformValidation.value,
+          tone: toneValidation.value,
+          humanness: humanness || (multiHumanness ? 'multi' : 'default'),
+          withDetection: true
+        }
+      }, { status: 200, headers: corsHeaders });
+    }
+    
+    // Standard generation without detection
     const posts = await generatePosts({ 
       input: inputValidation.sanitized!, 
       tone: toneValidation.value!, 

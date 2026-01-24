@@ -24,14 +24,44 @@ export interface Session {
 export type TonePreset = 'professional' | 'casual' | 'humorous' | 'inspirational' | 'educational';
 export type PlatformType = 'twitter' | 'linkedin' | 'instagram' | 'facebook' | 'threads';
 
+export type HumannessLevel = 
+  | 'corporate_polished' 
+  | 'professional_authentic' 
+  | 'casual_authentic' 
+  | 'texting_friend';
+
 export interface GenerateRequest {
   input: string;
   tone: TonePreset;
   platform: PlatformType;
+  humanness?: HumannessLevel;
+  multiHumanness?: boolean;
+}
+
+export interface AIDetectionResult {
+  riskScore: number;              // 0-100
+  riskLevel: 'MINIMAL' | 'LOW' | 'MEDIUM' | 'HIGH';
+  flags: string[];                // What triggered detection
+  recommendations: string[];       // How to fix
+  passed: boolean;                 // Score < 40
+  metrics: {
+    avgSentenceLength: number;
+    hasPersonalPronouns: boolean;
+    hasContractions: boolean;
+    aiBuzzwordCount: number;
+    complexPunctuation: boolean;
+  };
+}
+
+export interface GenerationResult {
+  content: string;
+  humanness?: string;
+  aiDetection: AIDetectionResult;
 }
 
 export interface GenerateResponse {
   posts: string[];
+  variations?: GenerationResult[];
 }
 
 // ==================== REPLY GENERATION ====================

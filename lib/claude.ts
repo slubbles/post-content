@@ -1,5 +1,16 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { getGenerationPrompt, getTemperature, VOICE_ANALYSIS_PROMPT, THREAD_GENERATION_PROMPT, validateContent, PLATFORM_CONFIGS } from './prompts';
+import { 
+  getGenerationPrompt, 
+  getTemperature, 
+  VOICE_ANALYSIS_PROMPT, 
+  THREAD_GENERATION_PROMPT, 
+  validateContent, 
+  PLATFORM_CONFIGS,
+  HUMANNESS_LEVELS,
+  type HumannessLevel
+} from './prompts';
+import { checkAIDetectionRisk } from './validation';
+import type { AIDetectionResult, GenerationResult } from '@/types/api';
 
 // Initialize Anthropic client (optional for build time)
 const anthropic = process.env.ANTHROPIC_API_KEY 
@@ -12,6 +23,8 @@ export interface GeneratePostOptions {
   input: string;
   tone: string;
   platform: string;
+  humanness?: HumannessLevel;
+  multiHumanness?: boolean;
   userVoice?: {
     sarcasmLevel: number;
     tiredLevel: number;
@@ -27,16 +40,27 @@ export interface Reply {
 }
 
 export async function generatePosts(options: GeneratePostOptions): Promise<string[]> {
-  const { input, tone, platform, userVoice } = options;
+  const { input, tone, platform, humanness, userVoice } = options;
 
   // Check if API is configured
   if (!anthropic) {
     throw new Error('ANTHROPIC_API_KEY is not configured. Add it to .env.local');
   }
 
-  // Get system prompt from prompts library
-  const systemPrompt = getGenerationPrompt(tone, platform, userVoice);
-  const temperature = getTemperature(tone);
+  // Build system prompt with humanness layer if specified
+  let systemPrompt = getGenerationPrompt(tone, platform, userVoice);
+  
+  if (humanness) {
+    const humannessConfig = HUMANNESS_LEVELS[humanness];
+    systemPrompt += `\n\n## HUMANNESS LEVEL: ${humannessConfig.description}\n\n`;
+    systemPrompt += `**Detection Risk Target:** ${humannessConfig.detectionRisk}\n\n`;
+    systemPrompt += humannessConfig.instructions;
+  }
+  
+  // Use humanness temperature if set, otherwise use tone temperature
+  const temperature = humanness 
+    ? HUMANNESS_LEVELS[humanness].temperature 
+    : getTemperature(tone);
 
   const platformName = platform.charAt(0).toUpperCase() + platform.slice(1);
   const userPrompt = `Generate exactly 3 different ${platformName} posts about: "${input}"
@@ -122,6 +146,62 @@ Make each post unique and authentic. Vary the approach across the 3 posts.`;
     }
     throw new Error('Failed to generate posts. Please try again.');
   }
+}
+
+/**
+ * Generate posts with AI detection analysis
+ * Returns posts with humanness level and detection scores
+ */
+export async function generatePostsWithDetection(
+  options: GeneratePostOptions
+): Promise<GenerationResult[]> {
+  const { multiHumanness, humanness } = options;
+  
+  if (!anthropic) {
+    throw new Error('ANTHROPIC_API_KEY is not configured');
+  }
+  
+  // MULTI-HUMANNESS MODE: Generate 3 versions at different levels
+  if (multiHumanness) {
+    const levels: HumannessLevel[] = [
+      'professional_authentic',
+      'casual_authentic',
+      'texting_friend'
+    ];
+    
+    const results = await Promise.all(
+      levels.map(async (level) => {
+        const posts = await generatePosts({
+          ...options,
+          humanness: level,
+          multiHumanness: false
+        });
+        
+        const humannessConfig = HUMANNESS_LEVELS[level];
+        
+        // Use first post from the generation
+        const content = posts[0] || '';
+        const aiDetection = checkAIDetectionRisk(content);
+        
+        return {
+          content,
+          humanness: humannessConfig.description,
+          aiDetection
+        };
+      })
+    );
+    
+    return results;
+  }
+  
+  // STANDARD MODE: Generate posts and analyze
+  const posts = await generatePosts(options);
+  
+  return posts.map(content => ({
+    content,
+    humanness: humanness ? HUMANNESS_LEVELS[humanness].description : undefined,
+    aiDetection: checkAIDetectionRisk(content)
+  }));
 }
 
 export interface VoiceAnalysisResult {
@@ -300,5 +380,161 @@ export async function generateThread(
       throw new Error('Request timed out. Please try again.');
     }
     throw new Error('Failed to generate thread. Please try again.');
+  }
+}
+
+/**
+ * Humanize AI-generated content to reduce detection risk
+ * Makes content sound more natural and human-written
+ */
+export interface HumanizedResult {
+  humanized: string;
+  before: AIDetectionResult;
+  after: AIDetectionResult;
+  improvements: string[];
+}
+
+export interface VoiceProfile {
+  sarcasmLevel: number;
+  tiredLevel: number;
+  favoriteWords: string[];
+  avgLength: number;
+}
+
+export async function humanizeContent(
+  content: string,
+  currentTone: string,
+  platform: string,
+  voiceProfile?: VoiceProfile | null
+): Promise<HumanizedResult> {
+  
+  if (!anthropic) {
+    throw new Error('ANTHROPIC_API_KEY is not configured');
+  }
+  
+  const beforeScore = checkAIDetectionRisk(content);
+  const platformConfig = PLATFORM_CONFIGS[platform] || PLATFORM_CONFIGS.twitter;
+  
+  const humanizePrompt = `
+You are an expert at making AI-generated content sound authentically human.
+
+ORIGINAL CONTENT:
+${content}
+
+CURRENT SETTINGS:
+- Tone: ${currentTone}
+- Platform: ${platform}
+- Character Limit: ${platformConfig.maxChars}
+
+${voiceProfile ? `
+USER'S VOICE PROFILE:
+- Sarcasm level: ${voiceProfile.sarcasmLevel}%
+- Tired/burnout vibes: ${voiceProfile.tiredLevel}%
+- Signature words: ${voiceProfile.favoriteWords.join(', ')}
+- Average sentence length: ${voiceProfile.avgLength} words
+` : ''}
+
+YOUR MISSION: Make this sound like a real person wrote it quickly, not an AI.
+
+APPLY THESE CHANGES:
+
+1. **Simplify Vocabulary** (Critical)
+   - Replace: leverage → use, robust → strong, comprehensive → complete
+   - Replace: delve → explore, tapestry → mix, paradigm → model
+   - Use everyday words a friend would use
+
+2. **Add Casual Elements**
+   - Use contractions naturally: I'm, you're, it's, don't, can't
+   - Can add occasional fillers: honestly, actually, tbh (sparingly)
+   - Lowercase 'i' once or twice if it feels natural
+   - Can use "idk", "lol" if tone allows
+
+3. **Create Natural Imperfections**
+   - Vary sentence rhythm dramatically (mix 5-word and 20-word sentences)
+   - Use fragments where they'd naturally occur
+   - Can trail off with ... if appropriate
+   - Break "perfect" parallel structure in lists
+   - Remove overly polished transitions
+
+4. **Fix AI Tells**
+   - Cut all AI buzzwords completely
+   - Remove formal punctuation (em-dashes, semicolons)
+   - Eliminate perfect parallel structure
+   - NO generic openings ("Here are...", "Let me...")
+   - Reduce exclamation marks to 1-2 max
+
+5. **Add Authenticity**
+   - Include personal pronouns (I, my, we)
+   - Can admit uncertainty: "I think", "maybe", "probably"
+   - Sound typed quickly, not carefully edited
+   - Personal voice over corporate voice
+   - Can be slightly imperfect (it's humanizing)
+
+6. **Maintain Quality**
+   - Keep the core message intact
+   - Preserve the framework structure (Hook-Story-Offer)
+   - Same value proposition
+   - Just change HOW it's said, not WHAT
+
+CRITICAL RULES:
+- Character limit: ${platformConfig.maxChars} (strict)
+- Keep the same tone essence (${currentTone})
+- Don't lose the conversion elements
+- Sound like someone typing to their audience, not a bot
+
+OUTPUT: Return ONLY the rewritten content, nothing else.
+`;
+
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      temperature: 0.9, // High temp for natural variation
+      messages: [{
+        role: 'user',
+        content: humanizePrompt
+      }]
+    });
+
+    const humanized = response.content[0].type === 'text' 
+      ? response.content[0].text.trim() 
+      : content;
+      
+    const afterScore = checkAIDetectionRisk(humanized);
+    
+    // Calculate improvements
+    const improvements: string[] = [];
+    
+    if (afterScore.riskScore < beforeScore.riskScore) {
+      const improvement = beforeScore.riskScore - afterScore.riskScore;
+      improvements.push(`Risk score reduced by ${improvement} points`);
+    }
+    
+    if (!beforeScore.metrics.hasPersonalPronouns && afterScore.metrics.hasPersonalPronouns) {
+      improvements.push('Added personal pronouns');
+    }
+    
+    if (!beforeScore.metrics.hasContractions && afterScore.metrics.hasContractions) {
+      improvements.push('Added contractions');
+    }
+    
+    if (beforeScore.metrics.aiBuzzwordCount > afterScore.metrics.aiBuzzwordCount) {
+      const removed = beforeScore.metrics.aiBuzzwordCount - afterScore.metrics.aiBuzzwordCount;
+      improvements.push(`Removed ${removed} AI buzzword${removed > 1 ? 's' : ''}`);
+    }
+    
+    if (beforeScore.metrics.avgSentenceLength > afterScore.metrics.avgSentenceLength + 3) {
+      improvements.push('Shortened average sentence length');
+    }
+    
+    return {
+      humanized,
+      before: beforeScore,
+      after: afterScore,
+      improvements
+    };
+  } catch (error) {
+    console.error('Humanize error:', error);
+    throw new Error('Failed to humanize content. Please try again.');
   }
 }
