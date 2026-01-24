@@ -6,27 +6,83 @@ import { Badge } from "@/components/ui/badge"
 import { CreditCard, ExternalLink, Zap } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { useToast } from "@/hooks/use-toast"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 export function BillingSection() {
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [cancelling, setCancelling] = useState(false)
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+  const { toast } = useToast()
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const response = await fetch("/api/auth/me")
-        if (response.ok) {
-          const data = await response.json()
-          setUser(data)
-        }
-      } catch (error) {
-        console.error("[v0] Failed to fetch user:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
     fetchUser()
   }, [])
+
+  const fetchUser = async () => {
+    try {
+      const response = await fetch("/api/auth/me")
+      if (response.ok) {
+        const data = await response.json()
+        setUser(data)
+      }
+    } catch (error) {
+      console.error("[v0] Failed to fetch user:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleCancelSubscription = async () => {
+    setCancelling(true)
+    try {
+      const response = await fetch("/api/subscription/cancel", {
+        method: "POST",
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        toast({
+          title: "Subscription Cancelled",
+          description: data.message || "Your subscription has been cancelled. You'll retain access until the end of your billing period.",
+        })
+        // Refresh user data
+        await fetchUser()
+        setShowCancelDialog(false)
+      } else {
+        const error = await response.json()
+        toast({
+          title: "Cancellation Failed",
+          description: error.error || "Unable to cancel subscription. Please contact support.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Cancel subscription error:", error)
+      toast({
+        title: "Error",
+        description: "
+                variant="outline" 
+                className="bg-transparent"
+                onClick={() => setShowCancelDialog(true)}
+                disabled={cancelling}
+              >
+                <CreditCard className="mr-2 h-4 w-4" />
+                {cancelling ? "Cancelling..." : "Cancel Subscription"}
+    } finally {
+      setCancelling(false)
+    }
+  }
 
   if (loading) {
     return <div>Loading...</div>
@@ -102,6 +158,28 @@ export function BillingSection() {
               <p className="text-2xl font-bold">
                 {totalCredits === 999999 ? "∞" : totalCredits - creditsUsed}
               </p>
+
+      {/* Cancel Subscription Confirmation Dialog */}
+      <AlertDialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Subscription?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel your subscription? You'll retain access until the end of your current billing period, but your subscription will not renew.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={cancelling}>Keep Subscription</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCancelSubscription}
+              disabled={cancelling}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {cancelling ? "Cancelling..." : "Yes, Cancel Subscription"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
             </div>
             <div className="space-y-1">
               <p className="text-sm text-muted-foreground">This Month</p>
