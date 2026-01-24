@@ -12,8 +12,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
-  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
-  basePath: "/api/auth",
+  cookies: {
+    sessionToken: {
+      name: `${process.env.NODE_ENV === "production" ? "__Secure-" : ""}next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   pages: {
     signIn: "/login",
     error: "/login",
@@ -80,11 +89,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
-      // For OAuth providers (Google/Twitter), ALWAYS allow sign in
-      // NextAuth will handle account creation automatically
+      // For OAuth providers (Google/Twitter), ensure email is set
       if (account?.provider === "google" || account?.provider === "twitter") {
-        // Don't do ANY database operations that could fail
-        // Just allow the sign in immediately
+        // Make sure we have an email from the OAuth provider
+        if (!user.email && profile?.email) {
+          // Update user with email from OAuth profile if missing
+          try {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { 
+                email: profile.email as string,
+                emailVerified: new Date() // OAuth emails are pre-verified
+              }
+            })
+          } catch (error) {
+            console.error("Error updating OAuth user email:", error)
+          }
+        }
         return true
       }
       
@@ -112,23 +133,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       
       return true
     },
-    async jwt({ token, user, account, trigger }) {
-      console.log("[JWT] Called with:", { 
-        hasUser: !!user, 
-        hasToken: !!token,
-        tokenId: token?.id,
-        tokenSub: token?.sub,
-        tokenEmail: token?.email,
-        trigger 
-      })
-      
+    async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id
         token.email = user.email
         token.name = user.name
         token.picture = user.image
-        
-        console.log("[JWT] New login - user data:", { id: user.id, email: user.email, name: user.name })
         
         // Fetch full user data from database
         const dbUser = await prisma.user.findUnique({
@@ -159,10 +169,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       
       // On every request, refresh user data from database to keep it current
-      if (token.id || token.sub) {
-        const userId = (token.id as string) || (token.sub as string)
+      if (token.id) {
         const dbUser = await prisma.user.findUnique({
-          where: { id: userId },
+          where: { id: token.id as string },
           select: { 
             name: true,
             email: true,
@@ -176,7 +185,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         })
         
         if (dbUser) {
-          token.id = userId
           token.name = dbUser.name
           token.email = dbUser.email
           token.picture = dbUser.image
@@ -185,42 +193,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.subscriptionStatus = dbUser.subscriptionStatus
           token.subscriptionId = dbUser.subscriptionId
           token.subscriptionEndsAt = dbUser.subscriptionEndsAt
-          
-          console.log("[JWT] Refreshed token with DB data:", { id: userId, email: dbUser.email, hasEmail: !!dbUser.email })
-        } else {
-          console.error("[JWT] User not found in database:", userId)
         }
       }
       
       return token
     },
     async session({ session, token }) {
-      console.log("[Session] Token data:", { 
-        hasToken: !!token,
-        tokenId: token?.id,
-        tokenSub: token?.sub,
-        tokenEmail: token?.email,
-        tokenKeys: token ? Object.keys(token) : []
-      })
-      
-      if (token && session) {
-        session.user = {
-          id: (token.id as string) || (token.sub as string),
-          email: (token.email as string) || "",
-          name: (token.name as string) || null,
-          image: (token.picture as string) || null,
-          emailVerified: (token.emailVerified as Date | null) || null,
-          subscribed: (token.subscribed as boolean) || false,
-          subscriptionStatus: (token.subscriptionStatus as string) || "free",
-          subscriptionId: (token.subscriptionId as string) || null,
-          subscriptionEndsAt: (token.subscriptionEndsAt as Date | null) || null,
-        }
-        
-        console.log("[Session] Built session.user:", {
-          id: session.user.id,
-          email: session.user.email,
-          hasEmail: !!session.user.email
-        })
+      if (session.user) {
+        session.user.id = token.id as string
+        session.user.email = token.email as string
+        session.user.name = token.name as string
+        session.user.image = token.picture as string
+        session.user.emailVerified = token.emailVerified as Date | null
+        session.user.subscribed = token.subscribed as boolean
+        session.user.subscriptionStatus = token.subscriptionStatus as string
+        session.user.subscriptionId = token.subscriptionId as string
+        session.user.subscriptionEndsAt = token.subscriptionEndsAt as Date | null
       }
       return session
     },
