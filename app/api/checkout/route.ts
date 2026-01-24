@@ -67,7 +67,8 @@ export async function POST(request: Request) {
     }
 
     // Add user email as query parameter for pre-filling
-    const urlWithEmail = `${checkoutUrl}?checkout[email]=${encodeURIComponent(userEmail)}`
+    // Polar.sh uses 'customer_email' parameter to prefill email
+    const urlWithEmail = `${checkoutUrl}?customer_email=${encodeURIComponent(userEmail)}`
 
     return NextResponse.json({ 
       checkoutUrl: urlWithEmail,
