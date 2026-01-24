@@ -1,9 +1,21 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
 
 // Track affiliate click
 export async function POST(request: Request) {
   try {
+    // Check rate limit
+    const rateLimitKey = getRateLimitKey(request, undefined, 'affiliate-track')
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.general)
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429 }
+      )
+    }
+    
     const { code } = await request.json()
 
     if (!code) {

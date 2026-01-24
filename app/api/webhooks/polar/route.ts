@@ -1,17 +1,56 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { headers } from "next/headers"
+import crypto from "crypto"
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
 
 // Polar.sh webhook handler for subscription events
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
+    // Check rate limit (protect against webhook spam)
+    const rateLimitKey = getRateLimitKey(request, undefined, 'webhook')
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.general)
     
-    // Verify webhook signature (add Polar webhook secret validation here)
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many requests' },
+        { status: 429 }
+      )
+    }
+    
+    // Get webhook signature from headers
     const headersList = await headers()
     const signature = headersList.get("polar-signature")
+    const webhookSecret = process.env.POLAR_WEBHOOK_SECRET
     
-    // TODO: Verify signature with POLAR_WEBHOOK_SECRET
+    // Verify webhook signature
+    if (!signature || !webhookSecret) {
+      console.error("[Polar Webhook] Missing signature or webhook secret")
+      return NextResponse.json(
+        { error: "Unauthorized - Missing signature" },
+        { status: 401 }
+      )
+    }
+    
+    // Read raw body for signature verification
+    const rawBody = await request.text()
+    const body = JSON.parse(rawBody)
+    
+    // Verify HMAC signature (Polar uses HMAC-SHA256)
+    const computedSignature = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(rawBody)
+      .digest("hex")
+    
+    if (signature !== computedSignature) {
+      console.error("[Polar Webhook] Invalid signature")
+      return NextResponse.json(
+        { error: "Unauthorized - Invalid signature" },
+        { status: 401 }
+      )
+    }
+    
+    console.log("[Polar Webhook] Signature verified successfully")
     
     const { event, data } = body
     

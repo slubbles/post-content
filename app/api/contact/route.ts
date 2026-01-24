@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
 
 // Initialize Resend only if API key is available
 let resend: any = null
@@ -10,6 +11,17 @@ if (process.env.RESEND_API_KEY) {
 
 export async function POST(request: Request) {
   try {
+    // Check rate limit
+    const rateLimitKey = getRateLimitKey(request, undefined, 'contact')
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.general)
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many contact requests. Please try again later.', retryAfter: rateLimit.retryAfter },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
+      )
+    }
+    
     const { name, email, subject, message } = await request.json()
 
     // Validation

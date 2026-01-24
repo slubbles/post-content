@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
 
 // Initialize Resend only if API key is available
 let resend: any = null
@@ -17,6 +18,17 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: "Unauthorized. Please sign in to send feedback." },
         { status: 401 }
+      )
+    }
+
+    // Check rate limit
+    const rateLimitKey = getRateLimitKey(request, session.user.id, 'feedback')
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.general)
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many feedback submissions. Please try again later.', retryAfter: rateLimit.retryAfter },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
       )
     }
 

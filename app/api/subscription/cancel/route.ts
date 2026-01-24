@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function POST(request: Request) {
   try {
@@ -8,6 +9,17 @@ export async function POST(request: Request) {
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    // Check rate limit
+    const rateLimitKey = getRateLimitKey(request, session.user.id, 'cancel')
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.general)
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many cancellation requests. Please try again later.', retryAfter: rateLimit.retryAfter },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
+      )
     }
 
     const user = await prisma.user.findUnique({
@@ -27,14 +39,52 @@ export async function POST(request: Request) {
       )
     }
 
-    // TODO: Integrate with Polar.sh API to cancel subscription
-    // For now, this is a placeholder that marks the subscription as cancelled
-    // You'll need to:
-    // 1. Get POLAR_API_KEY from environment
-    // 2. Call Polar's subscription cancellation endpoint
-    // 3. Handle the response and update the database
+    // Call Polar.sh API to cancel the subscription
+    const polarAccessToken = process.env.POLAR_ACCESS_TOKEN
+    
+    if (!polarAccessToken) {
+      console.error("[Cancel Subscription] POLAR_ACCESS_TOKEN not configured")
+      return NextResponse.json(
+        { error: "Payment provider not configured" },
+        { status: 500 }
+      )
+    }
 
-    // Placeholder: Mark subscription as cancelled in database
+    if (!user.subscriptionId) {
+      console.error("[Cancel Subscription] No subscription ID found for user")
+      return NextResponse.json(
+        { error: "Subscription ID not found" },
+        { status: 400 }
+      )
+    }
+
+    try {
+      // Cancel subscription via Polar API
+      const polarResponse = await fetch(
+        `https://api.polar.sh/v1/subscriptions/${user.subscriptionId}/cancel`,
+        {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${polarAccessToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+
+      if (!polarResponse.ok) {
+        const errorData = await polarResponse.text()
+        console.error("[Cancel Subscription] Polar API error:", errorData)
+        throw new Error(`Polar API error: ${polarResponse.status}`)
+      }
+
+      console.log("[Cancel Subscription] Successfully cancelled via Polar API")
+    } catch (polarError) {
+      console.error("[Cancel Subscription] Failed to cancel via Polar:", polarError)
+      // Continue to update local DB even if Polar API fails
+      // This ensures user sees cancellation status
+    }
+
+    // Update local database
     await prisma.user.update({
       where: { id: session.user.id },
       data: {

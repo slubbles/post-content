@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
 
 // Photo upload endpoint - requires storage integration (S3, Cloudflare R2, or Vercel Blob)
 export async function POST(request: Request) {
@@ -9,6 +10,17 @@ export async function POST(request: Request) {
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    // Check rate limit
+    const rateLimitKey = getRateLimitKey(request, session.user.id, 'upload')
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.general)
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many upload requests. Please try again later.', retryAfter: rateLimit.retryAfter },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
+      )
     }
 
     const formData = await request.formData()

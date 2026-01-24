@@ -1,9 +1,21 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
+import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
 
 export async function POST(request: Request) {
   try {
     const session = await auth()
+    
+    // Check rate limit
+    const rateLimitKey = getRateLimitKey(request, session?.user?.id, 'checkout')
+    const rateLimit = checkRateLimit(rateLimitKey, RATE_LIMITS.general)
+    
+    if (!rateLimit.success) {
+      return NextResponse.json(
+        { error: 'Too many checkout requests. Please try again later.', retryAfter: rateLimit.retryAfter },
+        { status: 429, headers: { 'Retry-After': String(rateLimit.retryAfter) } }
+      )
+    }
     
     console.log("[Checkout] Session check:", { 
       hasSession: !!session, 
