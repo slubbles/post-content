@@ -2,8 +2,9 @@ import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from "@/lib/rate-limit"
+import { put } from "@vercel/blob"
 
-// Photo upload endpoint - requires storage integration (S3, Cloudflare R2, or Vercel Blob)
+// Photo upload endpoint - uses Vercel Blob for cloud storage
 export async function POST(request: Request) {
   try {
     const session = await auth()
@@ -47,37 +48,25 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
+Upload to Vercel Blob
+    const timestamp = Date.now()
+    const filename = `avatars/${session.user.id}-${timestamp}.${file.name.split('.').pop()}`
+    
+    const blob = await put(filename, file, {
+      access: "public",
+      addRandomSuffix: false,
+    })
 
-    // TODO: Upload to cloud storage
-    // Option 1: Vercel Blob
-    // import { put } from '@vercel/blob';
-    // const blob = await put(`avatars/${session.user.id}`, file, { access: 'public' });
-    // const imageUrl = blob.url;
-    
-    // Option 2: Cloudflare R2
-    // Upload to R2 bucket via API
-    
-    // Option 3: AWS S3
-    // Upload to S3 bucket
-    
-    // For now, return error indicating storage not configured
-    return NextResponse.json(
-      { 
-        error: "Storage not configured. Set up Vercel Blob, Cloudflare R2, or AWS S3 first.",
-        instructions: "Add BLOB_READ_WRITE_TOKEN or AWS credentials to .env"
-      },
-      { status: 501 }
-    )
+    // Update user avatar in database
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { image: blob.url },
+    })
 
-    // Once storage is configured, update user avatar:
-    // await prisma.user.update({
-    //   where: { id: session.user.id },
-    //   data: { image: imageUrl },
-    // })
-    //
-    // return NextResponse.json({ 
-    //   url: imageUrl,
-    //   message: "Photo uploaded successfully" 
+    return NextResponse.json({
+      url: blob.url,
+      message: "Photo uploaded successfully",
+      message: "Photo uploaded successfully" 
     // })
 
   } catch (error) {
