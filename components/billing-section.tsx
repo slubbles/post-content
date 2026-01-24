@@ -71,14 +71,9 @@ export function BillingSection() {
       console.error("Cancel subscription error:", error)
       toast({
         title: "Error",
-        description: "
-                variant="outline" 
-                className="bg-transparent"
-                onClick={() => setShowCancelDialog(true)}
-                disabled={cancelling}
-              >
-                <CreditCard className="mr-2 h-4 w-4" />
-                {cancelling ? "Cancelling..." : "Cancel Subscription"}
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setCancelling(false)
     }

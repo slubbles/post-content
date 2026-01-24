@@ -48,7 +48,8 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
-Upload to Vercel Blob
+
+    // Upload to Vercel Blob
     const timestamp = Date.now()
     const filename = `avatars/${session.user.id}-${timestamp}.${file.name.split('.').pop()}`
     
@@ -66,8 +67,7 @@ Upload to Vercel Blob
     return NextResponse.json({
       url: blob.url,
       message: "Photo uploaded successfully",
-      message: "Photo uploaded successfully" 
-    // })
+    })
 
   } catch (error) {
     console.error("Photo upload error:", error)

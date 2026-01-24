@@ -51,8 +51,7 @@ export async function POST(request: Request) {
       },
     })
 
-    // TODO: Create Polar.sh checkout for one-time payment
-    // For now, return checkout URL placeholder
+    // Create Polar.sh checkout URL for one-time payment
     const checkoutUrl = `${process.env.POLAR_CREDITS_CHECKOUT_URL}?amount=${amount}&purchase_id=${purchase.id}`
 
     return NextResponse.json({

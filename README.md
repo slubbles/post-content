@@ -1,197 +1,363 @@
 # PostContent
 
-**AI-powered content generator that helps you create engaging X/Twitter posts in seconds.**
+> AI-powered content generator that learns your unique voice and creates engaging social media posts in seconds.
 
-## 🎯 What It Does
+[![Next.js](https://img.shields.io/badge/Next.js-16.1-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)](https://www.typescriptlang.org/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black)](https://vercel.com)
 
-- **Generate Posts**: Create 3 variations instantly with tone presets (Sarcastic, Raw Builder, Self-Roast)
-- **Train Your Voice**: Analyze your writing style from existing posts
-- **Smart Replies**: Generate context-aware replies to others' tweets
-- **Thread Creator**: Build 5-7 tweet threads on any topic
-- **History Management**: Save, filter, export, and manage all generated content
+🔗 **Live Demo**: [postcontent.io](https://postcontent.io)
+
+---
+
+## ✨ Features
+
+### 🎯 AI Content Generation
+- **Smart Variations**: Generate 3 unique post variations instantly
+- **Tone Presets**: Sarcastic, Raw Builder, Self-Roast, Professional, and more
+- **Thread Creator**: Build compelling 5-7 tweet threads on any topic
+- **Reply Generator**: Create context-aware replies to others' posts
+
+### 🎨 Voice Training
+- **Style Analysis**: Train the AI on your existing posts
+- **Brand Voice**: Maintain consistency across all generated content
+- **Example Learning**: AI learns from your best-performing content
+
+### 📊 Content Management
+- **Generation History**: Save and organize all generated content
+- **Search & Filter**: Find past posts by keyword, tone, or platform
+- **Export**: Download your content in multiple formats
+- **Analytics**: Track generation patterns and usage
+
+### 💳 Subscription Plans
+- **Free**: 10 generations/month
+- **Pro**: 200 generations/month + advanced features
+- **Enterprise**: Unlimited + API access + custom training
+
+---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
-- npm/yarn/pnpm
 
-### Installation
+- **Node.js** 18+ ([Download](https://nodejs.org/))
+- **PostgreSQL** database (we recommend [Neon](https://neon.tech))
+- **npm/yarn/pnpm** package manager
+
+### 1. Clone Repository
 
 ```bash
-# Clone the repo
-cd content-generator
+git clone https://github.com/slubbles/post-content.git
+cd post-content/content-generator
+```
 
-# Install dependencies
+### 2. Install Dependencies
+
+```bash
 npm install
+```
 
-# Run development server
+### 3. Environment Setup
+
+Copy the example environment file:
+
+```bash
+cp .env.example .env.local
+```
+
+Configure the following required variables in `.env.local`:
+
+```bash
+# Database
+DATABASE_URL="postgresql://user:password@host/database"
+
+# Authentication
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-key-here"  # Generate: openssl rand -base64 32
+
+# AI APIs
+ANTHROPIC_API_KEY="sk-ant-..."  # https://console.anthropic.com
+XAI_API_KEY="xai-..."           # https://console.x.ai
+
+# OAuth (Optional - for Google Sign-In)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-secret"
+
+# Payment (Polar.sh)
+POLAR_ACCESS_TOKEN="polar_..."
+POLAR_WEBHOOK_SECRET="whsec_..."
+POLAR_PRO_MONTHLY_URL="https://polar.sh/..."
+POLAR_PRO_ANNUAL_URL="https://polar.sh/..."
+POLAR_ENTERPRISE_URL="https://polar.sh/..."
+
+# Email (Resend)
+RESEND_API_KEY="re_..."
+DEVELOPER_EMAIL="your-email@example.com"
+
+# Vercel Blob Storage
+BLOB_READ_WRITE_TOKEN="vercel_blob_rw_..."
+```
+
+### 4. Database Setup
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Push schema to database
+npx prisma db push
+
+# (Optional) Seed with sample data
+npx prisma db seed
+```
+
+### 5. Run Development Server
+
+```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) - the app works with mock data by default!
-
-### Optional: Connect Real AI
-
-For production AI features, add environment variables:
-
-```bash
-# .env.local
-XAI_API_KEY=xai-...
-DATABASE_URL=postgresql://...
-```
-
-**Without these variables**: App uses mock data for testing/development.
-
-## 🏗️ Tech Stack
-
-- **Framework**: Next.js 16.1.1 (App Router, Turbopack)
-- **Language**: TypeScript (strict mode)
-- **Styling**: Tailwind CSS v4 (Atome-inspired design system)
-- **Animations**: Framer Motion
-- **AI**: Grok API (xAI) via OpenAI SDK
-- **Database**: Neon Serverless Postgres (optional)
-- **Hosting**: Vercel-ready
-
-## 📁 Project Structure
-
-```
-app/
-├── page.tsx              # Generate page (main dashboard)
-├── train/page.tsx        # Voice training analyzer
-├── reply/page.tsx        # Reply generator
-├── thread/page.tsx       # Thread creator
-├── history/page.tsx      # Post history manager
-├── settings/page.tsx     # User preferences
-└── api/
-    ├── generate/route.ts # Post generation endpoint
-    ├── train/route.ts    # Voice analysis endpoint
-    ├── reply/route.ts    # Reply generation endpoint
-    └── thread/route.ts   # Thread generation endpoint
-
-components/
-├── Navigation.tsx        # Top nav + mobile bottom bar
-├── PostGenerator.tsx     # Input form with tone presets
-├── GeneratedPosts.tsx    # Post display with actions
-├── LoadingState.tsx      # Reusable loading component
-└── Footer.tsx            # Enhanced footer
-
-lib/
-├── grok.ts              # Grok API client
-├── db.ts                # Neon database client
-└── prompts.ts           # Centralized prompt management
-```
-
-## 🎨 Design System
-
-**Inspired by [Atome.ph](https://www.atome.ph)** - Bold, modern, high-contrast design.
-
-- **Primary Color**: #f0ff5f (neon yellow)
-- **Theme**: Light mode with white cards on gray backgrounds
-- **Border Radius**: Pill-shaped buttons (100px), rounded cards (20-30px)
-- **Typography**: Responsive scaling (mobile → desktop)
-- **Mobile**: Touch-optimized (44-52px targets), iOS safe areas
-
-See [design-system.md](design-system.md) for complete documentation.
-
-## 📱 Features
-
-### Post Generation
-- 3 tone presets with distinct personalities
-- Real-time character counter (280 limit)
-- Copy to clipboard
-- Save to history
-- Regenerate variations
-
-### Voice Training
-- Analyze 5+ existing posts
-- Extract writing patterns
-- Save voice profile
-- 3-step guided flow
-
-### Reply Generator
-- Context-aware AI replies
-- 3 variations per request
-- Feedback system (too spicy/mild)
-- Individual copy actions
-
-### Thread Creator
-- Generate 5-7 tweet threads
-- Topic-based creation
-- Edit individual tweets
-- Reorder and delete tweets
-- Copy full thread
-
-### History & Settings
-- Filter by tone
-- Mark as used
-- Export to JSON
-- Preference management
-- Data export/clear
-
-## 🚢 Deployment
-
-### Vercel (Recommended)
-
-```bash
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-```
-
-Add environment variables in Vercel dashboard:
-- `XAI_API_KEY` (optional)
-- `DATABASE_URL` (optional)
-
-### Docker
-
-```bash
-# Build
-docker build -t voiceforge .
-
-# Run
-docker run -p 3000:3000 voiceforge
-```
-
-## 🔧 Development
-
-```bash
-npm run dev      # Start dev server
-npm run build    # Production build (works without env vars)
-npm run start    # Start production server
-npm run lint     # Run ESLint
-```
-
-## 📊 Status
-
-- ✅ **Weeks 1-3**: Complete (UI, pages, API integration)
-- ✅ **Design Overhaul**: Atome-inspired system implemented
-- ✅ **Mobile Optimization**: Touch-friendly, iOS safe areas
-- ⏳ **Week 4**: Thread generator complete, webhooks pending
-- ⏳ **Week 5**: Auth & launch prep (next milestone)
-
-See [STATUS.md](STATUS.md) for detailed progress.
-
-## 🎯 Target Audience
-
-- Indie hackers building in public
-- Developer advocates
-- Tech founders on X/Twitter
-- Open source maintainers
-- Anyone who codes more than they copywrite
-
-## 📝 License
-
-MIT
-
-## 🙏 Acknowledgments
-
-- Design inspired by [Atome.ph](https://www.atome.ph)
-- AI powered by [Grok (xAI)](https://x.ai)
-- Built with [Next.js](https://nextjs.org) & [Tailwind CSS](https://tailwindcss.com)
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-**Built by someone who hates writing but loves shipping.**
+## 📚 Tech Stack
+
+### Core Framework
+- **[Next.js 16.1](https://nextjs.org/)** - React framework with App Router
+- **[TypeScript 5](https://www.typescriptlang.org/)** - Type-safe development
+- **[React 19.2](https://react.dev/)** - UI library
+
+### Database & ORM
+- **[PostgreSQL](https://www.postgresql.org/)** - Primary database
+- **[Prisma 5.22](https://www.prisma.io/)** - Type-safe ORM
+- **[Neon](https://neon.tech/)** - Serverless Postgres hosting
+
+### Authentication
+- **[NextAuth v5](https://authjs.dev/)** - Authentication framework
+- **Google OAuth** - Social login
+- **Credentials** - Email/password auth
+
+### AI & APIs
+- **[Anthropic Claude](https://www.anthropic.com/)** - Content generation (Claude Sonnet 4)
+- **[XAI Grok](https://x.ai/)** - Alternative AI model
+- **Streaming Responses** - Real-time generation
+
+### Payments
+- **[Polar.sh](https://polar.sh/)** - Subscription management
+- **Webhook Integration** - Automated subscription sync
+- **HMAC Verification** - Secure webhook handling
+
+### UI & Styling
+- **[Tailwind CSS v4](https://tailwindcss.com/)** - Utility-first CSS
+- **[Radix UI](https://www.radix-ui.com/)** - Accessible components
+- **[Lucide Icons](https://lucide.dev/)** - Icon library
+- **shadcn/ui** - Component library
+
+### Email
+- **[Resend](https://resend.com/)** - Transactional emails
+- **[React Email](https://react.email/)** - Email templates
+
+### Storage
+- **[Vercel Blob](https://vercel.com/docs/storage/vercel-blob)** - File storage for avatars/photos
+
+### Deployment
+- **[Vercel](https://vercel.com/)** - Hosting & CI/CD
+- **Edge Functions** - Global low-latency API routes
+
+---
+
+## 🏗️ Project Structure
+
+```
+content-generator/
+├── app/                      # Next.js App Router
+│   ├── api/                  # API routes
+│   │   ├── auth/            # Authentication endpoints
+│   │   ├── generate/        # Content generation
+│   │   ├── subscription/    # Subscription management
+│   │   ├── webhooks/        # Payment webhooks
+│   │   └── upload/          # File uploads
+│   ├── (auth)/              # Auth pages (login, signup)
+│   ├── dashboard/           # User dashboard
+│   ├── blog/                # Marketing blog
+│   └── layout.tsx           # Root layout
+├── components/              # React components
+│   ├── ui/                  # shadcn/ui components
+│   ├── *-section.tsx        # Feature sections
+│   └── *.tsx                # Page-specific components
+├── lib/                     # Utility functions
+│   ├── auth.ts              # NextAuth configuration
+│   ├── db.ts                # Prisma client
+│   ├── rate-limit.ts        # Rate limiting logic
+│   └── usage.ts             # Usage tracking
+├── prisma/                  # Database
+│   └── schema.prisma        # Database schema
+├── public/                  # Static assets
+├── styles/                  # Global styles
+└── types/                   # TypeScript types
+```
+
+---
+
+## 🔒 Security Features
+
+- ✅ **Rate Limiting**: 60 req/min general, 10 req/min for AI generation
+- ✅ **Webhook Verification**: HMAC-SHA256 signature validation
+- ✅ **CSRF Protection**: Built into NextAuth
+- ✅ **Input Sanitization**: XSS prevention on user inputs
+- ✅ **Password Hashing**: bcrypt with salt rounds
+- ✅ **Environment Variables**: Secrets never committed to git
+
+---
+
+## 🌐 API Routes
+
+### Authentication
+- `POST /api/auth/register` - Create new account
+- `POST /api/auth/signin` - Email/password login
+- `GET /api/auth/signout` - Logout
+- `GET /api/auth/me` - Get current user
+
+### Content Generation
+- `POST /api/generate` - Generate post variations
+- `POST /api/generate/thread` - Create thread
+- `POST /api/generate/reply` - Generate reply
+
+### History
+- `GET /api/history` - Fetch generation history
+- `DELETE /api/history/:id` - Delete post
+
+### Subscription
+- `POST /api/checkout` - Create Polar checkout session
+- `POST /api/subscription/cancel` - Cancel subscription
+- `POST /api/webhooks/polar` - Handle payment webhooks
+
+### Upload
+- `POST /api/upload/photo` - Upload avatar to Vercel Blob
+
+### Admin
+- `GET /api/usage` - Get usage stats
+- `POST /api/affiliate/track` - Track referrals
+
+See [API_DOCUMENTATION.md](./API_DOCUMENTATION.md) for full endpoint details.
+
+---
+
+## 🧪 Development
+
+### Available Scripts
+
+```bash
+# Development
+npm run dev          # Start dev server (localhost:3000)
+
+# Build
+npm run build        # Production build
+npm run start        # Start production server
+
+# Database
+npx prisma studio    # Open Prisma Studio GUI
+npx prisma migrate   # Create migration
+npx prisma db push   # Push schema to database
+
+# Code Quality
+npm run lint         # Run ESLint
+npm run type-check   # TypeScript type checking
+```
+
+### Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `DATABASE_URL` | ✅ | PostgreSQL connection string |
+| `NEXTAUTH_SECRET` | ✅ | NextAuth encryption key |
+| `ANTHROPIC_API_KEY` | ✅ | Claude AI API key |
+| `XAI_API_KEY` | ✅ | Grok AI API key |
+| `POLAR_ACCESS_TOKEN` | ✅ | Polar.sh API token |
+| `POLAR_WEBHOOK_SECRET` | ✅ | Webhook signature secret |
+| `BLOB_READ_WRITE_TOKEN` | ✅ | Vercel Blob storage token |
+| `RESEND_API_KEY` | ✅ | Email sending API key |
+| `GOOGLE_CLIENT_ID` | ❌ | Google OAuth (optional) |
+| `GOOGLE_CLIENT_SECRET` | ❌ | Google OAuth (optional) |
+
+---
+
+## 🚢 Deployment
+
+### Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/slubbles/post-content)
+
+1. **Push to GitHub**
+```bash
+git push origin main
+```
+
+2. **Import to Vercel**
+   - Go to [vercel.com/new](https://vercel.com/new)
+   - Import your repository
+   - Vercel auto-detects Next.js
+
+3. **Add Environment Variables**
+   - Settings → Environment Variables
+   - Add all required variables from `.env.local`
+   - Apply to: Production, Preview, Development
+
+4. **Setup Vercel Blob**
+   - Storage tab → Create Database → Blob
+   - Token auto-added to environment variables
+
+5. **Configure Polar Webhook**
+   - Polar dashboard → Webhooks
+   - URL: `https://your-domain.vercel.app/api/webhooks/polar`
+   - Events: `subscription.*`
+
+6. **Deploy!**
+   - Vercel auto-deploys on every push to main
+   - Preview deployments for PRs
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for details.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Test thoroughly
+5. Commit: `git commit -m 'feat: add amazing feature'`
+6. Push: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- [Anthropic](https://www.anthropic.com/) for Claude AI
+- [Vercel](https://vercel.com/) for hosting & infrastructure
+- [Polar.sh](https://polar.sh/) for payment processing
+- [shadcn](https://ui.shadcn.com/) for UI components
+- All our contributors and supporters
+
+---
+
+## 📞 Support
+
+- **Documentation**: [postcontent.io/docs](https://postcontent.io/docs)
+- **Email**: support@postcontent.io
+- **GitHub Issues**: [Report a bug](https://github.com/slubbles/post-content/issues)
+- **Twitter**: [@postcontent](https://twitter.com/postcontent)
+
+---
+
+Made with ❤️ by the PostContent team
