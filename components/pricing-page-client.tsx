@@ -1,11 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { PricingCards } from "@/components/pricing-cards"
 import { LoadingSpinner } from "@/components/loading-spinner"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { X } from "lucide-react"
 
 interface User {
   name?: string
@@ -15,8 +17,10 @@ interface User {
 
 export function PricingPageClient() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
   const [user, setUser] = useState<User | undefined>(undefined)
+  const [showCancelledMessage, setShowCancelledMessage] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -40,7 +44,12 @@ export function PricingPageClient() {
       }
     }
     checkAuth()
-  }, [])
+    
+    // Check if user cancelled checkout
+    if (searchParams.get('cancelled') === 'true') {
+      setShowCancelledMessage(true)
+    }
+  }, [searchParams])
 
   const handleCTAClick = () => {
     if (isAuthenticated) {
@@ -67,6 +76,22 @@ export function PricingPageClient() {
           Choose the plan that fits your content needs. Start free, upgrade when you're ready.
         </p>
       </div>
+
+      {showCancelledMessage && (
+        <div className="mb-8 animate-fade-in">
+          <Alert className="max-w-2xl mx-auto border-muted-foreground/20">
+            <AlertDescription className="flex items-center justify-between">
+              <span>Checkout cancelled. No worries! Your plan is still active.</span>
+              <button
+                onClick={() => setShowCancelledMessage(false)}
+                className="ml-4 hover:opacity-70 transition-opacity"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       <div className="animate-fade-in-up animate-delay-100 animate-on-load">
         <PricingCards isAuthenticated={isAuthenticated} user={user} />

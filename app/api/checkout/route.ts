@@ -66,12 +66,22 @@ export async function POST(request: Request) {
       )
     }
 
-    // Add user email as query parameter for pre-filling
-    // Polar.sh uses 'customer_email' parameter to prefill email
-    const urlWithEmail = `${checkoutUrl}?customer_email=${encodeURIComponent(userEmail)}`
+    // Build checkout URL with all parameters
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://postcontent.io'
+    const successUrl = `${baseUrl}/success?plan=${plan}`
+    const cancelUrl = `${baseUrl}/pricing?cancelled=true`
+    
+    // Add all query parameters for Polar checkout
+    const params = new URLSearchParams({
+      customer_email: userEmail,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+    })
+    
+    const urlWithParams = `${checkoutUrl}?${params.toString()}`
 
     return NextResponse.json({ 
-      checkoutUrl: urlWithEmail,
+      checkoutUrl: urlWithParams,
       plan,
       isAnnual 
     })
