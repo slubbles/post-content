@@ -117,7 +117,26 @@ export function PricingCards() {
           title: "Redirecting to checkout",
           description: "Please wait while we redirect you to secure payment...",
         })
-        window.open(data.checkoutUrl, "_blank")
+        
+        // Open checkout in new window and track if it's closed
+        const checkoutWindow = window.open(data.checkoutUrl, "_blank")
+        
+        // Poll to detect when window is closed
+        const checkWindowClosed = setInterval(() => {
+          if (checkoutWindow && checkoutWindow.closed) {
+            clearInterval(checkWindowClosed)
+            // Reset loading state after a short delay
+            setTimeout(() => {
+              setLoadingPlan(null)
+            }, 500)
+          }
+        }, 500)
+        
+        // Clear interval after 5 minutes to avoid memory leaks
+        setTimeout(() => {
+          clearInterval(checkWindowClosed)
+          setLoadingPlan(null)
+        }, 300000)
       } else {
         throw new Error("No checkout URL received")
       }
