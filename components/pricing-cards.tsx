@@ -113,25 +113,44 @@ export function PricingCards() {
           description: "Please wait while we redirect you to secure payment...",
         })
         
-        // Open checkout in new window and track if it's closed
-        const checkoutWindow = window.open(data.checkoutUrl, "_blank")
+        // Detect mobile devices
+        const isMobile = /iPhone|iPad|iPod|Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
         
-        // Poll to detect when window is closed
-        const checkWindowClosed = setInterval(() => {
-          if (checkoutWindow && checkoutWindow.closed) {
-            clearInterval(checkWindowClosed)
-            // Reset loading state after a short delay
-            setTimeout(() => {
-              setLoadingPlan(null)
-            }, 500)
+        if (isMobile) {
+          // Mobile: Use same-tab redirect (better UX, no popup blockers)
+          window.location.href = data.checkoutUrl
+          // Loading state will persist until redirect completes
+        } else {
+          // Desktop: Open in new tab with window tracking
+          const checkoutWindow = window.open(data.checkoutUrl, "_blank")
+          
+          if (!checkoutWindow) {
+            // Popup was blocked - fallback to same-tab redirect
+            window.location.href = data.checkoutUrl
+            return
           }
-        }, 500)
-        
-        // Clear interval after 5 minutes to avoid memory leaks
-        setTimeout(() => {
-          clearInterval(checkWindowClosed)
-          setLoadingPlan(null)
-        }, 300000)
+          
+          // Poll to detect when window is closed
+          const checkWindowClosed = setInterval(() => {
+            try {
+              if (checkoutWindow.closed) {
+                clearInterval(checkWindowClosed)
+                // Reset loading state after a short delay
+                setTimeout(() => {
+                  setLoadingPlan(null)
+                }, 500)
+              }
+            } catch (e) {
+              // Cross-origin error - window still open
+            }
+          }, 500)
+          
+          // Clear interval after 5 minutes to avoid memory leaks
+          setTimeout(() => {
+            clearInterval(checkWindowClosed)
+            setLoadingPlan(null)
+          }, 300000)
+        }
       } else {
         throw new Error("No checkout URL received")
       }
