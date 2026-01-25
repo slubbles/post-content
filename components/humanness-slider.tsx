@@ -75,24 +75,15 @@ export function HumannessSlider({ value, onChange, disabled }: HumannessSliderPr
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Label className="text-sm sm:text-base">
-          Humanness Level
-          <span className="ml-2 text-xs text-muted-foreground font-normal">
-            (How casual it sounds)
-          </span>
-        </Label>
-        <div className="flex items-center gap-2">
-          <span className="text-2xl">{currentLevel.emoji}</span>
-          <div className="text-right">
-            <div className="text-sm font-medium">{currentLevel.description}</div>
-            <div className={cn("text-xs font-medium", currentLevel.riskColor)}>
-              AI Risk: {currentLevel.risk}
-            </div>
+        <div className="text-right w-full">
+          <div className="text-sm font-medium">{currentLevel.description}</div>
+          <div className={cn("text-xs font-medium", currentLevel.riskColor)}>
+            AI Risk: {currentLevel.risk}
           </div>
         </div>
       </div>
 
-      <div className="relative pt-2 pb-6">
+      <div className="relative pt-2 pb-2">
         <Slider
           min={1}
           max={4}
@@ -106,21 +97,18 @@ export function HumannessSlider({ value, onChange, disabled }: HumannessSliderPr
           )}
         />
         
-        {/* Emoji markers below slider */}
-        <div className="absolute -bottom-1 left-0 right-0 flex justify-between px-0.5">
+        {/* Text labels below slider */}
+        <div className="absolute -bottom-1 left-0 right-0 flex justify-between px-0.5 mt-2">
           {Object.entries(HUMANNESS_LEVELS).map(([key, level]) => (
-            <div
+            <span
               key={key}
               className={cn(
-                "flex flex-col items-center transition-all duration-200",
-                currentSliderValue === Number(key) ? "scale-110" : "scale-90 opacity-60"
+                "text-[10px] sm:text-xs font-medium transition-colors",
+                currentSliderValue === Number(key) ? "text-foreground" : "text-muted-foreground"
               )}
             >
-              <span className="text-xl sm:text-2xl">{level.emoji}</span>
-              <span className="text-[10px] sm:text-xs text-muted-foreground font-medium mt-0.5">
-                {level.label}
-              </span>
-            </div>
+              {level.label}
+            </span>
           ))}
         </div>
       </div>
