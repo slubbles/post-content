@@ -133,6 +133,7 @@ export function SettingsForm({
     }
 
     // Compare current values with initial values
+    // Note: AI preferences are tracked separately - any change to them triggers hasChanges
     const changed =
       name !== initialValues.name ||
       email !== initialValues.email ||
@@ -403,7 +404,7 @@ export function SettingsForm({
                     <span className="font-semibold text-sm">{account.provider.charAt(0).toUpperCase()}</span>
                   </div>
                   <div>
-                    <p className="font-medium">{account.provider}</p>
+                    <p className="font-medium capitalize">{account.provider}</p>
                     <p className="text-sm text-muted-foreground">{account.email}</p>
                   </div>
                 </div>

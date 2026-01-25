@@ -15,7 +15,14 @@ export async function GET() {
       select: {
         name: true,
         email: true,
+        image: true,
         preferences: true,
+        accounts: {
+          select: {
+            provider: true,
+            providerAccountId: true,
+          },
+        },
       },
     });
 
@@ -31,6 +38,7 @@ export async function GET() {
       temperature: 0.8,
       enableHistory: true,
       autoSave: true,
+      emailNotifications: true,
     };
 
     if (user.preferences) {
@@ -43,10 +51,20 @@ export async function GET() {
       }
     }
 
-    return NextResponse.json({
-      name: user.name || "",
+    // Map connected accounts
+    const connectedAccounts = user.accounts.map(account => ({
+      provider: account.provider,
       email: user.email || "",
-      preferences,
+    }));
+
+    return NextResponse.json({
+      settings: {
+        name: user.name || "",
+        email: user.email || "",
+        avatarUrl: user.image || "",
+        preferences,
+        connectedAccounts,
+      },
     });
   } catch (error) {
     console.error("Settings fetch error:", error);

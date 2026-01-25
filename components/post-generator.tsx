@@ -61,6 +61,29 @@ export function PostGenerator() {
   const isNearLimit = charCount > maxChars * 0.8
   const isOverLimit = charCount > maxChars
 
+  // Load user preferences on mount
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        const response = await fetch("/api/settings")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.settings?.preferences) {
+            const prefs = data.settings.preferences
+            // Apply user's saved preferences as defaults
+            if (prefs.defaultPlatform) setPlatform(prefs.defaultPlatform)
+            if (prefs.defaultTone) setTone(prefs.defaultTone)
+            if (prefs.defaultVariants) setVariants([prefs.defaultVariants])
+          }
+        }
+      } catch (error) {
+        console.error("[v0] Failed to load preferences:", error)
+        // Continue with default values on error
+      }
+    }
+    loadPreferences()
+  }, [])
+
   useEffect(() => {
     const handlePopulateForm = (event: CustomEvent) => {
       if (event.detail?.metadata?.topic) {
