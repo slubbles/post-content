@@ -21,6 +21,9 @@ import {
   List,
   Filter,
   Trash2,
+  Image,
+  Video,
+  FileText,
 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { formatDistanceToNow } from "date-fns"
@@ -33,7 +36,7 @@ import { ConfirmationModal } from "@/components/confirmation-modal"
 interface HistoryItem {
   id: string
   content: string
-  type: "generate" | "reply" | "thread"
+  type: string // Can be: generate, reply, thread, caption, video-script, etc.
   createdAt: string
   metadata?: {
     topic?: string
@@ -42,10 +45,17 @@ interface HistoryItem {
   }
 }
 
-const typeConfig = {
+const typeConfig: Record<string, { icon: typeof Sparkles; label: string; color: string }> = {
   generate: { icon: Sparkles, label: "Posts", color: "text-primary" },
   reply: { icon: MessageSquare, label: "Replies", color: "text-blue-500" },
   thread: { icon: List, label: "Threads", color: "text-green-500" },
+  caption: { icon: Image, label: "Captions", color: "text-purple-500" },
+  "video-script": { icon: Video, label: "Video Scripts", color: "text-orange-500" },
+}
+
+// Fallback for unknown types
+const getTypeConfig = (type: string) => {
+  return typeConfig[type] || { icon: FileText, label: "Content", color: "text-gray-500" }
 }
 
 const platformIcons: Record<string, typeof Twitter> = {
@@ -319,7 +329,8 @@ export default function HistoryPage() {
           ) : (
             <div className="space-y-3">
               {filteredHistory.map((item) => {
-                const TypeIcon = typeConfig[item.type].icon
+                const config = getTypeConfig(item.type)
+                const TypeIcon = config.icon
                 return (
                   <Card
                     key={item.id}
@@ -328,7 +339,7 @@ export default function HistoryPage() {
                   >
                     <div className="flex items-start gap-4">
                       <div
-                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted ${typeConfig[item.type].color}`}
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-muted ${config.color}`}
                       >
                         <TypeIcon className="h-5 w-5" />
                       </div>
@@ -390,10 +401,11 @@ export default function HistoryPage() {
               {selectedItem && (
                 <>
                   {(() => {
-                    const TypeIcon = typeConfig[selectedItem.type].icon
-                    return <TypeIcon className={`h-5 w-5 ${typeConfig[selectedItem.type].color}`} />
+                    const config = getTypeConfig(selectedItem.type)
+                    const TypeIcon = config.icon
+                    return <TypeIcon className={`h-5 w-5 ${config.color}`} />
                   })()}
-                  {typeConfig[selectedItem?.type || "generate"].label} Details
+                  {getTypeConfig(selectedItem.type).label} Details
                 </>
               )}
             </DialogTitle>
