@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -11,6 +11,8 @@ import { Progress } from "@/components/ui/progress"
 import { GeneratedPosts } from "@/components/generated-posts"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { HumannessSlider, type HumannessLevel } from "@/components/humanness-slider"
+import { MultiHumannessToggle } from "@/components/multi-humanness-toggle"
 
 const platforms = [
   { value: "facebook", label: "Facebook" },
@@ -23,10 +25,33 @@ export function CaptionGenerator() {
   const [platform, setPlatform] = useState("facebook")
   const [isGenerating, setIsGenerating] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [generatedCaptions, setGeneratedCaptions] = useState<string[]>([])
+  const [generatedCaptions, setGeneratedCaptions] = useState<string[] | any[]>([])
+  const [humanness, setHumanness] = useState<HumannessLevel | undefined>(undefined)
+  const [multiHumanness, setMultiHumanness] = useState(false)
 
   const used = 45
   const limit = 100
+
+  // Load user preferences on mount
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        const response = await fetch("/api/settings")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.settings?.preferences) {
+            const prefs = data.settings.preferences
+            if (prefs.defaultPlatform && ['facebook', 'linkedin'].includes(prefs.defaultPlatform)) {
+              setPlatform(prefs.defaultPlatform)
+            }
+          }
+        }
+      } catch (error) {
+        console.error("[v0] Failed to load preferences:", error)
+      }
+    }
+    loadPreferences()
+  }, [])
 
   const maxChars = 800
   const charCount = context.length
@@ -53,7 +78,12 @@ export function CaptionGenerator() {
       const response = await fetch("/api/caption", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ context, platform }),
+        body: JSON.stringify({ 
+          context, 
+          platform,
+          ...(humanness && { humanness }),
+          ...(multiHumanness && { multiHumanness: true }),
+        }),
       })
 
       clearInterval(progressInterval)
@@ -65,11 +95,16 @@ export function CaptionGenerator() {
       }
 
       const data = await response.json()
-      setGeneratedCaptions(data.captions)
+      // Support both old format (captions array) and new format (variations with detection)
+      if (data.variations) {
+        setGeneratedCaptions(data.variations)
+      } else {
+        setGeneratedCaptions(data.captions || [])
+      }
       window.dispatchEvent(new Event('credits-updated'))
       toast({
         title: "Captions generated!",
-        description: `Created ${data.captions.length} caption${data.captions.length > 1 ? "s" : ""} for you.`,
+        description: `Created ${data.captions?.length || data.variations?.length || 0} caption${(data.captions?.length || data.variations?.length || 0) > 1 ? "s" : ""} for you.`,
       })
     } catch (error) {
       console.error("[v0] Caption generation error:", error)
@@ -168,6 +203,41 @@ export function CaptionGenerator() {
                 ? "Facebook captions can be longer and more casual"
                 : "LinkedIn captions should be professional and value-driven"}
             </p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm sm:text-base">Humanness Level</Label>
+              {humanness && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setHumanness(undefined)
+                    setMultiHumanness(false)
+                  }}
+                  className="h-8 text-xs"
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
+            <HumannessSlider
+              value={humanness}
+              onChange={(level) => {
+                setHumanness(level)
+                setMultiHumanness(false)
+              }}
+              disabled={isGenerating || multiHumanness}
+            />
+            <MultiHumannessToggle
+              enabled={multiHumanness}
+              onChange={(enabled) => {
+                setMultiHumanness(enabled)
+                if (enabled) setHumanness(undefined)
+              }}
+              disabled={isGenerating || !!humanness}
+            />
           </div>
 
           <div className="space-y-2">

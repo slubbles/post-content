@@ -249,12 +249,17 @@ export async function analyzeVoice(posts: string[]): Promise<VoiceAnalysisResult
   }
 }
 
-export async function generateReplies(postToReply: string, context?: string): Promise<Reply[]> {
+export async function generateReplies(
+  postToReply: string, 
+  context?: string,
+  humanness?: HumannessLevel,
+  multiHumanness?: boolean
+): Promise<Reply[]> {
   if (!anthropic) {
     throw new Error('ANTHROPIC_API_KEY is not configured. Add it to .env.local');
   }
 
-  const systemPrompt = `You are a reply generator for X/Twitter. Create authentic, engaging replies that feel human.
+  let systemPrompt = `You are a reply generator for X/Twitter. Create authentic, engaging replies that feel human.
 Generate 3 different replies with varying tones:
 1. Funny/playful
 2. Insightful/valuable
@@ -266,15 +271,26 @@ Each reply should:
 - Add value or engagement
 - Match the vibe of the original post`;
 
+  // Add humanness layer if specified
+  if (humanness && HUMANNESS_LEVELS[humanness]) {
+    const humannessConfig = HUMANNESS_LEVELS[humanness];
+    systemPrompt += `\n\n## HUMANNESS LEVEL: ${humannessConfig.description}\n${humannessConfig.instructions}`;
+  }
+
   const userPrompt = context
     ? `Post to reply to: "${postToReply}"\n\nContext/angle: ${context}`
     : `Post to reply to: "${postToReply}"`;
+
+  // Determine temperature
+  const temperature = humanness && HUMANNESS_LEVELS[humanness]
+    ? HUMANNESS_LEVELS[humanness].temperature
+    : 0.8;
 
   try {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 800,
-      temperature: 0.8,
+      temperature,
       system: [
         {
           type: 'text',
@@ -321,10 +337,20 @@ interface Tweet {
 export async function generateThread(
   topic: string, 
   keyPoints?: string, 
-  threadLength?: number
+  threadLength?: number,
+  humanness?: HumannessLevel,
+  multiHumanness?: boolean
 ): Promise<Tweet[]> {
   if (!anthropic) {
     throw new Error('ANTHROPIC_API_KEY is not configured. Add it to .env.local');
+  }
+
+  let systemPrompt = THREAD_GENERATION_PROMPT;
+
+  // Add humanness layer if specified
+  if (humanness && HUMANNESS_LEVELS[humanness]) {
+    const humannessConfig = HUMANNESS_LEVELS[humanness];
+    systemPrompt += `\n\n## HUMANNESS LEVEL: ${humannessConfig.description}\n${humannessConfig.instructions}`;
   }
 
   let userPrompt = `Create a thread about: "${topic}"`;
@@ -337,15 +363,20 @@ export async function generateThread(
     userPrompt += `\n\nTarget thread length: ${threadLength} tweets`;
   }
 
+  // Determine temperature
+  const temperature = humanness && HUMANNESS_LEVELS[humanness]
+    ? HUMANNESS_LEVELS[humanness].temperature
+    : 0.8;
+
   try {
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 800,
-      temperature: 0.8,
+      temperature,
       system: [
         {
           type: 'text',
-          text: THREAD_GENERATION_PROMPT,
+          text: systemPrompt,
           cache_control: { type: 'ephemeral' as const }
         }
       ],

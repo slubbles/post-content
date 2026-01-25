@@ -6,6 +6,7 @@ import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
 import { sanitizeInput } from '@/lib/validation';
 import { handleCorsPrelight, getCorsHeaders } from '@/lib/cors';
 import { verifyCsrfToken } from '@/lib/csrf';
+import type { HumannessLevel } from '@/types/api';
 
 export async function OPTIONS(request: NextRequest) {
   const response = handleCorsPrelight(request);
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { topic, keyPoints, threadLength } = await request.json();
+    const { topic, keyPoints, threadLength, humanness, multiHumanness } = await request.json();
 
     // Validate and sanitize topic
     if (!topic || typeof topic !== 'string') {
@@ -54,6 +55,17 @@ export async function POST(request: NextRequest) {
         { error: 'Topic is required' },
         { status: 400 }
       );
+    }
+
+    // Validate humanness if provided
+    if (humanness) {
+      const validHumanness = ['corporate_polished', 'professional_authentic', 'casual_authentic', 'texting_friend'];
+      if (!validHumanness.includes(humanness)) {
+        return NextResponse.json(
+          { error: 'Invalid humanness level' },
+          { status: 400 }
+        );
+      }
     }
 
     const sanitizedTopic = sanitizeInput(topic);
@@ -90,8 +102,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate thread using Grok API with sanitized parameters
-    const tweets = await generateThread(sanitizedTopic, sanitizedKeyPoints, validThreadLength);
+    // Generate thread using Claude API with sanitized parameters
+    const tweets = await generateThread(
+      sanitizedTopic, 
+      sanitizedKeyPoints, 
+      validThreadLength,
+      humanness as HumannessLevel | undefined,
+      multiHumanness
+    );
 
     // Track thread generation for usage limits (count as 1 post, not per tweet)
     await trackPostGeneration(session.user.id, sanitizedTopic, 'thread');

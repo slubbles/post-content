@@ -5,6 +5,8 @@ import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
 import { sanitizeInput } from '@/lib/validation';
 import { handleCorsPrelight, getCorsHeaders } from '@/lib/cors';
 import { verifyCsrfToken } from '@/lib/csrf';
+import { checkAIDetectionRisk } from '@/lib/validation';
+import { HUMANNESS_LEVELS, type HumannessLevel } from '@/lib/prompts';
 import Anthropic from '@anthropic-ai/sdk';
 
 const anthropic = process.env.ANTHROPIC_API_KEY 
@@ -60,7 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { context, format } = await request.json();
+    const { context, format, humanness, multiHumanness } = await request.json();
 
     // Validate inputs
     if (!context || typeof context !== 'string') {
@@ -68,6 +70,17 @@ export async function POST(request: NextRequest) {
         { error: 'Context is required' },
         { status: 400 }
       );
+    }
+
+    // Validate humanness if provided
+    if (humanness) {
+      const validHumanness = ['corporate_polished', 'professional_authentic', 'casual_authentic', 'texting_friend'];
+      if (!validHumanness.includes(humanness)) {
+        return NextResponse.json(
+          { error: 'Invalid humanness level' },
+          { status: 400 }
+        );
+      }
     }
 
     const sanitizedContext = sanitizeInput(context);
@@ -104,7 +117,7 @@ export async function POST(request: NextRequest) {
 
     const formatDescription = formatDescriptions[scriptFormat as keyof typeof formatDescriptions];
 
-    const systemPrompt = `You are an expert video script writer specializing in short-form content for platforms like TikTok, Instagram Reels, and YouTube Shorts.
+    let systemPrompt = `You are an expert video script writer specializing in short-form content for platforms like TikTok, Instagram Reels, and YouTube Shorts.
 
 Create an engaging video script using the ${formatDescription} framework.
 
@@ -116,6 +129,17 @@ The script should be:
 - Engaging and actionable
 - Follow the ${scriptFormat} structure`;
 
+    // Add humanness layer if specified
+    if (humanness && HUMANNESS_LEVELS[humanness as HumannessLevel]) {
+      const humannessConfig = HUMANNESS_LEVELS[humanness as HumannessLevel];
+      systemPrompt += `\n\n## HUMANNESS LEVEL: ${humannessConfig.description}\n${humannessConfig.instructions}`;
+    }
+
+    // Determine temperature
+    const temperature = humanness && HUMANNESS_LEVELS[humanness as HumannessLevel]
+      ? HUMANNESS_LEVELS[humanness as HumannessLevel].temperature
+      : 0.8;
+
     const userPrompt = `Create a video script about: ${sanitizedContext}
 
 Use the ${formatDescription} format to structure the content.
@@ -125,7 +149,7 @@ Generate a cohesive, engaging video script that is ready to perform.`;
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
-      temperature: 0.8,
+      temperature,
       system: [
         {
           type: 'text',

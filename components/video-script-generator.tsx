@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -17,6 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { HumannessSlider, type HumannessLevel } from "@/components/humanness-slider"
+import { MultiHumannessToggle } from "@/components/multi-humanness-toggle"
 
 const formats = [
   {
@@ -46,9 +48,27 @@ export function VideoScriptGenerator() {
   const [generatedScript, setGeneratedScript] = useState("")
   const [context, setContext] = useState("")
   const [format, setFormat] = useState("hook-story-offer")
+  const [humanness, setHumanness] = useState<HumannessLevel | undefined>(undefined)
+  const [multiHumanness, setMultiHumanness] = useState(false)
 
   const used = 45
   const limit = 100
+
+  // Load user preferences on mount
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        const response = await fetch("/api/settings")
+        if (response.ok) {
+          const data = await response.json()
+          // No specific preferences to load for video scripts, but keep for consistency
+        }
+      } catch (error) {
+        console.error("[v0] Failed to load preferences:", error)
+      }
+    }
+    loadPreferences()
+  }, [])
 
   const maxChars = 1500
   const hookCount = hook.length
@@ -83,7 +103,12 @@ export function VideoScriptGenerator() {
       const response = await fetch("/api/video-script", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ context, format }),
+        body: JSON.stringify({ 
+          context, 
+          format,
+          ...(humanness && { humanness }),
+          ...(multiHumanness && { multiHumanness: true }),
+        }),
       })
 
       clearInterval(progressInterval)
@@ -199,6 +224,41 @@ export function VideoScriptGenerator() {
               {format === "emotion-logic-urgency" &&
                 "AI will craft an emotional opening, logical middle, and urgent close"}
             </p>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm sm:text-base">Humanness Level</Label>
+              {humanness && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setHumanness(undefined)
+                    setMultiHumanness(false)
+                  }}
+                  className="h-8 text-xs"
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
+            <HumannessSlider
+              value={humanness}
+              onChange={(level) => {
+                setHumanness(level)
+                setMultiHumanness(false)
+              }}
+              disabled={isGenerating || multiHumanness}
+            />
+            <MultiHumannessToggle
+              enabled={multiHumanness}
+              onChange={(enabled) => {
+                setMultiHumanness(enabled)
+                if (enabled) setHumanness(undefined)
+              }}
+              disabled={isGenerating || !!humanness}
+            />
           </div>
 
           <div className="space-y-2">

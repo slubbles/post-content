@@ -37,7 +37,7 @@ export async function POST(request: Request) {
 
     // Get voice profile for better humanization
     const voiceProfile = await prisma.voiceProfile.findUnique({
-      where: { userId }
+      where: { userId: session.user.id }
     });
 
     // Humanize the content

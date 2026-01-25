@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,6 +13,8 @@ import { Progress } from "@/components/ui/progress"
 import Link from "next/link"
 import { useUsage } from "@/hooks/use-usage"
 import { useToast } from "@/hooks/use-toast"
+import { HumannessSlider, type HumannessLevel } from "@/components/humanness-slider"
+import { MultiHumannessToggle } from "@/components/multi-humanness-toggle"
 
 export function ThreadGenerator() {
   const [topic, setTopic] = useState("")
@@ -21,11 +23,29 @@ export function ThreadGenerator() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatingProgress, setGeneratingProgress] = useState(0)
   const [generatedThread, setGeneratedThread] = useState<string[]>([])
+  const [humanness, setHumanness] = useState<HumannessLevel | undefined>(undefined)
+  const [multiHumanness, setMultiHumanness] = useState(false)
 
   const { usage, refresh } = useUsage()
   const used = usage.used
   const limit = usage.limit
   const { toast } = useToast()
+
+  // Load user preferences on mount
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        const response = await fetch("/api/settings")
+        if (response.ok) {
+          const data = await response.json()
+          // No specific preferences to load for threads, but keep for consistency
+        }
+      } catch (error) {
+        console.error("[v0] Failed to load preferences:", error)
+      }
+    }
+    loadPreferences()
+  }, [])
 
   const maxTopicChars = 500
   const maxKeyPointsChars = 800
@@ -61,6 +81,8 @@ export function ThreadGenerator() {
           topic,
           keyPoints,
           threadLength: threadLength[0],
+          ...(humanness && { humanness }),
+          ...(multiHumanness && { multiHumanness: true }),
         }),
       })
 
@@ -179,6 +201,41 @@ export function ThreadGenerator() {
                 "resize-none transition-all focus:ring-2 focus:ring-primary/20",
                 isKeyPointsOverLimit && "border-destructive focus:ring-destructive",
               )}
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm sm:text-base">Humanness Level</Label>
+              {humanness && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setHumanness(undefined)
+                    setMultiHumanness(false)
+                  }}
+                  className="h-8 text-xs"
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
+            <HumannessSlider
+              value={humanness}
+              onChange={(level) => {
+                setHumanness(level)
+                setMultiHumanness(false)
+              }}
+              disabled={isGenerating || multiHumanness}
+            />
+            <MultiHumannessToggle
+              enabled={multiHumanness}
+              onChange={(enabled) => {
+                setMultiHumanness(enabled)
+                if (enabled) setHumanness(undefined)
+              }}
+              disabled={isGenerating || !!humanness}
             />
           </div>
 

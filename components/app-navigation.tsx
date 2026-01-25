@@ -55,9 +55,9 @@ const publicNavLinks = [
 interface AppNavigationProps {
   isAuthenticated?: boolean
   user?: {
-    name?: string
-    email?: string
-    image?: string
+    name?: string | null
+    email?: string | null
+    image?: string | null
     plan?: string
   }
 }

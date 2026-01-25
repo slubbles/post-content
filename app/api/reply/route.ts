@@ -6,6 +6,7 @@ import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
 import { sanitizeInput } from '@/lib/validation';
 import { handleCorsPrelight, getCorsHeaders } from '@/lib/cors';
 import { verifyCsrfToken } from '@/lib/csrf';
+import type { HumannessLevel } from '@/types/api';
 
 export async function OPTIONS(request: NextRequest) {
   const response = handleCorsPrelight(request);
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { postToReply, context } = await request.json();
+    const { postToReply, context, humanness, multiHumanness } = await request.json();
 
     // Validate and sanitize input
     if (!postToReply || typeof postToReply !== 'string') {
@@ -54,6 +55,17 @@ export async function POST(request: NextRequest) {
         { error: 'Missing required field: postToReply' },
         { status: 400 }
       );
+    }
+
+    // Validate humanness if provided
+    if (humanness) {
+      const validHumanness = ['corporate_polished', 'professional_authentic', 'casual_authentic', 'texting_friend'];
+      if (!validHumanness.includes(humanness)) {
+        return NextResponse.json(
+          { error: 'Invalid humanness level' },
+          { status: 400 }
+        );
+      }
     }
 
     const sanitizedPost = sanitizeInput(postToReply);
@@ -84,7 +96,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const replies = await generateReplies(sanitizedPost, sanitizedContext);
+    const replies = await generateReplies(
+      sanitizedPost, 
+      sanitizedContext,
+      humanness as HumannessLevel | undefined,
+      multiHumanness
+    );
 
     // Track reply generation for usage limits
     await trackPostGeneration(session.user.id, replies[0], 'reply');

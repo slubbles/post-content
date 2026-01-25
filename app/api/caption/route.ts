@@ -5,6 +5,8 @@ import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/rate-limit';
 import { sanitizeInput } from '@/lib/validation';
 import { handleCorsPrelight, getCorsHeaders } from '@/lib/cors';
 import { verifyCsrfToken } from '@/lib/csrf';
+import { checkAIDetectionRisk } from '@/lib/validation';
+import { HUMANNESS_LEVELS, type HumannessLevel } from '@/lib/prompts';
 import Anthropic from '@anthropic-ai/sdk';
 
 const anthropic = process.env.ANTHROPIC_API_KEY 
@@ -60,7 +62,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { context, platform } = await request.json();
+    const { context, platform, humanness, multiHumanness } = await request.json();
 
     // Validate inputs
     if (!context || typeof context !== 'string') {
@@ -75,6 +77,17 @@ export async function POST(request: NextRequest) {
         { error: 'Platform must be either facebook or linkedin' },
         { status: 400 }
       );
+    }
+
+    // Validate humanness if provided
+    if (humanness) {
+      const validHumanness = ['corporate_polished', 'professional_authentic', 'casual_authentic', 'texting_friend'];
+      if (!validHumanness.includes(humanness)) {
+        return NextResponse.json(
+          { error: 'Invalid humanness level' },
+          { status: 400 }
+        );
+      }
     }
 
     const sanitizedContext = sanitizeInput(context);
@@ -100,7 +113,7 @@ export async function POST(request: NextRequest) {
 
     // Generate captions using Claude with Hook-Story-Offer framework
     const platformName = platform === 'facebook' ? 'Facebook' : 'LinkedIn';
-    const systemPrompt = `You are an expert social media caption writer specializing in ${platformName}.
+    let systemPrompt = `You are an expert social media caption writer specializing in ${platformName}.
 
 Create engaging captions using the Hook-Story-Offer framework:
 1. HOOK: Start with attention-grabbing opening (question, bold statement, or surprising fact)
@@ -119,9 +132,20 @@ Facebook-specific guidelines:
 - Use emojis strategically
 - Include relevant hashtags (2-4)
 - Encourage reactions and shares
-`}
+`}`;
 
-Generate 3 unique caption variations.`;
+    // Add humanness layer if specified
+    if (humanness && HUMANNESS_LEVELS[humanness as HumannessLevel]) {
+      const humannessConfig = HUMANNESS_LEVELS[humanness as HumannessLevel];
+      systemPrompt += `\n\n## HUMANNESS LEVEL: ${humannessConfig.description}\n${humannessConfig.instructions}`;
+    }
+
+    systemPrompt += '\n\nGenerate 3 unique caption variations.';
+
+    // Determine temperature
+    const temperature = humanness && HUMANNESS_LEVELS[humanness as HumannessLevel]
+      ? HUMANNESS_LEVELS[humanness as HumannessLevel].temperature
+      : 0.8;
 
     const userPrompt = `Create 3 ${platformName} captions about: "${sanitizedContext}"
 
@@ -130,7 +154,7 @@ Each caption should follow Hook-Story-Offer and be unique in approach.`;
     const message = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1200,
-      temperature: 0.8,
+      temperature,
       system: [
         {
           type: 'text',
@@ -161,6 +185,26 @@ Each caption should follow Hook-Story-Offer and be unique in approach.`;
 
     // Track generation for usage limits
     await trackPostGeneration(session.user.id, captions[0], 'caption');
+
+    // Return with detection if humanness is used
+    if (humanness || multiHumanness) {
+      const variations = captions.map(content => ({
+        content,
+        humanness: humanness ? HUMANNESS_LEVELS[humanness as HumannessLevel].description : 'Default',
+        aiDetection: checkAIDetectionRisk(content)
+      }));
+
+      return NextResponse.json({
+        variations,
+        captions, // Keep for backward compatibility
+        metadata: {
+          timestamp: new Date().toISOString(),
+          platform,
+          humanness,
+          withDetection: true
+        }
+      }, { headers: corsHeaders });
+    }
 
     return NextResponse.json({ captions }, { headers: corsHeaders });
   } catch (error) {

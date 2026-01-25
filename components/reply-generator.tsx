@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils"
 import { Progress } from "@/components/ui/progress"
 import { useUsage } from "@/hooks/use-usage"
 import { useToast } from "@/hooks/use-toast"
+import { HumannessSlider, type HumannessLevel } from "@/components/humanness-slider"
+import { MultiHumannessToggle } from "@/components/multi-humanness-toggle"
 
 const replyTones = [
   { value: "agree", label: "Agreeing" },
@@ -28,12 +30,39 @@ export function ReplyGenerator() {
   const [replyTone, setReplyTone] = useState("supportive")
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatingProgress, setGeneratingProgress] = useState(0)
-  const [generatedReplies, setGeneratedReplies] = useState<string[]>([])
+  const [generatedReplies, setGeneratedReplies] = useState<string[] | any[]>([])
+  const [humanness, setHumanness] = useState<HumannessLevel | undefined>(undefined)
+  const [multiHumanness, setMultiHumanness] = useState(false)
 
   const { usage, refresh } = useUsage()
   const used = usage.used
   const limit = usage.limit
   const { toast } = useToast()
+
+  // Load user preferences on mount
+  useEffect(() => {
+    const loadPreferences = async () => {
+      try {
+        const response = await fetch("/api/settings")
+        if (response.ok) {
+          const data = await response.json()
+          if (data.settings?.preferences?.defaultTone) {
+            // Map defaultTone to replyTone if applicable
+            const toneMap: Record<string, string> = {
+              'casual': 'supportive',
+              'humorous': 'supportive',
+              'professional': 'insightful'
+            }
+            const mappedTone = toneMap[data.settings.preferences.defaultTone]
+            if (mappedTone) setReplyTone(mappedTone)
+          }
+        }
+      } catch (error) {
+        console.error("[v0] Failed to load preferences:", error)
+      }
+    }
+    loadPreferences()
+  }, [])
 
   const maxPostChars = 500
   const maxContextChars = 300
@@ -69,6 +98,8 @@ export function ReplyGenerator() {
           postToReply: originalPost,
           context,
           replyTone,
+          ...(humanness && { humanness }),
+          ...(multiHumanness && { multiHumanness: true }),
         }),
       })
 
@@ -87,7 +118,12 @@ export function ReplyGenerator() {
 
       if (data.replies) {
         setTimeout(() => {
-          setGeneratedReplies(data.replies)
+          // Support both old format (replies array) and new format (variations with detection)
+          if (data.variations) {
+            setGeneratedReplies(data.variations)
+          } else {
+            setGeneratedReplies(data.replies)
+          }
           refresh() // Update credits after generation
           window.dispatchEvent(new Event('credits-updated'))
         }, 200)
@@ -200,6 +236,40 @@ export function ReplyGenerator() {
                 </Button>
               ))}
             </div>
+          </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-sm sm:text-base">Humanness Level</Label>
+              {humanness && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setHumanness(undefined)
+                    setMultiHumanness(false)
+                  }}
+                  className="h-8 text-xs"
+                >
+                  Reset
+                </Button>
+              )}
+            </div>
+            <HumannessSlider
+              value={humanness}
+              onChange={(level) => {
+                setHumanness(level)
+                setMultiHumanness(false)
+              }}
+              disabled={isGenerating || multiHumanness}
+            />
+            <MultiHumannessToggle
+              enabled={multiHumanness}
+              onChange={(enabled) => {
+                setMultiHumanness(enabled)
+                if (enabled) setHumanness(undefined)
+              }}
+              disabled={isGenerating || !!humanness}
+            />
           </div>
           <div className="space-y-2">
             <Button

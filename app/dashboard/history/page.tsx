@@ -444,16 +444,16 @@ export default function HistoryPage() {
       </Dialog>
 
       <ConfirmationModal
-        isOpen={showDeleteModal}
-        onClose={() => {
-          setShowDeleteModal(false)
-          setItemToDelete(null)
+        open={showDeleteModal}
+        onOpenChange={(open) => {
+          setShowDeleteModal(open)
+          if (!open) setItemToDelete(null)
         }}
         onConfirm={handleDelete}
         title="Delete Item"
         description="Are you sure you want to delete this item from your history? This action cannot be undone."
         confirmText="Delete"
-        isDestructive={true}
+        variant="destructive"
       />
     </div>
   )
