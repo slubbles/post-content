@@ -6,7 +6,19 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Footer } from "@/components/footer"
 
-const blogPosts = {
+type BlogPost = {
+  title: string
+  excerpt: string
+  author: string
+  date: string
+  readTime: string
+  category: string
+  content: string
+  keywords?: string[]
+  ogImage?: string
+}
+
+const blogPosts: Record<string, BlogPost> = {
   "ai-content-generation-guide-2026": {
     title: "AI Content Generation: Complete Guide for Marketers in 2026",
     excerpt:
@@ -15,6 +27,19 @@ const blogPosts = {
     date: "2026-01-14",
     readTime: "12 min read",
     category: "Guide",
+    keywords: [
+      "AI content generation",
+      "AI writing tools",
+      "content marketing AI",
+      "social media AI",
+      "AI for marketers",
+      "automated content creation",
+      "AI copywriting",
+      "multi-platform posting",
+      "voice training AI",
+      "authentic AI content"
+    ],
+    ogImage: "/images/blog/ai-content-guide-og.jpg",
     content: `
 # AI Content Generation: Complete Guide for Marketers in 2026
 
@@ -96,6 +121,19 @@ The goal isn't to replace human creativity. It's to amplify it.
     date: "2026-01-12",
     readTime: "10 min read",
     category: "Strategy",
+    keywords: [
+      "LinkedIn strategy",
+      "LinkedIn content",
+      "LinkedIn algorithm",
+      "B2B social media",
+      "LinkedIn marketing",
+      "professional networking",
+      "LinkedIn engagement",
+      "thought leadership",
+      "LinkedIn posting strategy",
+      "LinkedIn growth"
+    ],
+    ogImage: "/images/blog/linkedin-strategy-og.jpg",
     content: `
 # LinkedIn Content Strategy That Actually Works in 2026
 
@@ -222,6 +260,19 @@ Consistency beats perfection. Authenticity beats polish. And showing up beats st
     date: "2026-01-10",
     readTime: "8 min read",
     category: "Growth",
+    keywords: [
+      "Twitter growth",
+      "X platform strategy",
+      "Twitter followers",
+      "X engagement",
+      "Twitter marketing",
+      "social media growth",
+      "Twitter algorithm",
+      "X content strategy",
+      "Twitter monetization",
+      "viral tweets"
+    ],
+    ogImage: "/images/blog/twitter-growth-og.jpg",
     content: `
 # How to Grow on X (Twitter) in 2026: No BS Guide
 
@@ -360,9 +411,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return {
-    title: `${post.title} - PostContent Blog`,
+    title: `${post.title} | PostContent Blog`,
     description: post.excerpt,
-    keywords: [
+    keywords: post.keywords || [
       'AI content generation',
       'social media marketing',
       'content strategy',
@@ -379,15 +430,35 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       authors: [post.author],
       url: `https://www.postcontent.io/blog/${slug}`,
       siteName: 'PostContent',
+      images: [
+        {
+          url: post.ogImage || `https://www.postcontent.io/images/blog/${slug}-og.jpg`,
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.excerpt,
       creator: '@postcontent',
+      images: [post.ogImage || `https://www.postcontent.io/images/blog/${slug}-og.jpg`],
     },
     alternates: {
       canonical: `https://www.postcontent.io/blog/${slug}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
   }
 }
@@ -403,16 +474,19 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   // JSON-LD structured data for SEO
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt,
+    image: post.ogImage || `https://www.postcontent.io/images/blog/${slug}-og.jpg`,
     author: {
       '@type': 'Organization',
       name: post.author,
+      url: 'https://www.postcontent.io',
     },
     publisher: {
       '@type': 'Organization',
       name: 'PostContent',
+      url: 'https://www.postcontent.io',
       logo: {
         '@type': 'ImageObject',
         url: 'https://www.postcontent.io/logo.png',
@@ -424,16 +498,49 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       '@type': 'WebPage',
       '@id': `https://www.postcontent.io/blog/${slug}`,
     },
+    keywords: post.keywords?.join(', '),
+    articleSection: post.category,
+    wordCount: post.content.split(/\s+/).length,
+  }
+
+  // Breadcrumb structured data
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://www.postcontent.io',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blog',
+        item: 'https://www.postcontent.io/blog',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: post.title,
+        item: `https://www.postcontent.io/blog/${slug}`,
+      },
+    ],
   }
 
   return (
     <div className="min-h-screen bg-background">
       <AppNavigation isAuthenticated={false} />
       
-      {/* JSON-LD Script */}
+      {/* JSON-LD Scripts */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       <article className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">

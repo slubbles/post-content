@@ -9,8 +9,56 @@ import { Badge } from "@/components/ui/badge"
 import { auth } from "@/lib/auth"
 
 export const metadata: Metadata = {
-  title: "Blog - PostContent",
-  description: "Read the latest news, tips, and insights about AI content generation and social media strategy.",
+  title: "Blog - AI Content Marketing Tips & Strategies | PostContent",
+  description: "Read expert insights on AI content generation, social media strategy, LinkedIn marketing, Twitter growth, and multi-platform content creation. Free actionable tips for marketers.",
+  keywords: [
+    "AI content marketing blog",
+    "social media strategy",
+    "content creation tips",
+    "AI writing",
+    "LinkedIn marketing",
+    "Twitter growth",
+    "content automation",
+    "social media AI",
+    "digital marketing blog",
+    "content marketing 2026"
+  ],
+  openGraph: {
+    title: "PostContent Blog - AI Content Marketing Insights",
+    description: "Expert tips on AI content generation, social media strategy, and multi-platform marketing.",
+    url: "https://www.postcontent.io/blog",
+    siteName: "PostContent",
+    type: "website",
+    images: [
+      {
+        url: "https://www.postcontent.io/images/blog-og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "PostContent Blog",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PostContent Blog - AI Content Marketing Insights",
+    description: "Expert tips on AI content generation and social media strategy",
+    creator: "@postcontent",
+    images: ["https://www.postcontent.io/images/blog-og.jpg"],
+  },
+  alternates: {
+    canonical: "https://www.postcontent.io/blog",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 }
 
 export const dynamic = 'force-static'
