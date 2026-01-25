@@ -390,6 +390,19 @@ Make it more interesting. Then grow.
   },
 }
 
+// Get related blog posts (exclude current post)
+function getRelatedPosts(currentSlug: string) {
+  const allSlugs = Object.keys(blogPosts)
+  const relatedSlugs = allSlugs.filter(slug => slug !== currentSlug).slice(0, 2)
+  
+  return relatedSlugs.map(slug => ({
+    slug,
+    title: blogPosts[slug].title,
+    excerpt: blogPosts[slug].excerpt,
+    category: blogPosts[slug].category,
+  }))
+}
+
 export async function generateStaticParams() {
   // Generate static paths for all blog posts
   return Object.keys(blogPosts).map((slug) => ({
@@ -593,6 +606,27 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             }
             return <p key={index}>{paragraph.replace(/\*\*/g, "")}</p>
           })}
+        </div>
+
+        {/* Related Posts Section */}
+        <div className="mt-12 border-t pt-8">
+          <h3 className="text-2xl font-bold mb-6">Related Articles</h3>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {getRelatedPosts(slug).map((relatedPost) => (
+              <Link
+                key={relatedPost.slug}
+                href={`/blog/${relatedPost.slug}`}
+                className="group rounded-lg border border-border p-6 transition-colors hover:border-primary"
+              >
+                <div className="mb-2 text-sm text-muted-foreground">{relatedPost.category}</div>
+                <h4 className="text-lg font-semibold group-hover:text-primary transition-colors">
+                  {relatedPost.title}
+                </h4>
+                <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{relatedPost.excerpt}</p>
+                <div className="mt-4 text-sm text-primary">Read more →</div>
+              </Link>
+            ))}
+          </div>
         </div>
 
         <div className="mt-12 border-t pt-8">

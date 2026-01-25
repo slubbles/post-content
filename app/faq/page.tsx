@@ -7,8 +7,21 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { auth } from "@/lib/auth"
 
 export const metadata: Metadata = {
-  title: "FAQ - PostContent",
-  description: "Frequently asked questions about PostContent.",
+  title: "FAQ - Frequently Asked Questions | PostContent",
+  description: "Get answers to common questions about PostContent AI social media generator. Learn about credits, pricing, AI training, platforms, refunds, and more.",
+  keywords: [
+    "PostContent FAQ",
+    "AI content generator questions",
+    "social media AI help",
+    "content credits explained",
+    "AI training how-to",
+  ],
+  openGraph: {
+    title: "PostContent FAQ - All Your Questions Answered",
+    description: "Common questions about AI content generation, pricing, and features.",
+    url: "https://www.postcontent.io/faq",
+    type: "website",
+  },
 }
 
 const faqs = [
@@ -59,9 +72,27 @@ const faqs = [
   },
 ]
 
+// Generate FAQ structured data for SEO
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: faq.answer,
+    },
+  })),
+}
+
 export default function FAQPage() {
   return (
     <div className="min-h-screen bg-background animate-fade-in">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <AppNavigation isAuthenticated={false} />
 
       <div className="mx-auto max-w-4xl mobile-safe-padding py-8 sm:py-12">
