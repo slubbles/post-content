@@ -68,8 +68,11 @@ export function HumannessSlider({ value, onChange, disabled }: HumannessSliderPr
   const currentLevel = HUMANNESS_LEVELS[currentSliderValue as keyof typeof HUMANNESS_LEVELS]
 
   const handleValueChange = (values: number[]) => {
+    if (disabled) return
     const newValue = values[0]
-    onChange(getHumannessValue(newValue))
+    const humannessValue = getHumannessValue(newValue)
+    console.log('[HumannessSlider] Value changed:', { sliderValue: newValue, humanness: humannessValue })
+    onChange(humannessValue)
   }
 
   return (
@@ -83,7 +86,7 @@ export function HumannessSlider({ value, onChange, disabled }: HumannessSliderPr
         </div>
       </div>
 
-      <div className="relative pt-2 pb-2">
+      <div className="relative pt-2 pb-8">
         <Slider
           min={1}
           max={4}
@@ -92,13 +95,12 @@ export function HumannessSlider({ value, onChange, disabled }: HumannessSliderPr
           onValueChange={handleValueChange}
           disabled={disabled}
           className={cn(
-            "cursor-pointer",
-            disabled && "opacity-50 cursor-not-allowed"
+            disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
           )}
         />
         
         {/* Text labels below slider */}
-        <div className="absolute -bottom-1 left-0 right-0 flex justify-between px-0.5 mt-2">
+        <div className="absolute -bottom-6 left-0 right-0 flex justify-between px-0.5">
           {Object.entries(HUMANNESS_LEVELS).map(([key, level]) => (
             <span
               key={key}
