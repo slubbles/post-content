@@ -94,10 +94,12 @@ export function DashboardSidebar({ user, isCollapsed: externalCollapsed, onToggl
   const handleLogout = async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" })
-      router.push("/")
-      router.refresh()
+      // Force full page reload to clear all session cache
+      window.location.href = "/"
     } catch (error) {
       console.error("[v0] Logout error:", error)
+      // Even on error, redirect to clear session
+      window.location.href = "/"
     }
   }
 
